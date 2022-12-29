@@ -1,0 +1,22 @@
+name: Build
+
+on:
+    workflow_dispatch:
+    pull_request:
+    push:
+        branches:
+            - main
+
+jobs:
+    eslint-check:
+        name: build
+        runs-on: ubuntu-20.04
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+            - name: Install Packages
+              run: npm install
+            - name: Build
+              run: npm run build
