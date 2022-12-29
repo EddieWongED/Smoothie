@@ -1,12 +1,13 @@
 {
 	"name": "nodejs-typescript-template",
 	"version": "1.0.0",
-	"description": "",
+	"description": "Template project for typescript and nodejs.",
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
 		"build": "tsc",
-		"format": "eslint . --ext .ts --fix"
+		"format": "eslint . --ext .ts",
+		"format-and-fix": "eslint . --ext .ts --fix"
 	},
 	"keywords": [],
 	"author": "",

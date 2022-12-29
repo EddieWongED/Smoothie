@@ -1,4 +1,4 @@
-##### Typescript-Node.js Template
+## Typescript-Node.js Template
 
 -   In VSCode settings, append the following to use eslint by default:
 
