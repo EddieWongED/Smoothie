@@ -17,6 +17,7 @@
 		"indent": ["error", 4],
 		"linebreak-style": "off",
 		"no-unused-vars": "off",
+		"no-tabs": ["error", { "allowIndentationTabs": true }],
 		"require-jsdoc": "off",
 		"@typescript-eslint/no-unused-vars": "error",
 		"camelcase": "off",
