@@ -7,5 +7,5 @@
 		"outDir": "dist"
 	},
 	"extends": "@tsconfig/node18-strictest/tsconfig.json",
-	"include": ["src/**/*"]
+	"include": ["src/**/*", "environment.d.ts"]
 }
