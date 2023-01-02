@@ -16,11 +16,9 @@
 		"arrow-body-style": ["error", "as-needed"],
 		"indent": ["error", 4],
 		"linebreak-style": "off",
-		"no-unused-vars": "off",
 		"no-tabs": ["error", { "allowIndentationTabs": true }],
 		"require-jsdoc": "off",
 		"object-curly-spacing": ["error", "always"],
-		"@typescript-eslint/no-unused-vars": "error",
 		"camelcase": "off",
 		"@typescript-eslint/naming-convention": [
 			"error",
