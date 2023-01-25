@@ -1,52 +1,48 @@
 {
-	"root": true,
-	"parser": "@typescript-eslint/parser",
-	"parserOptions": { "project": ["./tsconfig.json"] },
-	"plugins": ["@typescript-eslint"],
-	"extends": [
-		"eslint:recommended",
-		"google",
-		"plugin:@typescript-eslint/recommended",
-		"plugin:@typescript-eslint/recommended-requiring-type-checking",
-		"plugin:@typescript-eslint/strict"
-	],
-	"rules": {
-		"semi": ["error", "always"],
-		"quotes": ["error", "double"],
-		"arrow-body-style": ["error", "as-needed"],
-		"indent": ["error", 4],
-		"linebreak-style": "off",
-		"no-tabs": ["error", { "allowIndentationTabs": true }],
-		"require-jsdoc": "off",
-		"object-curly-spacing": ["error", "always"],
-		"camelcase": "off",
-		"@typescript-eslint/naming-convention": [
-			"error",
-			{
-				"selector": "default",
-				"format": ["camelCase"]
-			},
-			{
-				"selector": "variableLike",
-				"format": ["camelCase"]
-			},
-			{
-				"selector": "memberLike",
-				"modifiers": ["private"],
-				"format": ["camelCase"],
-				"leadingUnderscore": "require"
-			},
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": { "project": ["./tsconfig.json"] },
+    "plugins": ["@typescript-eslint", "prettier"],
+    "extends": [
+        "eslint:recommended",
+        "google",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:@typescript-eslint/strict",
+        "prettier"
+    ],
+    "rules": {
+        "linebreak-style": "off",
+        "require-jsdoc": "off",
+        "object-curly-spacing": ["error", "always"],
+        "camelcase": "off",
+        "@typescript-eslint/naming-convention": [
+            "error",
+            {
+                "selector": "default",
+                "format": ["camelCase"]
+            },
+            {
+                "selector": "variableLike",
+                "format": ["camelCase"]
+            },
+            {
+                "selector": "memberLike",
+                "modifiers": ["private"],
+                "format": ["camelCase"],
+                "leadingUnderscore": "require"
+            },
 
-			{
-				"selector": "typeLike",
-				"format": ["PascalCase"]
-			}
-		],
-		"@typescript-eslint/consistent-type-imports": [
-			"error",
-			{
-				"prefer": "type-imports"
-			}
-		]
-	}
+            {
+                "selector": "typeLike",
+                "format": ["PascalCase"]
+            }
+        ],
+        "@typescript-eslint/consistent-type-imports": [
+            "error",
+            {
+                "prefer": "type-imports"
+            }
+        ]
+    }
 }

@@ -1,11 +1,11 @@
 {
-	"compilerOptions": {
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext",
-		"target": "ES2020",
-		"sourceMap": true,
-		"outDir": "dist"
-	},
-	"extends": "@tsconfig/node18-strictest/tsconfig.json",
-	"include": ["src/**/*", "environment.d.ts"]
+    "compilerOptions": {
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "target": "ES2020",
+        "sourceMap": true,
+        "outDir": "dist"
+    },
+    "extends": "@tsconfig/node18-strictest/tsconfig.json",
+    "include": ["src/**/*", "environment.d.ts"]
 }
