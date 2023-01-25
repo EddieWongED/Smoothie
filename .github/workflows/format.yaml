@@ -1,4 +1,4 @@
-name: Eslint Check
+name: Format Check
 
 on:
     workflow_dispatch:
@@ -9,7 +9,7 @@ on:
 
 jobs:
     eslint-check:
-        name: Eslint Check
+        name: Format Check
         runs-on: ubuntu-20.04
         steps:
             - uses: actions/checkout@v3
@@ -18,5 +18,5 @@ jobs:
                   node-version: 18
             - name: Install Packages
               run: npm install
-            - name: Eslint
-              run: npm run lint
+            - name: Prettier
+              run: npm run format

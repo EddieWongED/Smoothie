@@ -5,4 +5,6 @@ dotenv.config();
 
 export const client = new SmoothieClient();
 
-await client.start();
+void (async () => {
+    await client.start();
+})();

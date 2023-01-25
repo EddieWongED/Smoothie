@@ -14,8 +14,9 @@ const fileName = fileURLToPath(import.meta.url);
 const dirName = path.dirname(fileName);
 const rest = new REST({ version: "10" }).setToken(process.env.botToken);
 
-const importCommand = async (filePath: string)
-                    : Promise<SmoothieCommandType> => {
+const importCommand = async (
+    filePath: string
+): Promise<SmoothieCommandType> => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const importedObject: unknown = (await import(filePath))?.default;
     const command = importedObject as SmoothieCommandType;
@@ -26,7 +27,8 @@ void (async () => {
     const commands: ApplicationCommandDataResolvable[] = [];
 
     const commandFiles = await globPromise(
-        `${dirName}/../commands/*/*{.ts,.js}`);
+        `${dirName}/../commands/*/*{.ts,.js}`
+    );
 
     for (const filePath of commandFiles) {
         const command = await importCommand(filePath);
@@ -37,16 +39,17 @@ void (async () => {
     try {
         console.log(`Start refreshing ${commands.length} slash commands...`);
 
-        await rest.put(
-            Routes.applicationCommands(process.env.clientId),
-            { body: commands },
-        );
+        await rest.put(Routes.applicationCommands(process.env.clientId), {
+            body: commands,
+        });
 
         if (process.env.environment == "dev" && process.env.guildId) {
             await rest.put(
-                Routes.applicationGuildCommands(process.env.clientId,
-                    process.env.guildId),
-                { body: commands },
+                Routes.applicationGuildCommands(
+                    process.env.clientId,
+                    process.env.guildId
+                ),
+                { body: commands }
             );
         }
 

@@ -25,10 +25,11 @@ export class SmoothieClient extends Client {
         await this.login(process.env.botToken);
     }
 
-    private async _importCommand(filePath: string)
-                    : Promise<SmoothieCommandType | null> {
+    private async _importCommand(
+        filePath: string
+    ): Promise<SmoothieCommandType | null> {
         try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             const importedObject: unknown = (await import(filePath))?.default;
             const command = importedObject as SmoothieCommandType;
             return command;
@@ -38,10 +39,11 @@ export class SmoothieClient extends Client {
         }
     }
 
-    private async _importEvent(filePath: string):
-                            Promise<SmoothieEvent<keyof ClientEvents> | null> {
+    private async _importEvent(
+        filePath: string
+    ): Promise<SmoothieEvent<keyof ClientEvents> | null> {
         try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             const importedObject: unknown = (await import(filePath))?.default;
             const event = importedObject as SmoothieEvent<keyof ClientEvents>;
             return event;
@@ -52,10 +54,9 @@ export class SmoothieClient extends Client {
     }
 
     private async _registerEvents() {
-        const eventFiles = await globPromise(
-            `${dirName}/../events/*{.ts,.js}`);
+        const eventFiles = await globPromise(`${dirName}/../events/*{.ts,.js}`);
         eventFiles.forEach((filePath) => {
-            void (async () =>{
+            void (async () => {
                 const event = await this._importEvent(filePath);
                 if (!event) return;
                 this.on(event.event, event.run);
@@ -66,7 +67,8 @@ export class SmoothieClient extends Client {
 
     private async _loadCommands() {
         const commandFiles = await globPromise(
-            `${dirName}/../commands/*/*{.ts,.js}`);
+            `${dirName}/../commands/*/*{.ts,.js}`
+        );
         for (const filePath of commandFiles) {
             const command = await this._importCommand(filePath);
             if (!command) break;
