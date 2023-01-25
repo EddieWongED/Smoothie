@@ -4,6 +4,6 @@ export default new SmoothieCommand({
     name: "ping",
     description: "Reply with pong!",
     run: async ({ interaction }) => {
-        await interaction.followUp("Pong!");
+        await interaction.reply("Pong!");
     },
 });

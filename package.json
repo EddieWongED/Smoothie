@@ -10,7 +10,8 @@
 		"dev": "nodemon -w *.ts -e ts -x ts-node --esm --files -H -T ./src/index.ts",
 		"prod": "node dist/index.js",
 		"format": "eslint . --ext .ts",
-		"format-and-fix": "eslint . --ext .ts --fix"
+		"format-and-fix": "eslint . --ext .ts --fix",
+		"register-commands": "tsc && node ./dist/scripts/registerSlashCommands.js"
 	},
 	"keywords": [],
 	"author": "",
