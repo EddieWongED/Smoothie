@@ -12,9 +12,7 @@
         "prettier"
     ],
     "rules": {
-        "linebreak-style": "off",
         "require-jsdoc": "off",
-        "object-curly-spacing": ["error", "always"],
         "camelcase": "off",
         "@typescript-eslint/naming-convention": [
             "error",
