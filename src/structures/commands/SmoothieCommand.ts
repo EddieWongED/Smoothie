@@ -1,8 +1,7 @@
-import type { SmoothieCommandType } from "../../typings/structures/commands/SmoothieCommand.js";
+import type { SmoothieCommandList } from "../../typings/structures/commands/SmoothieCommand.js";
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class SmoothieCommand {
-    constructor(command: SmoothieCommandType) {
-        Object.assign(this, command);
+export class SmoothieCommand<Key extends keyof SmoothieCommandList> {
+    constructor(public name: Key, ...command: SmoothieCommandList[Key]) {
+        Object.assign(this, ...command);
     }
 }

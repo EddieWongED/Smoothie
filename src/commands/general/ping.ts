@@ -4,7 +4,7 @@ import type {
     ApplicationCommandOptionData,
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
-import type { PingOptions } from "../../typings/commands/general/PingOptions.js";
+import { SmoothieCommands } from "../../typings/structures/commands/SmoothieCommand.js";
 
 const numberOption: ApplicationCommandNumericOptionData = {
     name: "number",
@@ -15,12 +15,12 @@ const numberOption: ApplicationCommandNumericOptionData = {
 
 export const pingOptions: ApplicationCommandOptionData[] = [numberOption];
 
-export default new SmoothieCommand({
-    name: "ping",
+export default new SmoothieCommand(SmoothieCommands.ping, {
+    name: SmoothieCommands.ping,
     description: "Reply with pong!",
     options: pingOptions,
     run: async ({ interaction, options }) => {
-        const { number } = options as PingOptions;
+        const { number } = options;
         await interaction.editReply("Pong!");
         await interaction.followUp(`You typed ${number}.`);
         return;

@@ -1,5 +1,5 @@
 import type { ClientEvents } from "discord.js";
-import type { SmoothieCommandType } from "../../typings/structures/commands/SmoothieCommand.js";
+import type { SmoothieCommandTypes } from "../../typings/structures/commands/SmoothieCommand.js";
 import type { SmoothieEvent } from "../events/SmoothieEvent.js";
 
 import path from "path";
@@ -14,7 +14,7 @@ const fileName = fileURLToPath(import.meta.url);
 const dirName = path.dirname(fileName);
 
 export class SmoothieClient extends Client {
-    commands = new Collection<string, SmoothieCommandType>();
+    commands = new Collection<string, SmoothieCommandTypes>();
     commandHandler = new CommandHandler();
 
     constructor() {
@@ -29,11 +29,11 @@ export class SmoothieClient extends Client {
 
     private async _importCommand(
         filePath: string
-    ): Promise<SmoothieCommandType | null> {
+    ): Promise<SmoothieCommandTypes | null> {
         try {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             const importedObject: unknown = (await import(filePath))?.default;
-            const command = importedObject as SmoothieCommandType;
+            const command = importedObject as SmoothieCommandTypes;
             return command;
         } catch (err) {
             console.error(err);

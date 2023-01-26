@@ -1,7 +1,7 @@
 import type { CommandInteraction } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
 import { client } from "../../index.js";
-import type { SmoothieCommandOptionsType } from "../../typings/structures/commands/SmoothieCommandOptions.js";
+import type { SmoothieCommandOptionsType } from "../../typings/structures/commands/SmoothieCommand.js";
 
 export class CommandHandler {
     async handleSlashCommand(interaction: CommandInteraction) {
