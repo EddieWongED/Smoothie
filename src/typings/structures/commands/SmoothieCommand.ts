@@ -1,19 +1,18 @@
 import type {
     ChatInputApplicationCommandData,
     CommandInteraction,
-    CommandInteractionOptionResolver,
     PermissionResolvable,
 } from "discord.js";
-import type { SmoothieClient } from "../structures/SmoothieClient.js";
+import type { SmoothieClient } from "../../../structures/client/SmoothieClient.js";
+import type { SmoothieCommandOptionsType } from "./SmoothieCommandOptions.js";
 
 interface RunArguments {
     client: SmoothieClient;
     interaction: CommandInteraction;
-    args: CommandInteractionOptionResolver;
+    options: SmoothieCommandOptionsType;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type RunFunction = (args: RunArguments) => any;
+type RunFunction = (args: RunArguments) => Promise<void>;
 
 export type SmoothieCommandType = {
     userPermission?: PermissionResolvable[];

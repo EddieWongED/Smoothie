@@ -1,12 +1,13 @@
 import type { ClientEvents } from "discord.js";
-import type { SmoothieCommandType } from "../typings/SmoothieCommand.js";
-import type { SmoothieEvent } from "./SmoothieEvent.js";
+import type { SmoothieCommandType } from "../../typings/structures/commands/SmoothieCommand.js";
+import type { SmoothieEvent } from "../events/SmoothieEvent.js";
 
 import path from "path";
 import { fileURLToPath } from "url";
 import { Client, Collection, GatewayIntentBits } from "discord.js";
 import { promisify } from "util";
 import glob from "glob";
+import { CommandHandler } from "../commands/CommandHandler.js";
 
 const globPromise = promisify(glob);
 const fileName = fileURLToPath(import.meta.url);
@@ -14,6 +15,7 @@ const dirName = path.dirname(fileName);
 
 export class SmoothieClient extends Client {
     commands = new Collection<string, SmoothieCommandType>();
+    commandHandler = new CommandHandler();
 
     constructor() {
         super({ intents: [GatewayIntentBits.Guilds] });
@@ -54,7 +56,10 @@ export class SmoothieClient extends Client {
     }
 
     private async _registerEvents() {
-        const eventFiles = await globPromise(`${dirName}/../events/*{.ts,.js}`);
+        const eventFiles = await globPromise(
+            `${dirName}/../../events/*{.ts,.js}`
+        );
+        console.log("Start registering events...");
         eventFiles.forEach((filePath) => {
             void (async () => {
                 const event = await this._importEvent(filePath);
@@ -67,7 +72,7 @@ export class SmoothieClient extends Client {
 
     private async _loadCommands() {
         const commandFiles = await globPromise(
-            `${dirName}/../commands/*/*{.ts,.js}`
+            `${dirName}/../../commands/*/*{.ts,.js}`
         );
         for (const filePath of commandFiles) {
             const command = await this._importCommand(filePath);

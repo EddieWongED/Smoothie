@@ -5,7 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { promisify } from "util";
 import dotenv from "dotenv";
-import type { SmoothieCommandType } from "../typings/SmoothieCommand.js";
+import type { SmoothieCommandType } from "../typings/structures/commands/SmoothieCommand.js";
 
 dotenv.config();
 
@@ -36,25 +36,11 @@ void (async () => {
         commands.push(command);
     }
 
-    try {
-        console.log(`Start refreshing ${commands.length} slash commands...`);
+    console.log(`Start refreshing ${commands.length} slash commands...`);
 
-        await rest.put(Routes.applicationCommands(process.env.clientId), {
-            body: commands,
-        });
+    await rest.put(Routes.applicationCommands(process.env.clientId), {
+        body: commands,
+    });
 
-        if (process.env.environment == "dev" && process.env.guildId) {
-            await rest.put(
-                Routes.applicationGuildCommands(
-                    process.env.clientId,
-                    process.env.guildId
-                ),
-                { body: commands }
-            );
-        }
-
-        console.log("Refresh successfully.");
-    } catch (err) {
-        console.error(err);
-    }
+    console.log("Refresh successfully.");
 })();
