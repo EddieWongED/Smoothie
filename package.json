@@ -12,7 +12,9 @@
         "lint": "eslint . --ext .ts",
         "lint-and-fix": "eslint . --ext .ts --fix",
         "format": "prettier --config .prettierrc --write \"**/*.+(js|ts|json)\"",
-        "register-commands": "tsc && node ./dist/scripts/registerSlashCommands.js"
+        "register-global-commands": "tsc && node ./dist/scripts/registerGlobalSlashCommands.js",
+        "register-guild-commands": "tsc && node ./dist/scripts/registerGuildSlashCommands.js",
+        "clear-guild-commands": "tsc && node ./dist/scripts/clearGuildSlashCommands.js"
     },
     "keywords": [],
     "author": "",

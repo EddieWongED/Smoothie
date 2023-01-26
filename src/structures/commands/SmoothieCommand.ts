@@ -1,4 +1,4 @@
-import type { SmoothieCommandType } from "../typings/SmoothieCommand.js";
+import type { SmoothieCommandType } from "../../typings/structures/commands/SmoothieCommand.js";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class SmoothieCommand {

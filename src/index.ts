@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { SmoothieClient } from "./structures/SmoothieClient.js";
+import { SmoothieClient } from "./structures/client/SmoothieClient.js";
 
 dotenv.config();
 
