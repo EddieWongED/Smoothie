@@ -4,17 +4,31 @@ import type {
     PermissionResolvable,
 } from "discord.js";
 import type { SmoothieClient } from "../../../structures/client/SmoothieClient.js";
-import type { SmoothieCommandOptionsType } from "./SmoothieCommandOptions.js";
+import type { OptionsOptions } from "../../commands/dev/OptionsOptions.js";
+import type { PingOptions } from "../../commands/general/PingOptions.js";
 
-interface RunArguments {
+interface RunArguments<OptionsType> {
     client: SmoothieClient;
     interaction: CommandInteraction;
-    options: SmoothieCommandOptionsType;
+    options: OptionsType;
 }
 
-type RunFunction = (args: RunArguments) => Promise<void>;
-
-export type SmoothieCommandType = {
+export type SmoothieCommandType<OptionsType> = {
     userPermission?: PermissionResolvable[];
-    run: RunFunction;
+    run: (args: RunArguments<OptionsType>) => Promise<void>;
 } & ChatInputApplicationCommandData;
+
+export type SmoothieCommandTypes =
+    SmoothieCommandType<SmoothieCommandOptionsType>;
+
+export type SmoothieCommandOptionsType = OptionsOptions | PingOptions;
+
+export enum SmoothieCommands {
+    ping = "ping",
+    options = "options",
+}
+
+export interface SmoothieCommandList {
+    [SmoothieCommands.ping]: [command: SmoothieCommandType<PingOptions>];
+    [SmoothieCommands.options]: [command: SmoothieCommandType<OptionsOptions>];
+}

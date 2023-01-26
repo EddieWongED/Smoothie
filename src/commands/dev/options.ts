@@ -6,7 +6,7 @@ import type {
     ApplicationCommandStringOption,
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
-import type { OptionsOptions } from "../../typings/commands/dev/OptionsOptions.js";
+import { SmoothieCommands } from "../../typings/structures/commands/SmoothieCommand.js";
 
 const numberOption: ApplicationCommandNumericOptionData = {
     name: "number",
@@ -35,12 +35,12 @@ const optionsOptions: ApplicationCommandOptionData[] = [
     booleanOption,
 ];
 
-export default new SmoothieCommand({
-    name: "options",
+export default new SmoothieCommand(SmoothieCommands.options, {
+    name: SmoothieCommands.options,
     description: "Show all types of options.",
     options: optionsOptions,
     run: async ({ interaction, options }) => {
-        const { number, string, boolean } = options as OptionsOptions;
+        const { number, string, boolean } = options;
         await interaction.editReply(
             `number = ${number}, string = ${string}, boolean = ${
                 boolean === undefined ? "Not given" : String(boolean)

@@ -5,7 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { promisify } from "util";
 import dotenv from "dotenv";
-import type { SmoothieCommandType } from "../typings/structures/commands/SmoothieCommand.js";
+import type { SmoothieCommandTypes } from "../typings/structures/commands/SmoothieCommand.js";
 
 dotenv.config();
 
@@ -16,10 +16,10 @@ const rest = new REST({ version: "10" }).setToken(process.env.botToken);
 
 const importCommand = async (
     filePath: string
-): Promise<SmoothieCommandType> => {
+): Promise<SmoothieCommandTypes> => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const importedObject: unknown = (await import(filePath))?.default;
-    const command = importedObject as SmoothieCommandType;
+    const command = importedObject as SmoothieCommandTypes;
     return command;
 };
 
