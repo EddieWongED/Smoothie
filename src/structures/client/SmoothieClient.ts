@@ -18,7 +18,13 @@ export class SmoothieClient extends Client {
     commandHandler = new CommandHandler();
 
     constructor() {
-        super({ intents: [GatewayIntentBits.Guilds] });
+        super({
+            intents: [
+                GatewayIntentBits.Guilds,
+                GatewayIntentBits.GuildMessages,
+                GatewayIntentBits.MessageContent,
+            ],
+        });
     }
 
     async start() {

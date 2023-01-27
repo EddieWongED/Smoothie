@@ -19,10 +19,9 @@ export default new SmoothieCommand(SmoothieCommands.ping, {
     name: SmoothieCommands.ping,
     description: "Reply with pong!",
     options: pingOptions,
-    run: async ({ interaction, options }) => {
+    run: async ({ payload, options }) => {
         const { number } = options;
-        await interaction.editReply("Pong!");
-        await interaction.followUp(`You typed ${number}.`);
+        await payload.reply(`Pong! You typed ${number}.`);
         return;
     },
 });

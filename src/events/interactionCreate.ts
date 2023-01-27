@@ -8,5 +8,6 @@ export default new SmoothieEvent(
         if (interaction.isChatInputCommand()) {
             await client.commandHandler.handleSlashCommand(interaction);
         }
+        return;
     }
 );
