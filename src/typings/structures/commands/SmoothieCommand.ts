@@ -1,6 +1,7 @@
 import type {
     ChatInputApplicationCommandData,
     CommandInteraction,
+    Message,
     PermissionResolvable,
 } from "discord.js";
 import type { SmoothieClient } from "../../../structures/client/SmoothieClient.js";
@@ -9,7 +10,7 @@ import type { PingOptions } from "../../commands/general/PingOptions.js";
 
 interface RunArguments<OptionsType> {
     client: SmoothieClient;
-    interaction: CommandInteraction;
+    payload: CommandInteraction | Message;
     options: OptionsType;
 }
 
@@ -21,6 +22,7 @@ export type SmoothieCommandType<OptionsType> = {
 export type SmoothieCommandTypes =
     SmoothieCommandType<SmoothieCommandOptionsType>;
 
+// All data below need to update when adding new command
 export type SmoothieCommandOptionsType = OptionsOptions | PingOptions;
 
 export enum SmoothieCommands {

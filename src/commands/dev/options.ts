@@ -15,6 +15,13 @@ const numberOption: ApplicationCommandNumericOptionData = {
     required: true,
 };
 
+const integerOption: ApplicationCommandNumericOptionData = {
+    name: "integer",
+    type: ApplicationCommandOptionType.Integer,
+    description: "Integer option.",
+    required: true,
+};
+
 const stringOption: ApplicationCommandStringOption = {
     name: "string",
     type: ApplicationCommandOptionType.String,
@@ -31,6 +38,7 @@ const booleanOption: ApplicationCommandBooleanOptionData = {
 
 const optionsOptions: ApplicationCommandOptionData[] = [
     numberOption,
+    integerOption,
     stringOption,
     booleanOption,
 ];
@@ -39,10 +47,10 @@ export default new SmoothieCommand(SmoothieCommands.options, {
     name: SmoothieCommands.options,
     description: "Show all types of options.",
     options: optionsOptions,
-    run: async ({ interaction, options }) => {
-        const { number, string, boolean } = options;
-        await interaction.editReply(
-            `number = ${number}, string = ${string}, boolean = ${
+    run: async ({ payload, options }) => {
+        const { number, integer, string, boolean } = options;
+        await payload.reply(
+            `number = ${number}, integer = ${integer}, string = ${string}, boolean = ${
                 boolean === undefined ? "Not given" : String(boolean)
             }`
         );
