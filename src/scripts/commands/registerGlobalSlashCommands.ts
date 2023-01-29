@@ -5,7 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { promisify } from "util";
 import dotenv from "dotenv";
-import type { SmoothieCommandTypes } from "../typings/structures/commands/SmoothieCommand.js";
+import type { SmoothieCommandTypes } from "../../typings/structures/commands/SmoothieCommand.js";
 
 dotenv.config();
 
@@ -16,23 +16,35 @@ const rest = new REST({ version: "10" }).setToken(process.env.botToken);
 
 const importCommand = async (
     filePath: string
-): Promise<SmoothieCommandTypes> => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const importedObject: unknown = (await import(filePath))?.default;
-    const command = importedObject as SmoothieCommandTypes;
-    return command;
+): Promise<SmoothieCommandTypes | null> => {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const importedObject: unknown = (await import(filePath))?.default;
+        const command = importedObject as SmoothieCommandTypes;
+        return command;
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
 };
 
 void (async () => {
     const commands: ApplicationCommandDataResolvable[] = [];
 
     const commandFiles = await globPromise(
-        `${dirName}/../commands/*/*{.ts,.js}`
+        `${dirName}/../../commands/*/*{.ts,.js}`
     );
 
     for (const filePath of commandFiles) {
         const command = await importCommand(filePath);
-        if (!command.name) return;
+        if (!command) return;
+        if (command.aliases) {
+            for (const alias of command.aliases) {
+                const aliasCommand = Object.assign({}, command);
+                aliasCommand.name = alias;
+                commands.push(aliasCommand);
+            }
+        }
         commands.push(command);
     }
 

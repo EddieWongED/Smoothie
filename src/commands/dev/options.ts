@@ -45,6 +45,7 @@ const optionsOptions: ApplicationCommandOptionData[] = [
 
 export default new SmoothieCommand(SmoothieCommands.options, {
     name: SmoothieCommands.options,
+    aliases: ["option", "o"],
     description: "Show all types of options.",
     options: optionsOptions,
     run: async ({ payload, options }) => {
