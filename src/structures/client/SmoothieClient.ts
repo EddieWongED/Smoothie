@@ -9,6 +9,7 @@ import { promisify } from "util";
 import glob from "glob";
 import { CommandHandler } from "../commands/CommandHandler.js";
 import Logging from "../logging/Logging.js";
+import Database from "../database/Database.js";
 
 const globPromise = promisify(glob);
 const fileName = fileURLToPath(import.meta.url);
@@ -17,6 +18,7 @@ const dirName = path.dirname(fileName);
 export class SmoothieClient extends Client {
     commands = new Collection<string, SmoothieCommandTypes>();
     commandHandler = new CommandHandler();
+    database = new Database();
 
     constructor() {
         super({
