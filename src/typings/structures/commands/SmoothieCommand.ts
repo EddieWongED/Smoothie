@@ -23,7 +23,7 @@ export type SmoothieCommandType<OptionsType> = {
 export type SmoothieCommandTypes =
     SmoothieCommandType<SmoothieCommandOptionsType>;
 
-// All data below need to update when adding new command
+// All data below need to update when adding a new command
 export type SmoothieCommandOptionsType = OptionsOptions | PingOptions;
 
 export enum SmoothieCommands {
