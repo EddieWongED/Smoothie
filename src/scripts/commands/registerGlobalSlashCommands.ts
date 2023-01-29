@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import { promisify } from "util";
 import dotenv from "dotenv";
 import type { SmoothieCommandTypes } from "../../typings/structures/commands/SmoothieCommand.js";
+import Logging from "../../structures/logging/Logging.js";
 
 dotenv.config();
 
@@ -48,11 +49,11 @@ void (async () => {
         commands.push(command);
     }
 
-    console.log(`Start refreshing ${commands.length} slash commands...`);
+    Logging.info(`Start refreshing ${commands.length} slash commands...`);
 
     await rest.put(Routes.applicationCommands(process.env.clientId), {
         body: commands,
     });
 
-    console.log("Refresh successfully.");
+    Logging.info("Refresh successfully.");
 })();

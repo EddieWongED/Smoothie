@@ -8,6 +8,7 @@ import { Client, Collection, GatewayIntentBits } from "discord.js";
 import { promisify } from "util";
 import glob from "glob";
 import { CommandHandler } from "../commands/CommandHandler.js";
+import Logging from "../logging/Logging.js";
 
 const globPromise = promisify(glob);
 const fileName = fileURLToPath(import.meta.url);
@@ -65,13 +66,13 @@ export class SmoothieClient extends Client {
         const eventFiles = await globPromise(
             `${dirName}/../../events/*{.ts,.js}`
         );
-        console.log("Start registering events...");
+        Logging.info("Start registering events...");
         eventFiles.forEach((filePath) => {
             void (async () => {
                 const event = await this._importEvent(filePath);
                 if (!event) return;
                 this.on(event.event, event.run);
-                console.log(`${event.event} event is registered.`);
+                Logging.info(`${event.event} event is registered.`);
             })();
         });
     }
