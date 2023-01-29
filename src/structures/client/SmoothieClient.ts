@@ -83,6 +83,11 @@ export class SmoothieClient extends Client {
         for (const filePath of commandFiles) {
             const command = await this._importCommand(filePath);
             if (!command) break;
+            if (command.aliases) {
+                for (const alias of command.aliases) {
+                    this.commands.set(alias, command);
+                }
+            }
             this.commands.set(command.name, command);
         }
     }

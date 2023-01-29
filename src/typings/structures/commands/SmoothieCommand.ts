@@ -16,6 +16,7 @@ interface RunArguments<OptionsType> {
 
 export type SmoothieCommandType<OptionsType> = {
     userPermission?: PermissionResolvable[];
+    aliases?: string[];
     run: (args: RunArguments<OptionsType>) => Promise<void>;
 } & ChatInputApplicationCommandData;
 
