@@ -1,7 +1,8 @@
 import { Events } from "discord.js";
 import { SmoothieEvent } from "../structures/events/SmoothieEvent.js";
+import Logging from "../structures/logging/Logging.js";
 
 export default new SmoothieEvent(Events.ClientReady, () => {
-    console.log("Bot is online.");
+    Logging.info("Bot is online.");
     return;
 });

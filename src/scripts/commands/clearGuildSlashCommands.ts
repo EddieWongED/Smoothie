@@ -1,5 +1,6 @@
 import { REST, Routes } from "discord.js";
 import dotenv from "dotenv";
+import Logging from "../../structures/logging/Logging.js";
 
 dotenv.config();
 
@@ -7,15 +8,15 @@ const rest = new REST({ version: "10" }).setToken(process.env.botToken);
 
 void (async () => {
     if (!process.env.guildId) {
-        console.log("Please specify your guildId in .env file!");
+        Logging.error("Please specify your guildId in .env file!");
         return;
     }
     if (!process.env.clientId) {
-        console.log("Please specify your clientId in .env file!");
+        Logging.error("Please specify your clientId in .env file!");
         return;
     }
 
-    console.log("Attempting to clear guild slash commands...");
+    Logging.info("Attempting to clear guild slash commands...");
 
     await rest.put(
         Routes.applicationGuildCommands(
@@ -25,5 +26,5 @@ void (async () => {
         { body: [] }
     );
 
-    console.log("Clear successfully.");
+    Logging.info("Clear successfully.");
 })();
