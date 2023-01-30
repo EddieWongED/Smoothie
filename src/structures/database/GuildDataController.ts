@@ -4,9 +4,13 @@ import type GuildData from "../../typings/models/GuildData.js";
 import Logging from "../logging/Logging.js";
 
 export default class GuildDataController {
-    async create(guildId: string): Promise<GuildData | null> {
+    async create(guildId: string | null): Promise<GuildData | null> {
+        if (!guildId) return null;
+
         // Check if the data exists or not
-        const receivedGuildData = await this.read(guildId);
+        const receivedGuildData = (await GuildDataModel.findOne({
+            guildId: guildId,
+        })) as unknown as GuildData | null;
         if (receivedGuildData) {
             return receivedGuildData;
         }
@@ -28,11 +32,17 @@ export default class GuildDataController {
         return null;
     }
 
-    async read(guildId: string): Promise<GuildData | null> {
+    async read(guildId: string | null): Promise<GuildData | null> {
+        if (!guildId) return null;
+
         try {
-            return (await GuildDataModel.findOne({
+            const guildData = (await GuildDataModel.findOne({
                 guildId: guildId,
             })) as unknown as GuildData | null;
+            if (!guildData) {
+                return this.create(guildId);
+            }
+            return guildData;
         } catch (err) {
             Logging.error(err);
         }
@@ -40,11 +50,13 @@ export default class GuildDataController {
     }
 
     async update<Key extends keyof GuildData>(
-        guildId: string,
+        guildId: string | null,
         key: Key,
         value: GuildData[Key]
     ): Promise<GuildData | null> {
+        if (!guildId) return null;
         if (key === "guildId") return null;
+
         try {
             const data = await GuildDataModel.findOneAndUpdate(
                 { guildId: guildId },
@@ -58,7 +70,8 @@ export default class GuildDataController {
         return null;
     }
 
-    async remove(guildId: string): Promise<boolean> {
+    async remove(guildId: string | null): Promise<boolean> {
+        if (!guildId) return false;
         try {
             const result = await GuildDataModel.deleteOne({ guildId: guildId });
             return result.acknowledged && result.deletedCount >= 1;
