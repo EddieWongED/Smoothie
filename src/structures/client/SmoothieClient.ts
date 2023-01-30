@@ -73,6 +73,7 @@ export class SmoothieClient extends Client {
             void (async () => {
                 const event = await this._importEvent(filePath);
                 if (!event) return;
+                Logging.info(`Registering ${event.event} event...`);
                 this.on(event.event, event.run);
                 Logging.info(`${event.event} event is registered.`);
             })();
@@ -83,6 +84,7 @@ export class SmoothieClient extends Client {
         const commandFiles = await globPromise(
             `${dirName}/../../commands/*/*{.ts,.js}`
         );
+        Logging.info("Start loading commands...");
         for (const filePath of commandFiles) {
             const command = await this._importCommand(filePath);
             if (!command) break;
@@ -92,6 +94,14 @@ export class SmoothieClient extends Client {
                 }
             }
             this.commands.set(command.name, command);
+            Logging.info(
+                `${command.name} command (${
+                    command.aliases?.length ?? 0
+                } alias(es)) is loaded.`
+            );
         }
+        Logging.info(
+            `Loaded all the commands (total: ${commandFiles.length}).`
+        );
     }
 }
