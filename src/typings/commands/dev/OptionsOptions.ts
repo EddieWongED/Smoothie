@@ -1,4 +1,4 @@
-export interface OptionsOptions {
+export default interface OptionsOptions {
     number: number;
     integer: number;
     string: string;

@@ -6,8 +6,10 @@ export interface Internationalization {
     optionsIntegerMessage: string;
     optionsStringMessage: string;
     optionsBooleanMessage: string;
-    languageMessageSuccess: string;
-    languageMessageFailed: string;
+    languageShowMessageSuccess: string;
+    languageShowMessageFailed: string;
+    languageUpdateMessageSuccess: string;
+    languageUpdateMessageFailed: string;
 
     // Error message
     noSuchCommandMessage: string;

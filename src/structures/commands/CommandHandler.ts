@@ -35,8 +35,7 @@ export class CommandHandler {
 
             // Parse command options
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const options: SmoothieCommandOptionsType | Record<string, any> =
-                {};
+            const options: Record<string, any> = {};
             for (const option of data) {
                 switch (option.type) {
                     case ApplicationCommandOptionType.Integer:
@@ -129,8 +128,7 @@ export class CommandHandler {
             }
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const options: SmoothieCommandOptionsType | Record<string, any> =
-                {};
+            const options: Record<string, any> = {};
             for (const [i, arg] of args.entries()) {
                 const option = commandOptions[i];
                 if (!option) return;
