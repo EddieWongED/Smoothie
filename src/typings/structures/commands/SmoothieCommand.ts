@@ -7,8 +7,9 @@ import type {
 } from "discord.js";
 import type ReplyHandler from "../../../structures/commands/ReplyHandler.js";
 import type GuildDataHandler from "../../../structures/database/GuildDataHandler.js";
-import type { OptionsOptions } from "../../commands/dev/OptionsOptions.js";
-import type { LanguageOptions } from "../../commands/general/LanguageOptions.js";
+import type OptionsOptions from "../../commands/dev/OptionsOptions.js";
+import type LanguageOptions from "../../commands/general/LanguageOptions.js";
+import type PingOptions from "../../commands/general/PingOptions.js";
 
 export type SlashCommandPayload = ChatInputCommandInteraction & {
     payloadType: "slash";
@@ -47,7 +48,10 @@ export type SmoothieCommandTypes =
 export type NoOptions = Record<string, never>;
 
 // All data below need to update when adding a new command
-export type SmoothieCommandOptionsType = OptionsOptions | LanguageOptions;
+export type SmoothieCommandOptionsType =
+    | PingOptions
+    | OptionsOptions
+    | LanguageOptions;
 
 export enum SmoothieCommands {
     ping = "ping",
@@ -56,7 +60,7 @@ export enum SmoothieCommands {
 }
 
 export interface SmoothieCommandList {
-    [SmoothieCommands.ping]: [command: SmoothieCommandType<GetRootNodeOptions>];
+    [SmoothieCommands.ping]: [command: SmoothieCommandType<PingOptions>];
     [SmoothieCommands.options]: [command: SmoothieCommandType<OptionsOptions>];
     [SmoothieCommands.language]: [
         command: SmoothieCommandType<LanguageOptions>

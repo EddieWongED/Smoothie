@@ -18,7 +18,7 @@ const languageOption: ApplicationCommandStringOption = {
     }),
     type: ApplicationCommandOptionType.String,
     description: "The language code.",
-    required: true,
+    required: false,
 };
 
 export const languageOptions: ApplicationCommandOptionData[] = [languageOption];
@@ -30,12 +30,25 @@ export default new SmoothieCommand(SmoothieCommands.language, {
     options: languageOptions,
     run: async ({ options, guildData, reply }) => {
         const { language } = options;
-        const newGuildData = await guildData.update("language", language);
-        if (!newGuildData) {
-            await reply.error("languageMessageFailed", language);
+
+        // Show language
+        if (!language) {
+            const guildLanguage = await guildData.get("language");
+            if (guildLanguage) {
+                await reply.info("languageShowMessageSuccess", guildLanguage);
+            } else {
+                await reply.error("languageShowMessageFailed");
+            }
             return;
         }
-        await reply.info("languageMessageSuccess", newGuildData.language);
+
+        // Change language
+        const newGuildData = await guildData.update("language", language);
+        if (!newGuildData) {
+            await reply.error("languageUpdateMessageFailed", language);
+            return;
+        }
+        await reply.info("languageUpdateMessageSuccess", newGuildData.language);
         return;
     },
 });
