@@ -10,6 +10,11 @@ export interface Internationalization {
     languageShowMessageFailed: string;
     languageUpdateMessageSuccess: string;
     languageUpdateMessageFailed: string;
+    prefixShowMessageSuccess: string;
+    prefixShowMessageFailed: string;
+    prefixUpdateMessageSuccess: string;
+    prefixUpdateMessageFailed: string;
+    prefixLengthErrorMessage: string;
 
     // Error message
     noSuchCommandMessage: string;

@@ -26,7 +26,7 @@ export const languageOptions: ApplicationCommandOptionData[] = [languageOption];
 export default new SmoothieCommand(SmoothieCommands.language, {
     name: SmoothieCommands.language,
     aliases: ["lang"],
-    description: "Change language.",
+    description: "Show / Change language.",
     options: languageOptions,
     run: async ({ options, guildData, reply }) => {
         const { language } = options;
