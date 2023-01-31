@@ -1,6 +1,5 @@
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import { SmoothieCommands } from "../../typings/structures/commands/SmoothieCommand.js";
-import { client } from "../../index.js";
 import type {
     ApplicationCommandOptionChoiceData,
     ApplicationCommandOptionData,
