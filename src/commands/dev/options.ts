@@ -7,7 +7,6 @@ import type {
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
 import { SmoothieCommands } from "../../typings/structures/commands/SmoothieCommand.js";
-import { getLocale } from "../../i18n/i18n.js";
 
 const numberOption: ApplicationCommandNumericOptionData = {
     name: "number",
@@ -53,17 +52,14 @@ export default new SmoothieCommand(SmoothieCommands.options, {
     aliases: ["option", "o"],
     description: "Show all types of options.",
     options: optionsOptions,
-    run: async ({ payload, options, guildData }) => {
+    run: async ({ options, reply }) => {
         const { number, integer, string, boolean } = options;
-        await payload.reply(
-            getLocale(
-                guildData.language,
-                "optionsMessage",
-                number.toString(),
-                integer.toString(),
-                string,
-                boolean === undefined ? "Not given" : String(boolean)
-            )
+        await reply.info("optionsNumberMessage", number.toString());
+        await reply.infoFollowUp("optionsIntegerMessage", integer.toString());
+        await reply.infoFollowUp("optionsStringMessage", string);
+        await reply.infoFollowUp(
+            "optionsBooleanMessage",
+            boolean === undefined ? "Not Given" : String(boolean)
         );
         return;
     },

@@ -1,23 +1,30 @@
 import type {
     ApplicationCommandChoicesOption,
     BaseApplicationCommandOptionsData,
-    ChatInputCommandInteraction,
-    Message,
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
-import { getLocale } from "../../i18n/i18n.js";
 import { client } from "../../index.js";
-import type { SmoothieCommandOptionsType } from "../../typings/structures/commands/SmoothieCommand.js";
+import type {
+    MessageCommandPayload,
+    SlashCommandPayload,
+    SmoothieCommandOptionsType,
+} from "../../typings/structures/commands/SmoothieCommand.js";
 import stringToBoolean from "../../utils/stringToBoolean.js";
+import ReplyHandler from "./ReplyHandler.js";
 
 export class CommandHandler {
-    async handleSlashCommand(interaction: ChatInputCommandInteraction) {
+    async handleSlashCommand(interaction: SlashCommandPayload) {
         try {
             // Fetch guild data
             const guildId = interaction.guildId;
             if (!guildId) return;
             const guildData = await client.database.guildData.read(guildId);
             if (!guildData) return;
+            const language = guildData.language;
+
+            // Create reply handler
+            const reply = new ReplyHandler(interaction, language);
+            await reply.info("loadingCommandMessage", interaction.commandName);
 
             // Retrieve command
             const command = client.commands.get(interaction.commandName);
@@ -50,13 +57,14 @@ export class CommandHandler {
                 payload: interaction,
                 options: options as SmoothieCommandOptionsType,
                 guildData: guildData,
+                reply: reply,
             });
         } catch (err) {
             console.error(err);
         }
     }
 
-    async handleMessageCommand(message: Message) {
+    async handleMessageCommand(message: MessageCommandPayload) {
         try {
             // Fetch guild data
             const guildId = message.guildId;
@@ -76,10 +84,12 @@ export class CommandHandler {
             const args: string[] = data.length > 1 ? data.slice(1) : [];
             const command = client.commands.get(commandName);
 
+            // Create reply handler
+            const reply = new ReplyHandler(message, language);
+            await reply.info("loadingCommandMessage", commandName);
+
             if (!command) {
-                await message.reply(
-                    getLocale(language, "noSuchCommandMessage", commandName)
-                );
+                await reply.error("noSuchCommandMessage", commandName);
                 return;
             }
 
@@ -97,25 +107,21 @@ export class CommandHandler {
                         : `<${option.name} (optional)>`;
                 }
             );
-            const fullCommandString = `\`${prefix}${commandName} ${optionNamesWithAngleBrackets.join(
+
+            let fullCommandString = `\`${prefix}${commandName} ${optionNamesWithAngleBrackets.join(
                 " "
             )}\``;
+            if (commandOptions.length == 0) {
+                fullCommandString = `\`${prefix}${commandName}\``;
+            }
 
             if (args.length < minOptionsLength) {
-                await message.reply(
-                    getLocale(language, "tooFewInputMessage", fullCommandString)
-                );
+                await reply.error("tooFewInputMessage", fullCommandString);
                 return;
             }
 
             if (args.length > maxOptionsLength) {
-                await message.reply(
-                    getLocale(
-                        language,
-                        "tooManyInputMessage",
-                        fullCommandString
-                    )
-                );
+                await reply.error("tooManyInputMessage", fullCommandString);
                 return;
             }
 
@@ -141,13 +147,10 @@ export class CommandHandler {
                     case ApplicationCommandOptionType.Integer: {
                         const number = Number(arg);
                         if (Number.isNaN(number) || !Number.isInteger(number)) {
-                            await message.reply(
-                                getLocale(
-                                    language,
-                                    "requireIntegerMessage",
-                                    option.name,
-                                    fullCommandString
-                                )
+                            await reply.error(
+                                "requireIntegerMessage",
+                                option.name,
+                                fullCommandString
                             );
                             return;
                         }
@@ -155,17 +158,14 @@ export class CommandHandler {
                         // If choices exist, check if the input matches the choices or not
                         if (choices) {
                             if (!(choices as number[]).includes(number)) {
-                                await message.reply(
-                                    getLocale(
-                                        language,
-                                        "noMatchChoiceMessage",
-                                        option.name,
-                                        number.toString(),
-                                        fullCommandString,
-                                        choices
-                                            .map((choice) => `\`${choice}\``)
-                                            .join(", ")
-                                    )
+                                await reply.error(
+                                    "noMatchChoiceMessage",
+                                    option.name,
+                                    number.toString(),
+                                    fullCommandString,
+                                    choices
+                                        .map((choice) => `\`${choice}\``)
+                                        .join(", ")
                                 );
                                 return;
                             }
@@ -176,13 +176,10 @@ export class CommandHandler {
                     case ApplicationCommandOptionType.Number: {
                         const number = Number(arg);
                         if (Number.isNaN(number)) {
-                            await message.reply(
-                                getLocale(
-                                    language,
-                                    "requireNumberMessage",
-                                    option.name,
-                                    fullCommandString
-                                )
+                            await reply.error(
+                                "requireNumberMessage",
+                                option.name,
+                                fullCommandString
                             );
                             return;
                         }
@@ -190,17 +187,14 @@ export class CommandHandler {
                         // If choices exist, check if the input matches the choices or not
                         if (choices) {
                             if (!(choices as number[]).includes(number)) {
-                                await message.reply(
-                                    getLocale(
-                                        language,
-                                        "noMatchChoiceMessage",
-                                        option.name,
-                                        number.toString(),
-                                        fullCommandString,
-                                        choices
-                                            .map((choice) => `\`${choice}\``)
-                                            .join(", ")
-                                    )
+                                await reply.error(
+                                    "noMatchChoiceMessage",
+                                    option.name,
+                                    number.toString(),
+                                    fullCommandString,
+                                    choices
+                                        .map((choice) => `\`${choice}\``)
+                                        .join(", ")
                                 );
                                 return;
                             }
@@ -214,17 +208,14 @@ export class CommandHandler {
                         // If choices exist, check if the input matches the choices or not
                         if (choices) {
                             if (!(choices as string[]).includes(string)) {
-                                await message.reply(
-                                    getLocale(
-                                        language,
-                                        "noMatchChoiceMessage",
-                                        option.name,
-                                        string,
-                                        fullCommandString,
-                                        choices
-                                            .map((choice) => `\`${choice}\``)
-                                            .join(", ")
-                                    )
+                                await reply.error(
+                                    "noMatchChoiceMessage",
+                                    option.name,
+                                    string,
+                                    fullCommandString,
+                                    choices
+                                        .map((choice) => `\`${choice}\``)
+                                        .join(", ")
                                 );
                                 return;
                             }
@@ -243,6 +234,7 @@ export class CommandHandler {
                 payload: message,
                 options: options as SmoothieCommandOptionsType,
                 guildData: guildData,
+                reply: reply,
             });
         } catch (err) {
             console.error(err);

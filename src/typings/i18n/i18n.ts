@@ -2,7 +2,10 @@
 export interface Internationalization {
     // Command message
     pingMessage: string;
-    optionsMessage: string;
+    optionsNumberMessage: string;
+    optionsIntegerMessage: string;
+    optionsStringMessage: string;
+    optionsBooleanMessage: string;
     languageMessageSuccess: string;
     languageMessageFailed: string;
 
@@ -13,6 +16,9 @@ export interface Internationalization {
     requireIntegerMessage: string;
     requireNumberMessage: string;
     noMatchChoiceMessage: string;
+
+    // Others
+    loadingCommandMessage: string;
 }
 
 export enum Languages {
