@@ -1,14 +1,26 @@
 import { Events } from "discord.js";
 import { client } from "../index.js";
+import GuildDataHandler from "../structures/database/GuildDataHandler.js";
 import { SmoothieEvent } from "../structures/events/SmoothieEvent.js";
 import type { MessageCommandPayload } from "../typings/structures/commands/SmoothieCommand.js";
 
 export default new SmoothieEvent(Events.MessageCreate, async (message) => {
     if (message.author.bot) return;
-    if (message.content.startsWith("$")) {
+
+    // Create guild data
+    const guildId = message.guildId;
+    if (!guildId) return;
+    const guildData = new GuildDataHandler(guildId);
+    const prefix = await guildData.get("prefix");
+    if (!prefix) return;
+
+    if (message.content.startsWith(prefix)) {
         const messageCommandPayload = message as MessageCommandPayload;
         messageCommandPayload.payloadType = "message";
-        await client.commandHandler.handleMessageCommand(messageCommandPayload);
+        await client.commandHandler.handleMessageCommand(
+            messageCommandPayload,
+            guildData
+        );
     }
     return;
 });

@@ -11,20 +11,18 @@ import type {
     SmoothieCommandOptionsType,
 } from "../../typings/structures/commands/SmoothieCommand.js";
 import stringToBoolean from "../../utils/stringToBoolean.js";
-import GuildDataHandler from "../database/GuildDataHandler.js";
+import type GuildDataHandler from "../database/GuildDataHandler.js";
 import ReplyHandler from "./ReplyHandler.js";
 
 export class CommandHandler {
-    async handleSlashCommand(interaction: SlashCommandPayload) {
+    async handleSlashCommand(
+        interaction: SlashCommandPayload,
+        guildData: GuildDataHandler
+    ) {
         try {
-            // Fetch guild data
-            const guildId = interaction.guildId;
-            if (!guildId) return;
-            const guildData = new GuildDataHandler(guildId);
+            // Create reply handler
             const language =
                 (await guildData.get("language")) ?? defaultLanguage;
-
-            // Create reply handler
             const reply = new ReplyHandler(interaction, language);
             await reply.info("loadingCommandMessage", interaction.commandName);
 
@@ -65,15 +63,11 @@ export class CommandHandler {
         }
     }
 
-    async handleMessageCommand(message: MessageCommandPayload) {
+    async handleMessageCommand(
+        message: MessageCommandPayload,
+        guildData: GuildDataHandler
+    ) {
         try {
-            // Fetch guild data
-            const guildId = message.guildId;
-            if (!guildId) return;
-            const guildData = new GuildDataHandler(guildId);
-            const language =
-                (await guildData.get("language")) ?? defaultLanguage;
-
             // Parse and retrieve command
             const prefix = await guildData.get("prefix");
             if (!prefix) return;
@@ -87,6 +81,8 @@ export class CommandHandler {
             const command = client.commands.get(commandName);
 
             // Create reply handler
+            const language =
+                (await guildData.get("language")) ?? defaultLanguage;
             const reply = new ReplyHandler(message, language);
             await reply.info("loadingCommandMessage", commandName);
 

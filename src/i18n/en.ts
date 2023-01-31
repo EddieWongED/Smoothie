@@ -10,6 +10,13 @@ const en: Internationalization = {
     languageShowMessageFailed: "Failed to fetch your language.",
     languageUpdateMessageSuccess: "Switched to `%ARG%` successfully.",
     languageUpdateMessageFailed: "Failed to switch to `%ARG%`.",
+    prefixShowMessageSuccess: "Your command prefix is: `%ARG%`.",
+    prefixShowMessageFailed: "Failed to fetch your command prefix.",
+    prefixUpdateMessageSuccess:
+        "Your command prefix has been changed to `%ARG%`.",
+    prefixUpdateMessageFailed:
+        "Failed to change your command prefix to `%ARG%`.",
+    prefixLengthErrorMessage: "The length of command prefix can only be 1-3.",
     noSuchCommandMessage: "There is no `%ARG%` command.",
     tooFewInputMessage: "Too few input! (%ARG%)",
     tooManyInputMessage: "Too many input! (%ARG%)",

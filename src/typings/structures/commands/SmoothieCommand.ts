@@ -10,6 +10,7 @@ import type GuildDataHandler from "../../../structures/database/GuildDataHandler
 import type OptionsOptions from "../../commands/dev/OptionsOptions.js";
 import type LanguageOptions from "../../commands/general/LanguageOptions.js";
 import type PingOptions from "../../commands/general/PingOptions.js";
+import type PrefixOptions from "../../commands/general/PrefixOptions.js";
 
 export type SlashCommandPayload = ChatInputCommandInteraction & {
     payloadType: "slash";
@@ -51,12 +52,14 @@ export type NoOptions = Record<string, never>;
 export type SmoothieCommandOptionsType =
     | PingOptions
     | OptionsOptions
-    | LanguageOptions;
+    | LanguageOptions
+    | PrefixOptions;
 
 export enum SmoothieCommands {
     ping = "ping",
     options = "options",
     language = "language",
+    prefix = "prefix",
 }
 
 export interface SmoothieCommandList {
@@ -65,4 +68,5 @@ export interface SmoothieCommandList {
     [SmoothieCommands.language]: [
         command: SmoothieCommandType<LanguageOptions>
     ];
+    [SmoothieCommands.prefix]: [command: SmoothieCommandType<PrefixOptions>];
 }
