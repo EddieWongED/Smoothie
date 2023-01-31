@@ -32,3 +32,5 @@ export function getLocale<
         return arg;
     });
 }
+
+export const defaultLanguage = Languages.en as keyof LanguageList;

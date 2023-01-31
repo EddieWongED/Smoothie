@@ -6,9 +6,9 @@ import type {
     PermissionResolvable,
 } from "discord.js";
 import type ReplyHandler from "../../../structures/commands/ReplyHandler.js";
+import type GuildDataHandler from "../../../structures/database/GuildDataHandler.js";
 import type { OptionsOptions } from "../../commands/dev/OptionsOptions.js";
 import type { LanguageOptions } from "../../commands/general/LanguageOptions.js";
-import type GuildData from "../../models/GuildData.js";
 
 export type SlashCommandPayload = ChatInputCommandInteraction & {
     payloadType: "slash";
@@ -31,7 +31,7 @@ export type CommandReplyResponse =
 interface RunArguments<OptionsType> {
     payload: CommandPayloadType;
     options: OptionsType;
-    guildData: GuildData;
+    guildData: GuildDataHandler;
     reply: ReplyHandler;
 }
 

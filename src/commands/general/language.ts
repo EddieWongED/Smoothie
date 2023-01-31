@@ -31,19 +31,12 @@ export default new SmoothieCommand(SmoothieCommands.language, {
     options: languageOptions,
     run: async ({ options, guildData, reply }) => {
         const { language } = options;
-        const guildId = guildData.guildId;
-        const newGuildData = await client.database.guildData.update(
-            guildId,
-            "language",
-            language
-        );
+        const newGuildData = await guildData.update("language", language);
         if (!newGuildData) {
             await reply.error("languageMessageFailed", language);
             return;
         }
-
         await reply.info("languageMessageSuccess", newGuildData.language);
-
         return;
     },
 });
