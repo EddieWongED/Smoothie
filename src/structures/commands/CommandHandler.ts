@@ -3,6 +3,7 @@ import type {
     BaseApplicationCommandOptionsData,
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
+import { defaultLanguage } from "../../i18n/i18n.js";
 import { client } from "../../index.js";
 import type {
     MessageCommandPayload,
@@ -10,6 +11,7 @@ import type {
     SmoothieCommandOptionsType,
 } from "../../typings/structures/commands/SmoothieCommand.js";
 import stringToBoolean from "../../utils/stringToBoolean.js";
+import GuildDataHandler from "../database/GuildDataHandler.js";
 import ReplyHandler from "./ReplyHandler.js";
 
 export class CommandHandler {
@@ -18,9 +20,9 @@ export class CommandHandler {
             // Fetch guild data
             const guildId = interaction.guildId;
             if (!guildId) return;
-            const guildData = await client.database.guildData.read(guildId);
-            if (!guildData) return;
-            const language = guildData.language;
+            const guildData = new GuildDataHandler(guildId);
+            const language =
+                (await guildData.get("language")) ?? defaultLanguage;
 
             // Create reply handler
             const reply = new ReplyHandler(interaction, language);
@@ -69,12 +71,13 @@ export class CommandHandler {
             // Fetch guild data
             const guildId = message.guildId;
             if (!guildId) return;
-            const guildData = await client.database.guildData.read(guildId);
-            if (!guildData) return;
-            const language = guildData.language;
+            const guildData = new GuildDataHandler(guildId);
+            const language =
+                (await guildData.get("language")) ?? defaultLanguage;
 
             // Parse and retrieve command
-            const prefix = guildData.prefix;
+            const prefix = await guildData.get("prefix");
+            if (!prefix) return;
             const data = message.content
                 .trim()
                 .slice(prefix.length)
