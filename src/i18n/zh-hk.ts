@@ -17,6 +17,10 @@ const zh_hk: Internationalization = {
     prefixUpdateSuccessMessage: "成功將 command prefix 轉做 `%ARG%`。",
     prefixUpdateFailedMessage: "轉唔到 command prefix 做 `%ARG%`。",
     prefixLengthErrorMessage: "command prefix 嘅長度一定要係 1-3。",
+    joinFailedMessage: "嘗試入你個 voice channel 但係失敗咗。",
+    joinSuccessMessage: "成功入咗你個 voice channel。",
+    leaveFailedMessage: "嘗試離開你個 voice channel 但係失敗咗。",
+    leaveSuccessMessage: "成功離開咗你個 voice channel。",
 
     // Error message
     noSuchCommandMessage: "冇 `%ARG%` 呢個指令。",
@@ -25,6 +29,7 @@ const zh_hk: Internationalization = {
     requireIntegerMessage: "`%ARG%` 要一個整數。請再嚟一次。（%ARG%）",
     requireNumberMessage: "`%ARG%` 要一個數字。請再嚟一次。（%ARG%）",
     noMatchChoiceMessage: "`%ARG%` 唔接受 `%ARG%`（%ARG%）。你可以輸入︰%ARG%",
+    notInVoiceChannelMessage: "你唔係任何一個 voice channel 入面！",
 
     // Others
     successTitle: "得咗！",

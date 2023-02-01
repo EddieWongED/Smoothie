@@ -11,6 +11,8 @@ import type OptionsOptions from "../../commands/dev/OptionsOptions.js";
 import type LanguageOptions from "../../commands/general/LanguageOptions.js";
 import type PingOptions from "../../commands/general/PingOptions.js";
 import type PrefixOptions from "../../commands/general/PrefixOptions.js";
+import type JoinOptions from "../../commands/music/JoinOptions.js";
+import type LeaveOptions from "../../commands/music/LeaveOptions.js";
 
 export type SlashCommandPayload = ChatInputCommandInteraction & {
     payloadType: "slash";
@@ -40,7 +42,7 @@ interface RunArguments<OptionsType> {
 export type SmoothieCommandType<OptionsType> = {
     userPermission?: PermissionResolvable[];
     aliases?: string[];
-    run: (args: RunArguments<OptionsType>) => Promise<void>;
+    run: (args: RunArguments<OptionsType>) => Promise<void> | void;
 } & ChatInputApplicationCommandData;
 
 export type SmoothieCommandTypes =
@@ -53,13 +55,17 @@ export type SmoothieCommandOptionsType =
     | PingOptions
     | OptionsOptions
     | LanguageOptions
-    | PrefixOptions;
+    | PrefixOptions
+    | JoinOptions
+    | LeaveOptions;
 
 export enum SmoothieCommands {
     ping = "ping",
     options = "options",
     language = "language",
     prefix = "prefix",
+    join = "join",
+    leave = "leave",
 }
 
 export interface SmoothieCommandList {
@@ -69,4 +75,6 @@ export interface SmoothieCommandList {
         command: SmoothieCommandType<LanguageOptions>
     ];
     [SmoothieCommands.prefix]: [command: SmoothieCommandType<PrefixOptions>];
+    [SmoothieCommands.join]: [command: SmoothieCommandType<JoinOptions>];
+    [SmoothieCommands.leave]: [command: SmoothieCommandType<LeaveOptions>];
 }
