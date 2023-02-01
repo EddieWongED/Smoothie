@@ -10,6 +10,7 @@ import glob from "glob";
 import { CommandHandler } from "../commands/CommandHandler.js";
 import Logging from "../logging/Logging.js";
 import Database from "../database/Database.js";
+import type SmoothieVoiceConnection from "../music/SmoothieVoiceConnection.js";
 
 const globPromise = promisify(glob);
 const fileName = fileURLToPath(import.meta.url);
@@ -17,6 +18,7 @@ const dirName = path.dirname(fileName);
 
 export class SmoothieClient extends Client {
     commands = new Collection<string, SmoothieCommandTypes>();
+    voiceConnections = new Collection<string, SmoothieVoiceConnection>();
     commandHandler = new CommandHandler();
     database = new Database();
 
@@ -24,6 +26,7 @@ export class SmoothieClient extends Client {
         super({
             intents: [
                 GatewayIntentBits.Guilds,
+                GatewayIntentBits.GuildVoiceStates,
                 GatewayIntentBits.GuildMessages,
                 GatewayIntentBits.MessageContent,
             ],

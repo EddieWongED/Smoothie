@@ -18,6 +18,10 @@ const en: Internationalization = {
     prefixUpdateFailedMessage:
         "Failed to change your command prefix to `%ARG%`.",
     prefixLengthErrorMessage: "The length of command prefix can only be 1-3.",
+    joinFailedMessage: "Failed to join your voice channel.",
+    joinSuccessMessage: "Joined your voice channel successfully.",
+    leaveFailedMessage: "Failed to leave your voice channel.",
+    leaveSuccessMessage: "Left your voice channel successfully.",
 
     // Error message
     noSuchCommandMessage: "There is no `%ARG%` command.",
@@ -29,6 +33,7 @@ const en: Internationalization = {
         "`%ARG%` requires a number. Please try again. (%ARG%)",
     noMatchChoiceMessage:
         "`%ARG%` does not accept `%ARG%` (%ARG%). Possible values(s): %ARG%",
+    notInVoiceChannelMessage: "You are not in any voice channel!",
 
     // Others
     successTitle: "Success!",

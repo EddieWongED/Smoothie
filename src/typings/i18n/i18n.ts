@@ -15,6 +15,10 @@ export interface Internationalization {
     prefixUpdateSuccessMessage: string;
     prefixUpdateFailedMessage: string;
     prefixLengthErrorMessage: string;
+    joinFailedMessage: string;
+    joinSuccessMessage: string;
+    leaveFailedMessage: string;
+    leaveSuccessMessage: string;
 
     // Error message
     noSuchCommandMessage: string;
@@ -23,6 +27,7 @@ export interface Internationalization {
     requireIntegerMessage: string;
     requireNumberMessage: string;
     noMatchChoiceMessage: string;
+    notInVoiceChannelMessage: string;
 
     // Others
     successTitle: string;
