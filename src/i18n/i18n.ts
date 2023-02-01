@@ -13,10 +13,11 @@ const languages: LanguageList = {
     [Languages.zh_hk]: zh_hk,
 };
 
-export function getLocale<
-    Language extends keyof LanguageList,
-    Message extends keyof Internationalization
->(language: Language, message: Message, ...args: string[]): string {
+export function getLocale(
+    language: keyof LanguageList,
+    message: keyof Internationalization,
+    args: string[]
+): string {
     const locale = languages[language][message];
     const noOfArgsNeeded = (locale.match(/%ARG%/g) ?? []).length;
     if (args.length !== noOfArgsNeeded) {

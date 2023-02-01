@@ -49,17 +49,34 @@ const optionsOptions: ApplicationCommandOptionData[] = [
 
 export default new SmoothieCommand(SmoothieCommands.options, {
     name: SmoothieCommands.options,
-    aliases: ["option", "o"],
+    aliases: ["option"],
     description: "Show all types of options.",
     options: optionsOptions,
     run: async ({ options, reply }) => {
         const { number, integer, string, boolean } = options;
-        await reply.info("optionsNumberMessage", number.toString());
-        await reply.infoFollowUp("optionsIntegerMessage", integer.toString());
-        await reply.infoFollowUp("optionsStringMessage", string);
+        await reply.info(
+            "optionsTitle",
+            "optionsMessage",
+            ["number"],
+            [number.toString()]
+        );
         await reply.infoFollowUp(
-            "optionsBooleanMessage",
-            boolean === undefined ? "Not Given" : String(boolean)
+            "optionsTitle",
+            "optionsMessage",
+            ["integer"],
+            [integer.toString()]
+        );
+        await reply.infoFollowUp(
+            "optionsTitle",
+            "optionsMessage",
+            ["string"],
+            [string]
+        );
+        await reply.infoFollowUp(
+            "optionsTitle",
+            "optionsMessage",
+            ["boolean"],
+            [boolean === undefined ? "Not Given" : String(boolean)]
         );
         return;
     },

@@ -5,7 +5,7 @@ export default new SmoothieCommand(SmoothieCommands.ping, {
     name: SmoothieCommands.ping,
     description: "Reply with pong!",
     run: async ({ reply }) => {
-        await reply.info("pingMessage");
+        await reply.info("pingMessage", "pingMessage");
         return;
     },
 });

@@ -2,18 +2,18 @@
 export interface Internationalization {
     // Command message
     pingMessage: string;
-    optionsNumberMessage: string;
-    optionsIntegerMessage: string;
-    optionsStringMessage: string;
-    optionsBooleanMessage: string;
-    languageShowMessageSuccess: string;
-    languageShowMessageFailed: string;
-    languageUpdateMessageSuccess: string;
-    languageUpdateMessageFailed: string;
-    prefixShowMessageSuccess: string;
-    prefixShowMessageFailed: string;
-    prefixUpdateMessageSuccess: string;
-    prefixUpdateMessageFailed: string;
+    optionsTitle: string;
+    optionsMessage: string;
+    languageShowSuccessTitle: string;
+    languageShowSuccessMessage: string;
+    languageShowFailedMessage: string;
+    languageUpdateSuccessMessage: string;
+    languageUpdateFailedMessage: string;
+    prefixShowSuccessTitle: string;
+    prefixShowSuccessMessage: string;
+    prefixShowFailedMessage: string;
+    prefixUpdateSuccessMessage: string;
+    prefixUpdateFailedMessage: string;
     prefixLengthErrorMessage: string;
 
     // Error message
@@ -25,6 +25,9 @@ export interface Internationalization {
     noMatchChoiceMessage: string;
 
     // Others
+    successTitle: string;
+    errorTitle: string;
+    loadingCommandTitle: string;
     loadingCommandMessage: string;
 }
 

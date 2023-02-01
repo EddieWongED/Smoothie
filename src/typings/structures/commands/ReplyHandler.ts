@@ -1,1 +1,1 @@
-export type ReplyLevel = "info" | "warn" | "error";
+export type ReplyLevel = "success" | "info" | "warn" | "error";

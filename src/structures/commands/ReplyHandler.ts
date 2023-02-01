@@ -11,6 +11,7 @@ import type {
     MessageCommandResponse,
     SlashCommandResponse,
 } from "../../typings/structures/commands/SmoothieCommand.js";
+import SmoothieEmbed from "../embed/SmoothieEmbed.js";
 import Logging from "../logging/Logging.js";
 
 export default class ReplyHandler {
@@ -31,24 +32,43 @@ export default class ReplyHandler {
 
     async reply(
         level: ReplyLevel,
-        message: keyof Internationalization,
-        ...args: string[]
+        title: keyof Internationalization,
+        description: keyof Internationalization,
+        titleArgs: string[] = [],
+        descriptionArgs: string[] = []
     ): Promise<CommandReplyResponse | null> {
         if (this._isEditable) {
-            return this._edit(level, message, ...args);
+            return this._edit(
+                level,
+                title,
+                description,
+                titleArgs,
+                descriptionArgs
+            );
         }
+        const titleString = getLocale(this.language, title, titleArgs);
+        const descriptionString = getLocale(
+            this.language,
+            description,
+            descriptionArgs
+        );
+        const response = SmoothieEmbed.create(
+            level,
+            titleString,
+            descriptionString
+        );
         let payload: CommandReplyResponse;
         switch (this.payload.payloadType) {
             case "slash": {
                 payload = (await this.payload.reply(
-                    this._getFormattedString(level, message, ...args)
+                    response
                 )) as SlashCommandResponse;
                 payload.payloadType = "slash";
                 break;
             }
             case "message": {
                 payload = (await this.payload.reply(
-                    this._getFormattedString(level, message, ...args)
+                    response
                 )) as MessageCommandResponse;
                 payload.payloadType = "message";
                 this._currentPayload = payload;
@@ -60,31 +80,72 @@ export default class ReplyHandler {
         return payload;
     }
 
-    async info(
-        message: keyof Internationalization,
-        ...args: string[]
+    async success(
+        title: keyof Internationalization,
+        description: keyof Internationalization,
+        titleArgs: string[] = [],
+        descriptionArgs: string[] = []
     ): Promise<CommandReplyResponse | null> {
-        return this.reply("info", message, ...args);
+        return this.reply(
+            "success",
+            title,
+            description,
+            titleArgs,
+            descriptionArgs
+        );
+    }
+
+    async info(
+        title: keyof Internationalization,
+        description: keyof Internationalization,
+        titleArgs: string[] = [],
+        descriptionArgs: string[] = []
+    ): Promise<CommandReplyResponse | null> {
+        return this.reply(
+            "info",
+            title,
+            description,
+            titleArgs,
+            descriptionArgs
+        );
     }
 
     async warn(
-        message: keyof Internationalization,
-        ...args: string[]
+        title: keyof Internationalization,
+        description: keyof Internationalization,
+        titleArgs: string[] = [],
+        descriptionArgs: string[] = []
     ): Promise<CommandReplyResponse | null> {
-        return this.reply("warn", message, ...args);
+        return this.reply(
+            "warn",
+            title,
+            description,
+            titleArgs,
+            descriptionArgs
+        );
     }
 
     async error(
-        message: keyof Internationalization,
-        ...args: string[]
+        title: keyof Internationalization,
+        description: keyof Internationalization,
+        titleArgs: string[] = [],
+        descriptionArgs: string[] = []
     ): Promise<CommandReplyResponse | null> {
-        return this.reply("error", message, ...args);
+        return this.reply(
+            "error",
+            title,
+            description,
+            titleArgs,
+            descriptionArgs
+        );
     }
 
     async followUp(
         level: ReplyLevel,
-        message: keyof Internationalization,
-        ...args: string[]
+        title: keyof Internationalization,
+        description: keyof Internationalization,
+        titleArgs: string[] = [],
+        descriptionArgs: string[] = []
     ): Promise<MessageCommandPayload | null> {
         if (!this._currentPayload) {
             Logging.warn(
@@ -93,17 +154,28 @@ export default class ReplyHandler {
             return null;
         }
 
+        const titleString = getLocale(this.language, title, titleArgs);
+        const descriptionString = getLocale(
+            this.language,
+            description,
+            descriptionArgs
+        );
+        const response = SmoothieEmbed.create(
+            level,
+            titleString,
+            descriptionString
+        );
         let messagePayload: MessageCommandPayload;
         switch (this._currentPayload.payloadType) {
             case "slash": {
                 messagePayload = (await this._currentPayload.followUp(
-                    this._getFormattedString(level, message, ...args)
+                    response
                 )) as MessageCommandPayload;
                 break;
             }
             case "message": {
                 messagePayload = (await this._currentPayload.reply(
-                    this._getFormattedString(level, message, ...args)
+                    response
                 )) as MessageCommandPayload;
                 break;
             }
@@ -113,31 +185,72 @@ export default class ReplyHandler {
         return messagePayload;
     }
 
-    async infoFollowUp(
-        message: keyof Internationalization,
-        ...args: string[]
+    async successFollowUp(
+        title: keyof Internationalization,
+        description: keyof Internationalization,
+        titleArgs: string[] = [],
+        descriptionArgs: string[] = []
     ): Promise<CommandReplyResponse | null> {
-        return this.followUp("info", message, ...args);
+        return this.followUp(
+            "success",
+            title,
+            description,
+            titleArgs,
+            descriptionArgs
+        );
+    }
+
+    async infoFollowUp(
+        title: keyof Internationalization,
+        description: keyof Internationalization,
+        titleArgs: string[] = [],
+        descriptionArgs: string[] = []
+    ): Promise<CommandReplyResponse | null> {
+        return this.followUp(
+            "info",
+            title,
+            description,
+            titleArgs,
+            descriptionArgs
+        );
     }
 
     async warnFollowUp(
-        message: keyof Internationalization,
-        ...args: string[]
+        title: keyof Internationalization,
+        description: keyof Internationalization,
+        titleArgs: string[] = [],
+        descriptionArgs: string[] = []
     ): Promise<CommandReplyResponse | null> {
-        return this.followUp("warn", message, ...args);
+        return this.followUp(
+            "warn",
+            title,
+            description,
+            titleArgs,
+            descriptionArgs
+        );
     }
 
     async errorFollowUp(
-        message: keyof Internationalization,
-        ...args: string[]
+        title: keyof Internationalization,
+        description: keyof Internationalization,
+        titleArgs: string[] = [],
+        descriptionArgs: string[] = []
     ): Promise<CommandReplyResponse | null> {
-        return this.followUp("error", message, ...args);
+        return this.followUp(
+            "error",
+            title,
+            description,
+            titleArgs,
+            descriptionArgs
+        );
     }
 
     private async _edit(
         level: ReplyLevel,
-        message: keyof Internationalization,
-        ...args: string[]
+        title: keyof Internationalization,
+        description: keyof Internationalization,
+        titleArgs: string[] = [],
+        descriptionArgs: string[] = []
     ): Promise<MessageCommandPayload | null> {
         if (!this._isEditable) {
             Logging.warn(
@@ -147,17 +260,28 @@ export default class ReplyHandler {
         }
         if (!this._currentPayload) return null;
 
+        const titleString = getLocale(this.language, title, titleArgs);
+        const descriptionString = getLocale(
+            this.language,
+            description,
+            descriptionArgs
+        );
+        const response = SmoothieEmbed.create(
+            level,
+            titleString,
+            descriptionString
+        );
         let messagePayload: MessageCommandPayload;
         switch (this._currentPayload.payloadType) {
             case "slash": {
                 messagePayload = (await this._currentPayload.editReply(
-                    this._getFormattedString(level, message, ...args)
+                    response
                 )) as MessageCommandPayload;
                 break;
             }
             case "message": {
                 messagePayload = (await this._currentPayload.edit(
-                    this._getFormattedString(level, message, ...args)
+                    response
                 )) as MessageCommandPayload;
                 break;
             }
@@ -165,23 +289,5 @@ export default class ReplyHandler {
         messagePayload.payloadType = "message";
         this._currentPayload = messagePayload;
         return messagePayload;
-    }
-
-    private _getFormattedString(
-        level: ReplyLevel,
-        message: keyof Internationalization,
-        ...args: string[]
-    ): string {
-        switch (level) {
-            case "info": {
-                return "[INFO] " + getLocale(this.language, message, ...args);
-            }
-            case "warn": {
-                return "[WARN] " + getLocale(this.language, message, ...args);
-            }
-            case "error": {
-                return "[ERROR] " + getLocale(this.language, message, ...args);
-            }
-        }
     }
 }
