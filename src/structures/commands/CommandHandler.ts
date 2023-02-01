@@ -24,7 +24,12 @@ export class CommandHandler {
             const language =
                 (await guildData.get("language")) ?? defaultLanguage;
             const reply = new ReplyHandler(interaction, language);
-            await reply.info("loadingCommandMessage", interaction.commandName);
+            await reply.info(
+                "loadingCommandTitle",
+                "loadingCommandMessage",
+                [],
+                [interaction.commandName]
+            );
 
             // Retrieve command
             const command = client.commands.get(interaction.commandName);
@@ -84,10 +89,20 @@ export class CommandHandler {
             const language =
                 (await guildData.get("language")) ?? defaultLanguage;
             const reply = new ReplyHandler(message, language);
-            await reply.info("loadingCommandMessage", commandName);
+            await reply.info(
+                "loadingCommandTitle",
+                "loadingCommandMessage",
+                [],
+                [commandName]
+            );
 
             if (!command) {
-                await reply.error("noSuchCommandMessage", commandName);
+                await reply.error(
+                    "errorTitle",
+                    "noSuchCommandMessage",
+                    [],
+                    [commandName]
+                );
                 return;
             }
 
@@ -114,12 +129,22 @@ export class CommandHandler {
             }
 
             if (args.length < minOptionsLength) {
-                await reply.error("tooFewInputMessage", fullCommandString);
+                await reply.error(
+                    "errorTitle",
+                    "tooFewInputMessage",
+                    [],
+                    [fullCommandString]
+                );
                 return;
             }
 
             if (args.length > maxOptionsLength) {
-                await reply.error("tooManyInputMessage", fullCommandString);
+                await reply.error(
+                    "errorTitle",
+                    "tooManyInputMessage",
+                    [],
+                    [fullCommandString]
+                );
                 return;
             }
 
@@ -145,9 +170,10 @@ export class CommandHandler {
                         const number = Number(arg);
                         if (Number.isNaN(number) || !Number.isInteger(number)) {
                             await reply.error(
+                                "errorTitle",
                                 "requireIntegerMessage",
-                                option.name,
-                                fullCommandString
+                                [],
+                                [option.name, fullCommandString]
                             );
                             return;
                         }
@@ -156,13 +182,17 @@ export class CommandHandler {
                         if (choices) {
                             if (!(choices as number[]).includes(number)) {
                                 await reply.error(
+                                    "errorTitle",
                                     "noMatchChoiceMessage",
-                                    option.name,
-                                    number.toString(),
-                                    fullCommandString,
-                                    choices
-                                        .map((choice) => `\`${choice}\``)
-                                        .join(", ")
+                                    [],
+                                    [
+                                        option.name,
+                                        number.toString(),
+                                        fullCommandString,
+                                        choices
+                                            .map((choice) => `\`${choice}\``)
+                                            .join(", "),
+                                    ]
                                 );
                                 return;
                             }
@@ -174,9 +204,10 @@ export class CommandHandler {
                         const number = Number(arg);
                         if (Number.isNaN(number)) {
                             await reply.error(
+                                "errorTitle",
                                 "requireNumberMessage",
-                                option.name,
-                                fullCommandString
+                                [],
+                                [option.name, fullCommandString]
                             );
                             return;
                         }
@@ -185,13 +216,17 @@ export class CommandHandler {
                         if (choices) {
                             if (!(choices as number[]).includes(number)) {
                                 await reply.error(
+                                    "errorTitle",
                                     "noMatchChoiceMessage",
-                                    option.name,
-                                    number.toString(),
-                                    fullCommandString,
-                                    choices
-                                        .map((choice) => `\`${choice}\``)
-                                        .join(", ")
+                                    [],
+                                    [
+                                        option.name,
+                                        number.toString(),
+                                        fullCommandString,
+                                        choices
+                                            .map((choice) => `\`${choice}\``)
+                                            .join(", "),
+                                    ]
                                 );
                                 return;
                             }
@@ -206,13 +241,17 @@ export class CommandHandler {
                         if (choices) {
                             if (!(choices as string[]).includes(string)) {
                                 await reply.error(
+                                    "errorTitle",
                                     "noMatchChoiceMessage",
-                                    option.name,
-                                    string,
-                                    fullCommandString,
-                                    choices
-                                        .map((choice) => `\`${choice}\``)
-                                        .join(", ")
+                                    [],
+                                    [
+                                        option.name,
+                                        string,
+                                        fullCommandString,
+                                        choices
+                                            .map((choice) => `\`${choice}\``)
+                                            .join(", "),
+                                    ]
                                 );
                                 return;
                             }

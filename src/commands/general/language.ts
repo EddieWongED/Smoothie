@@ -35,9 +35,14 @@ export default new SmoothieCommand(SmoothieCommands.language, {
         if (!language) {
             const guildLanguage = await guildData.get("language");
             if (guildLanguage) {
-                await reply.info("languageShowMessageSuccess", guildLanguage);
+                await reply.info(
+                    "languageShowSuccessTitle",
+                    "languageShowSuccessMessage",
+                    [],
+                    [guildLanguage]
+                );
             } else {
-                await reply.error("languageShowMessageFailed");
+                await reply.error("errorTitle", "languageShowFailedMessage");
             }
             return;
         }
@@ -45,10 +50,20 @@ export default new SmoothieCommand(SmoothieCommands.language, {
         // Change language
         const newGuildData = await guildData.update("language", language);
         if (!newGuildData) {
-            await reply.error("languageUpdateMessageFailed", language);
+            await reply.error(
+                "errorTitle",
+                "languageUpdateFailedMessage",
+                [],
+                [language]
+            );
             return;
         }
-        await reply.info("languageUpdateMessageSuccess", newGuildData.language);
+        await reply.success(
+            "successTitle",
+            "languageUpdateSuccessMessage",
+            [],
+            [newGuildData.language]
+        );
         return;
     },
 });

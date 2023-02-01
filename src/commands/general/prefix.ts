@@ -27,25 +27,40 @@ export default new SmoothieCommand(SmoothieCommands.prefix, {
         if (!prefix) {
             const guildPrefix = await guildData.get("prefix");
             if (guildPrefix) {
-                await reply.info("prefixShowMessageSuccess", guildPrefix);
+                await reply.info(
+                    "prefixShowSuccessTitle",
+                    "prefixShowSuccessMessage",
+                    [],
+                    [guildPrefix]
+                );
             } else {
-                await reply.error("prefixShowMessageFailed");
+                await reply.error("errorTitle", "prefixShowFailedMessage");
             }
             return;
         }
 
         // Change prefix
         if (prefix.length < 1 || prefix.length > 3) {
-            await reply.error("prefixLengthErrorMessage");
+            await reply.error("errorTitle", "prefixLengthErrorMessage");
             return;
         }
 
         const newGuildData = await guildData.update("prefix", prefix);
         if (!newGuildData) {
-            await reply.error("prefixUpdateMessageFailed", prefix);
+            await reply.error(
+                "errorTitle",
+                "prefixUpdateFailedMessage",
+                [],
+                [prefix]
+            );
             return;
         }
-        await reply.info("prefixUpdateMessageSuccess", newGuildData.prefix);
+        await reply.success(
+            "successTitle",
+            "prefixUpdateSuccessMessage",
+            [],
+            [newGuildData.prefix]
+        );
         return;
     },
 });
