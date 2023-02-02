@@ -4,15 +4,18 @@ import { VoiceConnectionStatus } from "@discordjs/voice";
 import { joinVoiceChannel } from "@discordjs/voice";
 import type { VoiceChannel } from "discord.js";
 import { client } from "../../index.js";
-import Logging from "../logging/Logging.js";
+import GuildLogging from "../logging/GuildLogging.js";
 
 export default class SmoothieVoiceConnection {
     channelId: string | null = null;
+    guildLogging: GuildLogging;
 
     constructor(
         public guildId: string,
         public adapterCreator: DiscordGatewayAdapterCreator
-    ) {}
+    ) {
+        this.guildLogging = new GuildLogging(this.guildId);
+    }
 
     connect(channelId: string): boolean {
         let connection = getVoiceConnection(this.guildId);
@@ -28,8 +31,6 @@ export default class SmoothieVoiceConnection {
             selfDeaf: true,
         });
 
-        const guild = client.guilds.cache.get(this.guildId);
-        const guildName = guild?.name ?? "";
         const channel = client.channels.cache.get(channelId) as
             | VoiceChannel
             | undefined;
@@ -37,16 +38,16 @@ export default class SmoothieVoiceConnection {
 
         // When Smoothie is connecting the voice channel
         connection.on(VoiceConnectionStatus.Connecting, () => {
-            Logging.info(
-                `[${guildName} (${this.guildId})] Smoothie is connecting to the voice channel ${channelName} (${channelId}).`
+            this.guildLogging.info(
+                `Smoothie is connecting to the voice channel ${channelName} (${channelId}).`
             );
             return;
         });
 
         // When Smoothie joins the voice channel
         connection.on(VoiceConnectionStatus.Ready, () => {
-            Logging.info(
-                `[${guildName} (${this.guildId})] Smoothie has joined to the voice channel ${channelName} (${channelId}).`
+            this.guildLogging.info(
+                `Smoothie has joined to the voice channel ${channelName} (${channelId}).`
             );
             return;
         });

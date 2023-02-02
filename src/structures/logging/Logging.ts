@@ -4,12 +4,14 @@ import chalk from "chalk";
 export default class Logging {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public static log = (args: any) => this.info(args);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public static info = (args: any) =>
         console.log(
             chalk.blue(`[${new Date().toUTCString()}] [INFO] `),
             typeof args === "string" ? chalk.bold(chalk.blueBright(args)) : args
         );
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public static warn = (args: any) =>
         console.log(
@@ -18,6 +20,7 @@ export default class Logging {
                 ? chalk.bold(chalk.yellowBright(args))
                 : args
         );
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public static error = (args: any) =>
         console.log(
