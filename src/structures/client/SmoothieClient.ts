@@ -36,7 +36,7 @@ export class SmoothieClient extends Client {
     async start() {
         await this._loadCommands();
         await this._registerEvents();
-        await this.login(process.env.botToken);
+        await this.login(process.env.BOT_TOKEN);
     }
 
     private async _importCommand(

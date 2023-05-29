@@ -13,7 +13,7 @@ dotenv.config();
 const globPromise = promisify(glob);
 const fileName = fileURLToPath(import.meta.url);
 const dirName = path.dirname(fileName);
-const rest = new REST({ version: "10" }).setToken(process.env.botToken);
+const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
 
 const importCommand = async (
     filePath: string
@@ -51,7 +51,7 @@ void (async () => {
 
     Logging.info(`Start refreshing ${commands.length} slash commands...`);
 
-    await rest.put(Routes.applicationCommands(process.env.clientId), {
+    await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {
         body: commands,
     });
 

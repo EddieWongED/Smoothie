@@ -4,15 +4,15 @@ import Logging from "../../structures/logging/Logging.js";
 
 dotenv.config();
 
-const rest = new REST({ version: "10" }).setToken(process.env.botToken);
+const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
 
 void (async () => {
-    if (!process.env.guildId) {
+    if (!process.env.GUILD_ID) {
         Logging.error("Please specify your guildId in .env file!");
         return;
     }
-    if (!process.env.clientId) {
-        Logging.error("Please specify your clientId in .env file!");
+    if (!process.env.CLIENT_ID) {
+        Logging.error("Please specify your CLIENT_ID in .env file!");
         return;
     }
 
@@ -20,8 +20,8 @@ void (async () => {
 
     await rest.put(
         Routes.applicationGuildCommands(
-            process.env.clientId,
-            process.env.guildId
+            process.env.CLIENT_ID,
+            process.env.GUILD_ID
         ),
         { body: [] }
     );
