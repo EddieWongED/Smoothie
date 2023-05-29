@@ -20,3 +20,5 @@ jobs:
               run: npm install
             - name: Prettier
               run: npm run format
+            - name: Compare
+              run: git diff HEAD --exit-code

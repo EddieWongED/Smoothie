@@ -13,7 +13,7 @@ dotenv.config();
 const globPromise = promisify(glob);
 const fileName = fileURLToPath(import.meta.url);
 const dirName = path.dirname(fileName);
-const rest = new REST({ version: "10" }).setToken(process.env.botToken);
+const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
 
 const importCommand = async (
     filePath: string
@@ -30,12 +30,12 @@ const importCommand = async (
 };
 
 void (async () => {
-    if (!process.env.guildId) {
+    if (!process.env.GUILD_ID) {
         Logging.error("Please specify your guildId in .env file!");
         return;
     }
-    if (!process.env.clientId) {
-        Logging.error("Please specify your clientId in .env file!");
+    if (!process.env.CLIENT_ID) {
+        Logging.error("Please specify your CLIENT_ID in .env file!");
         return;
     }
 
@@ -62,8 +62,8 @@ void (async () => {
 
     await rest.put(
         Routes.applicationGuildCommands(
-            process.env.clientId,
-            process.env.guildId
+            process.env.CLIENT_ID,
+            process.env.GUILD_ID
         ),
         { body: commands }
     );
