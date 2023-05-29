@@ -1,11 +1,11 @@
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
-import { SmoothieCommands } from "../../typings/structures/commands/SmoothieCommand.js";
+import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 
-export default new SmoothieCommand(SmoothieCommands.ping, {
-    name: SmoothieCommands.ping,
+export default new SmoothieCommand(Commands.ping, {
+    name: Commands.ping,
     description: "Reply with pong!",
     run: async ({ reply }) => {
-        await reply.info("pingMessage", "pingMessage");
+        await reply.info({ title: "pingMessage", description: "pingMessage" });
         return;
     },
 });

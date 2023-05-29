@@ -1,5 +1,5 @@
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
-import { SmoothieCommands } from "../../typings/structures/commands/SmoothieCommand.js";
+import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import type {
     ApplicationCommandOptionChoiceData,
     ApplicationCommandOptionData,
@@ -23,8 +23,8 @@ const languageOption: ApplicationCommandStringOption = {
 
 export const languageOptions: ApplicationCommandOptionData[] = [languageOption];
 
-export default new SmoothieCommand(SmoothieCommands.language, {
-    name: SmoothieCommands.language,
+export default new SmoothieCommand(Commands.language, {
+    name: Commands.language,
     aliases: ["lang"],
     description: "Show / Change language.",
     options: languageOptions,
@@ -35,14 +35,16 @@ export default new SmoothieCommand(SmoothieCommands.language, {
         if (!language) {
             const guildLanguage = await guildData.get("language");
             if (guildLanguage) {
-                await reply.info(
-                    "languageShowSuccessTitle",
-                    "languageShowSuccessMessage",
-                    [],
-                    [guildLanguage]
-                );
+                await reply.info({
+                    title: "languageShowSuccessTitle",
+                    description: "languageShowSuccessMessage",
+                    descriptionArgs: [guildLanguage],
+                });
             } else {
-                await reply.error("errorTitle", "languageShowFailedMessage");
+                await reply.error({
+                    title: "errorTitle",
+                    description: "languageShowFailedMessage",
+                });
             }
             return;
         }
@@ -50,20 +52,18 @@ export default new SmoothieCommand(SmoothieCommands.language, {
         // Change language
         const newGuildData = await guildData.update("language", language);
         if (!newGuildData) {
-            await reply.error(
-                "errorTitle",
-                "languageUpdateFailedMessage",
-                [],
-                [language]
-            );
+            await reply.error({
+                title: "errorTitle",
+                description: "languageUpdateFailedMessage",
+                descriptionArgs: [language],
+            });
             return;
         }
-        await reply.success(
-            "successTitle",
-            "languageUpdateSuccessMessage",
-            [],
-            [newGuildData.language]
-        );
+        await reply.success({
+            title: "successTitle",
+            description: "languageUpdateSuccessMessage",
+            descriptionArgs: [newGuildData.language],
+        });
         return;
     },
 });

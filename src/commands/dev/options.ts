@@ -6,7 +6,7 @@ import type {
     ApplicationCommandStringOption,
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
-import { SmoothieCommands } from "../../typings/structures/commands/SmoothieCommand.js";
+import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 
 const numberOption: ApplicationCommandNumericOptionData = {
     name: "number",
@@ -47,37 +47,39 @@ const optionsOptions: ApplicationCommandOptionData[] = [
     booleanOption,
 ];
 
-export default new SmoothieCommand(SmoothieCommands.options, {
-    name: SmoothieCommands.options,
+export default new SmoothieCommand(Commands.options, {
+    name: Commands.options,
     aliases: ["option"],
     description: "Show all types of options.",
     options: optionsOptions,
     run: async ({ options, reply }) => {
         const { number, integer, string, boolean } = options;
-        await reply.info(
-            "optionsTitle",
-            "optionsMessage",
-            ["number"],
-            [number.toString()]
-        );
-        await reply.infoFollowUp(
-            "optionsTitle",
-            "optionsMessage",
-            ["integer"],
-            [integer.toString()]
-        );
-        await reply.infoFollowUp(
-            "optionsTitle",
-            "optionsMessage",
-            ["string"],
-            [string]
-        );
-        await reply.infoFollowUp(
-            "optionsTitle",
-            "optionsMessage",
-            ["boolean"],
-            [boolean === undefined ? "Not Given" : String(boolean)]
-        );
+        await reply.info({
+            title: "optionsTitle",
+            description: "optionsMessage",
+            titleArgs: ["number"],
+            descriptionArgs: [number.toString()],
+        });
+        await reply.infoFollowUp({
+            title: "optionsTitle",
+            description: "optionsMessage",
+            titleArgs: ["integer"],
+            descriptionArgs: [integer.toString()],
+        });
+        await reply.infoFollowUp({
+            title: "optionsTitle",
+            description: "optionsMessage",
+            titleArgs: ["string"],
+            descriptionArgs: [string],
+        });
+        await reply.infoFollowUp({
+            title: "optionsTitle",
+            description: "optionsMessage",
+            titleArgs: ["boolean"],
+            descriptionArgs: [
+                boolean === undefined ? "Not Given" : String(boolean),
+            ],
+        });
         return;
     },
 });

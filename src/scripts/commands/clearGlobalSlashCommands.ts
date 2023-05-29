@@ -13,5 +13,5 @@ void (async () => {
         body: [],
     });
 
-    Logging.info("Clear successfully.");
+    Logging.success("Clear successfully.");
 })();
