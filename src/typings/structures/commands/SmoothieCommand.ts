@@ -14,52 +14,29 @@ import type PrefixOptions from "../../commands/general/PrefixOptions.js";
 import type JoinOptions from "../../commands/music/JoinOptions.js";
 import type LeaveOptions from "../../commands/music/LeaveOptions.js";
 
+// Payload
 export type SlashCommandPayload = ChatInputCommandInteraction & {
     payloadType: "slash";
 };
 
 export type MessageCommandPayload = Message & { payloadType: "message" };
 
+export type CommandPayload = SlashCommandPayload | MessageCommandPayload;
+
+// Response
 export type SlashCommandResponse = InteractionResponse & {
     payloadType: "slash";
 };
 
 export type MessageCommandResponse = Message & { payloadType: "message" };
 
-export type CommandPayloadType = SlashCommandPayload | MessageCommandPayload;
+export type CommandResponse = SlashCommandResponse | MessageCommandResponse;
 
-export type CommandReplyResponse =
-    | SlashCommandResponse
-    | MessageCommandResponse;
-
-interface RunArguments<OptionsType> {
-    payload: CommandPayloadType;
-    options: OptionsType;
-    guildData: GuildDataHandler;
-    reply: ReplyHandler;
-}
-
-export type SmoothieCommandType<OptionsType> = {
-    userPermission?: PermissionResolvable[];
-    aliases?: string[];
-    run: (args: RunArguments<OptionsType>) => Promise<void> | void;
-} & ChatInputApplicationCommandData;
-
-export type SmoothieCommandTypes =
-    SmoothieCommandType<SmoothieCommandOptionsType>;
-
+// Command options
 export type NoOptions = Record<string, never>;
 
-// All data below need to update when adding a new command
-export type SmoothieCommandOptionsType =
-    | PingOptions
-    | OptionsOptions
-    | LanguageOptions
-    | PrefixOptions
-    | JoinOptions
-    | LeaveOptions;
-
-export enum SmoothieCommands {
+/** Update when adding new command **/
+export enum Commands {
     ping = "ping",
     options = "options",
     language = "language",
@@ -68,13 +45,30 @@ export enum SmoothieCommands {
     leave = "leave",
 }
 
-export interface SmoothieCommandList {
-    [SmoothieCommands.ping]: [command: SmoothieCommandType<PingOptions>];
-    [SmoothieCommands.options]: [command: SmoothieCommandType<OptionsOptions>];
-    [SmoothieCommands.language]: [
-        command: SmoothieCommandType<LanguageOptions>
-    ];
-    [SmoothieCommands.prefix]: [command: SmoothieCommandType<PrefixOptions>];
-    [SmoothieCommands.join]: [command: SmoothieCommandType<JoinOptions>];
-    [SmoothieCommands.leave]: [command: SmoothieCommandType<LeaveOptions>];
+/** Update when adding new command **/
+interface CommandOptionsList {
+    [Commands.ping]: PingOptions;
+    [Commands.options]: OptionsOptions;
+    [Commands.language]: LanguageOptions;
+    [Commands.prefix]: PrefixOptions;
+    [Commands.join]: JoinOptions;
+    [Commands.leave]: LeaveOptions;
 }
+
+export type CommandOptions = CommandOptionsList[CommandName];
+
+// Command
+export type CommandName = keyof CommandOptionsList;
+
+interface CommandArgs<Name extends keyof CommandOptionsList> {
+    payload: CommandPayload;
+    options: CommandOptionsList[Name];
+    guildData: GuildDataHandler;
+    reply: ReplyHandler;
+}
+
+export type Command<Name extends CommandName = CommandName> = {
+    userPermission?: PermissionResolvable[];
+    aliases?: string[];
+    run: (args: CommandArgs<Name>) => Promise<void> | void;
+} & ChatInputApplicationCommandData;

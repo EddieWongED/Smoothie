@@ -2,10 +2,10 @@ import type { GuildMember } from "discord.js";
 import { client } from "../../index.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import SmoothieVoiceConnection from "../../structures/music/SmoothieVoiceConnection.js";
-import { SmoothieCommands } from "../../typings/structures/commands/SmoothieCommand.js";
+import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 
-export default new SmoothieCommand(SmoothieCommands.join, {
-    name: SmoothieCommands.join,
+export default new SmoothieCommand(Commands.join, {
+    name: Commands.join,
     description: "The bot will join your voice channel.",
     run: async ({ payload, reply }) => {
         const guildId = payload.guildId;
@@ -15,7 +15,10 @@ export default new SmoothieCommand(SmoothieCommands.join, {
         const member = payload.member as GuildMember;
         const voiceChannelId = member.voice.channel?.id;
         if (!voiceChannelId) {
-            await reply.error("errorTitle", "notInVoiceChannelMessage");
+            await reply.error({
+                title: "errorTitle",
+                description: "notInVoiceChannelMessage",
+            });
             return;
         }
 
@@ -29,10 +32,16 @@ export default new SmoothieCommand(SmoothieCommands.join, {
         }
 
         if (!voiceConnection.connect(voiceChannelId)) {
-            await reply.error("errorTitle", "joinFailedMessage");
+            await reply.error({
+                title: "errorTitle",
+                description: "joinFailedMessage",
+            });
             return;
         }
-        await reply.success("successTitle", "joinSuccessMessage");
+        await reply.success({
+            title: "successTitle",
+            description: "joinSuccessMessage",
+        });
         return;
     },
 });

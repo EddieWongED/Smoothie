@@ -1,7 +1,10 @@
-import type { SmoothieCommandList } from "../../typings/structures/commands/SmoothieCommand.js";
+import type {
+    Command,
+    CommandName,
+} from "../../typings/structures/commands/SmoothieCommand.js";
 
-export class SmoothieCommand<Key extends keyof SmoothieCommandList> {
-    constructor(public name: Key, ...command: SmoothieCommandList[Key]) {
-        Object.assign(this, ...command);
+export class SmoothieCommand<Key extends CommandName> {
+    constructor(public name: Key, command: Command<Key>) {
+        Object.assign(this, command);
     }
 }

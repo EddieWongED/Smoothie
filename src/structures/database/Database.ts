@@ -5,11 +5,7 @@ import GuildDataController from "./GuildDataController.js";
 export default class Database {
     guildData = new GuildDataController();
 
-    constructor() {
-        void this._connect();
-    }
-
-    private async _connect() {
+    async connect() {
         try {
             mongoose.set("strictQuery", true);
             Logging.info("Connecting to database...");
@@ -17,7 +13,7 @@ export default class Database {
                 w: "majority",
                 retryWrites: true,
             });
-            Logging.info("Connected to database.");
+            Logging.success("Connected to database.");
         } catch (err) {
             Logging.error(err);
         }

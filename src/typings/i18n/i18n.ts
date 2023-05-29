@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-export interface Internationalization {
+export interface InternationalizationList {
     // Command message
     pingMessage: string;
     optionsTitle: string;
@@ -41,7 +41,10 @@ export enum Languages {
     zh_hk = "zh-hk",
 }
 
-export interface LanguageList {
-    [Languages.en]: Internationalization;
-    [Languages.zh_hk]: Internationalization;
-}
+export type LanguageList = {
+    [key in Languages]: InternationalizationList;
+};
+
+export type Language = keyof LanguageList;
+
+export type Internationalization = keyof InternationalizationList;

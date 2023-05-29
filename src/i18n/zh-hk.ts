@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import type { Internationalization } from "../typings/i18n/i18n.js";
+import type { InternationalizationList } from "../typings/i18n/i18n.js";
 
-const zh_hk: Internationalization = {
+const zh_hk: InternationalizationList = {
     // Command message
     pingMessage: "Pong！",
     optionsTitle: "`%ARG%`",

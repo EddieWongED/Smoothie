@@ -1,23 +1,17 @@
 import type { ClientEvents } from "discord.js";
-import type { SmoothieCommandTypes } from "../../typings/structures/commands/SmoothieCommand.js";
+import type { Command } from "../../typings/structures/commands/SmoothieCommand.js";
 import type { SmoothieEvent } from "../events/SmoothieEvent.js";
 
-import path from "path";
-import { fileURLToPath } from "url";
 import { Client, Collection, GatewayIntentBits } from "discord.js";
-import { promisify } from "util";
-import glob from "glob";
 import { CommandHandler } from "../commands/CommandHandler.js";
 import Logging from "../logging/Logging.js";
 import Database from "../database/Database.js";
 import type SmoothieVoiceConnection from "../music/SmoothieVoiceConnection.js";
-
-const globPromise = promisify(glob);
-const fileName = fileURLToPath(import.meta.url);
-const dirName = path.dirname(fileName);
+import importDefault from "../../utils/importDefault.js";
+import subfilePathsOf from "../../utils/subfilePathsOf.js";
 
 export class SmoothieClient extends Client {
-    commands = new Collection<string, SmoothieCommandTypes>();
+    commands = new Collection<string, Command>();
     voiceConnections = new Collection<string, SmoothieVoiceConnection>();
     commandHandler = new CommandHandler();
     database = new Database();
@@ -34,63 +28,36 @@ export class SmoothieClient extends Client {
     }
 
     async start() {
-        await this._loadCommands();
-        await this._registerEvents();
+        await Promise.all([
+            this._loadCommands(),
+            this._registerEvents(),
+            this.database.connect(),
+        ]);
         await this.login(process.env.BOT_TOKEN);
     }
 
-    private async _importCommand(
-        filePath: string
-    ): Promise<SmoothieCommandTypes | null> {
-        try {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            const importedObject: unknown = (await import(filePath))?.default;
-            const command = importedObject as SmoothieCommandTypes;
-            return command;
-        } catch (err) {
-            console.error(err);
-            return null;
-        }
-    }
-
-    private async _importEvent(
-        filePath: string
-    ): Promise<SmoothieEvent<keyof ClientEvents> | null> {
-        try {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            const importedObject: unknown = (await import(filePath))?.default;
-            const event = importedObject as SmoothieEvent<keyof ClientEvents>;
-            return event;
-        } catch (err) {
-            console.error(err);
-            return null;
-        }
-    }
-
     private async _registerEvents() {
-        const eventFiles = await globPromise(
-            `${dirName}/../../events/*{.ts,.js}`
-        );
+        const paths = await subfilePathsOf("events");
         Logging.info("Start registering events...");
-        eventFiles.forEach((filePath) => {
-            void (async () => {
-                const event = await this._importEvent(filePath);
-                if (!event) return;
-                Logging.info(`Registering ${event.event} event...`);
-                this.on(event.event, event.run);
-                Logging.info(`${event.event} event is registered.`);
-            })();
-        });
+        for (const path of paths) {
+            const event = await importDefault<
+                SmoothieEvent<keyof ClientEvents>
+            >(path);
+            if (!event) return;
+            Logging.info(`Registering ${event.event} event...`);
+            this.on(event.event, event.run);
+            Logging.info(`${event.event} event is registered.`);
+        }
+        Logging.success(`Loaded all the events (total: ${paths.length}).`);
     }
 
     private async _loadCommands() {
-        const commandFiles = await globPromise(
-            `${dirName}/../../commands/*/*{.ts,.js}`
-        );
+        const paths = await subfilePathsOf("commands");
         Logging.info("Start loading commands...");
-        for (const filePath of commandFiles) {
-            const command = await this._importCommand(filePath);
+        for (const path of paths) {
+            const command = await importDefault<Command>(path);
             if (!command) break;
+            Logging.info(`Loading ${command.name} command...`);
             if (command.aliases) {
                 for (const alias of command.aliases) {
                     this.commands.set(alias, command);
@@ -103,8 +70,6 @@ export class SmoothieClient extends Client {
                 } alias(es)) is loaded.`
             );
         }
-        Logging.info(
-            `Loaded all the commands (total: ${commandFiles.length}).`
-        );
+        Logging.success(`Loaded all the commands (total: ${paths.length}).`);
     }
 }

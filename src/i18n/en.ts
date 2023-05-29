@@ -1,6 +1,6 @@
-import type { Internationalization } from "../typings/i18n/i18n.js";
+import type { InternationalizationList } from "../typings/i18n/i18n.js";
 
-const en: Internationalization = {
+const en: InternationalizationList = {
     // Command message
     pingMessage: "Pong!",
     optionsTitle: "`%ARG%`",

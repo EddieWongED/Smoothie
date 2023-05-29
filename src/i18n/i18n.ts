@@ -2,6 +2,7 @@
 import Logging from "../structures/logging/Logging.js";
 import type {
     Internationalization,
+    Language,
     LanguageList,
 } from "../typings/i18n/i18n.js";
 import { Languages } from "../typings/i18n/i18n.js";
@@ -14,8 +15,8 @@ const languages: LanguageList = {
 };
 
 export function getLocale(
-    language: keyof LanguageList,
-    message: keyof Internationalization,
+    language: Language,
+    message: Internationalization,
     args: string[]
 ): string {
     const locale = languages[language][message];
@@ -34,4 +35,4 @@ export function getLocale(
     });
 }
 
-export const defaultLanguage = Languages.en as keyof LanguageList;
+export const defaultLanguage = Languages.en as Language;

@@ -27,4 +27,13 @@ export default class Logging {
             chalk.red(`[${new Date().toUTCString()}] [ERROR] `),
             typeof args === "string" ? chalk.bold(chalk.redBright(args)) : args
         );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public static success = (args: any) =>
+        console.log(
+            chalk.green(`[${new Date().toUTCString()}] [SUCCESS] `),
+            typeof args === "string"
+                ? chalk.bold(chalk.greenBright(args))
+                : args
+        );
 }

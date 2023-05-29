@@ -6,13 +6,14 @@ import { ApplicationCommandOptionType } from "discord.js";
 import { defaultLanguage } from "../../i18n/i18n.js";
 import { client } from "../../index.js";
 import type {
+    CommandOptions,
     MessageCommandPayload,
     SlashCommandPayload,
-    SmoothieCommandOptionsType,
 } from "../../typings/structures/commands/SmoothieCommand.js";
 import stringToBoolean from "../../utils/stringToBoolean.js";
 import type GuildDataHandler from "../database/GuildDataHandler.js";
 import ReplyHandler from "./ReplyHandler.js";
+import Logging from "../logging/Logging.js";
 
 export class CommandHandler {
     async handleSlashCommand(
@@ -24,12 +25,11 @@ export class CommandHandler {
             const language =
                 (await guildData.get("language")) ?? defaultLanguage;
             const reply = new ReplyHandler(interaction, language);
-            await reply.info(
-                "loadingCommandTitle",
-                "loadingCommandMessage",
-                [],
-                [interaction.commandName]
-            );
+            await reply.info({
+                title: "loadingCommandTitle",
+                description: "loadingCommandMessage",
+                descriptionArgs: [interaction.commandName],
+            });
 
             // Retrieve command
             const command = client.commands.get(interaction.commandName);
@@ -59,12 +59,12 @@ export class CommandHandler {
 
             await command.run({
                 payload: interaction,
-                options: options as SmoothieCommandOptionsType,
+                options: options as CommandOptions,
                 guildData: guildData,
                 reply: reply,
             });
         } catch (err) {
-            console.error(err);
+            Logging.error(err);
         }
     }
 
@@ -89,20 +89,18 @@ export class CommandHandler {
             const language =
                 (await guildData.get("language")) ?? defaultLanguage;
             const reply = new ReplyHandler(message, language);
-            await reply.info(
-                "loadingCommandTitle",
-                "loadingCommandMessage",
-                [],
-                [commandName]
-            );
+            await reply.info({
+                title: "loadingCommandTitle",
+                description: "loadingCommandMessage",
+                descriptionArgs: [commandName],
+            });
 
             if (!command) {
-                await reply.error(
-                    "errorTitle",
-                    "noSuchCommandMessage",
-                    [],
-                    [commandName]
-                );
+                await reply.error({
+                    title: "errorTitle",
+                    description: "noSuchCommandMessage",
+                    descriptionArgs: [commandName],
+                });
                 return;
             }
 
@@ -129,22 +127,20 @@ export class CommandHandler {
             }
 
             if (args.length < minOptionsLength) {
-                await reply.error(
-                    "errorTitle",
-                    "tooFewInputMessage",
-                    [],
-                    [fullCommandString]
-                );
+                await reply.error({
+                    title: "errorTitle",
+                    description: "tooFewInputMessage",
+                    descriptionArgs: [fullCommandString],
+                });
                 return;
             }
 
             if (args.length > maxOptionsLength) {
-                await reply.error(
-                    "errorTitle",
-                    "tooManyInputMessage",
-                    [],
-                    [fullCommandString]
-                );
+                await reply.error({
+                    title: "errorTitle",
+                    description: "tooManyInputMessage",
+                    descriptionArgs: [fullCommandString],
+                });
                 return;
             }
 
@@ -169,31 +165,32 @@ export class CommandHandler {
                     case ApplicationCommandOptionType.Integer: {
                         const number = Number(arg);
                         if (Number.isNaN(number) || !Number.isInteger(number)) {
-                            await reply.error(
-                                "errorTitle",
-                                "requireIntegerMessage",
-                                [],
-                                [option.name, fullCommandString]
-                            );
+                            await reply.error({
+                                title: "errorTitle",
+                                description: "requireIntegerMessage",
+                                descriptionArgs: [
+                                    option.name,
+                                    fullCommandString,
+                                ],
+                            });
                             return;
                         }
 
                         // If choices exist, check if the input matches the choices or not
                         if (choices) {
                             if (!(choices as number[]).includes(number)) {
-                                await reply.error(
-                                    "errorTitle",
-                                    "noMatchChoiceMessage",
-                                    [],
-                                    [
+                                await reply.error({
+                                    title: "errorTitle",
+                                    description: "noMatchChoiceMessage",
+                                    descriptionArgs: [
                                         option.name,
                                         number.toString(),
                                         fullCommandString,
                                         choices
                                             .map((choice) => `\`${choice}\``)
                                             .join(", "),
-                                    ]
-                                );
+                                    ],
+                                });
                                 return;
                             }
                         }
@@ -203,31 +200,32 @@ export class CommandHandler {
                     case ApplicationCommandOptionType.Number: {
                         const number = Number(arg);
                         if (Number.isNaN(number)) {
-                            await reply.error(
-                                "errorTitle",
-                                "requireNumberMessage",
-                                [],
-                                [option.name, fullCommandString]
-                            );
+                            await reply.error({
+                                title: "errorTitle",
+                                description: "requireNumberMessage",
+                                descriptionArgs: [
+                                    option.name,
+                                    fullCommandString,
+                                ],
+                            });
                             return;
                         }
 
                         // If choices exist, check if the input matches the choices or not
                         if (choices) {
                             if (!(choices as number[]).includes(number)) {
-                                await reply.error(
-                                    "errorTitle",
-                                    "noMatchChoiceMessage",
-                                    [],
-                                    [
+                                await reply.error({
+                                    title: "errorTitle",
+                                    description: "noMatchChoiceMessage",
+                                    descriptionArgs: [
                                         option.name,
                                         number.toString(),
                                         fullCommandString,
                                         choices
                                             .map((choice) => `\`${choice}\``)
                                             .join(", "),
-                                    ]
-                                );
+                                    ],
+                                });
                                 return;
                             }
                         }
@@ -240,19 +238,18 @@ export class CommandHandler {
                         // If choices exist, check if the input matches the choices or not
                         if (choices) {
                             if (!(choices as string[]).includes(string)) {
-                                await reply.error(
-                                    "errorTitle",
-                                    "noMatchChoiceMessage",
-                                    [],
-                                    [
+                                await reply.error({
+                                    title: "errorTitle",
+                                    description: "noMatchChoiceMessage",
+                                    descriptionArgs: [
                                         option.name,
                                         string,
                                         fullCommandString,
                                         choices
                                             .map((choice) => `\`${choice}\``)
                                             .join(", "),
-                                    ]
-                                );
+                                    ],
+                                });
                                 return;
                             }
                         }
@@ -268,12 +265,12 @@ export class CommandHandler {
 
             await command.run({
                 payload: message,
-                options: options as SmoothieCommandOptionsType,
+                options: options as CommandOptions,
                 guildData: guildData,
                 reply: reply,
             });
         } catch (err) {
-            console.error(err);
+            Logging.error(err);
         }
     }
 }
