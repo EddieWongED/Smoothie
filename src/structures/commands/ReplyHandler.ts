@@ -77,21 +77,6 @@ export default class ReplyHandler {
         return payload;
     }
 
-    async success({
-        title,
-        description,
-        titleArgs = [],
-        descriptionArgs = [],
-    }: ReplyArgs): Promise<CommandResponse | null> {
-        return this.reply({
-            level: "success",
-            title: title,
-            description: description,
-            titleArgs: titleArgs,
-            descriptionArgs: descriptionArgs,
-        });
-    }
-
     async info({
         title,
         description,
@@ -100,6 +85,21 @@ export default class ReplyHandler {
     }: ReplyArgs): Promise<CommandResponse | null> {
         return this.reply({
             level: "info",
+            title: title,
+            description: description,
+            titleArgs: titleArgs,
+            descriptionArgs: descriptionArgs,
+        });
+    }
+
+    async success({
+        title,
+        description,
+        titleArgs = [],
+        descriptionArgs = [],
+    }: ReplyArgs): Promise<CommandResponse | null> {
+        return this.reply({
+            level: "success",
             title: title,
             description: description,
             titleArgs: titleArgs,
@@ -182,21 +182,6 @@ export default class ReplyHandler {
         return messagePayload;
     }
 
-    async successFollowUp({
-        title,
-        description,
-        titleArgs = [],
-        descriptionArgs = [],
-    }: ReplyArgs): Promise<CommandResponse | null> {
-        return this.followUp({
-            level: "success",
-            title: title,
-            description: description,
-            titleArgs: titleArgs,
-            descriptionArgs: descriptionArgs,
-        });
-    }
-
     async infoFollowUp({
         title,
         description,
@@ -205,6 +190,21 @@ export default class ReplyHandler {
     }: ReplyArgs): Promise<CommandResponse | null> {
         return this.followUp({
             level: "info",
+            title: title,
+            description: description,
+            titleArgs: titleArgs,
+            descriptionArgs: descriptionArgs,
+        });
+    }
+
+    async successFollowUp({
+        title,
+        description,
+        titleArgs = [],
+        descriptionArgs = [],
+    }: ReplyArgs): Promise<CommandResponse | null> {
+        return this.followUp({
+            level: "success",
             title: title,
             description: description,
             titleArgs: titleArgs,

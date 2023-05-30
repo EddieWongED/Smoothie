@@ -4,20 +4,19 @@ import { VoiceConnectionStatus } from "@discordjs/voice";
 import { joinVoiceChannel } from "@discordjs/voice";
 import type { VoiceChannel } from "discord.js";
 import { client } from "../../index.js";
-import GuildLogging from "../logging/GuildLogging.js";
+import Logging from "../logging/Logging.js";
+import createGuildPrefix from "../../utils/createGuildPrefix.js";
 
 export default class SmoothieVoiceConnection {
     channelId: string | null = null;
-    guildLogging: GuildLogging;
 
     constructor(
         public guildId: string,
         public adapterCreator: DiscordGatewayAdapterCreator
-    ) {
-        this.guildLogging = new GuildLogging(this.guildId);
-    }
+    ) {}
 
     connect(channelId: string): boolean {
+        const guildPrefix = createGuildPrefix(this.guildId);
         let connection = getVoiceConnection(this.guildId);
         if (connection) {
             // Join from another voice channel
@@ -38,7 +37,8 @@ export default class SmoothieVoiceConnection {
 
         // When Smoothie is connecting the voice channel
         connection.on(VoiceConnectionStatus.Connecting, () => {
-            this.guildLogging.info(
+            Logging.info(
+                guildPrefix,
                 `Smoothie is connecting to the voice channel ${channelName} (${channelId}).`
             );
             return;
@@ -46,7 +46,8 @@ export default class SmoothieVoiceConnection {
 
         // When Smoothie joins the voice channel
         connection.on(VoiceConnectionStatus.Ready, () => {
-            this.guildLogging.info(
+            Logging.info(
+                guildPrefix,
                 `Smoothie has joined to the voice channel ${channelName} (${channelId}).`
             );
             return;

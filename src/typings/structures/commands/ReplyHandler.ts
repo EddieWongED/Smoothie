@@ -1,6 +1,5 @@
 import type { Internationalization } from "../../i18n/i18n.js";
-
-export type ReplyLevel = "success" | "info" | "warn" | "error";
+import type { LoggingLevel } from "../logging/Logging.js";
 
 export interface ReplyArgs {
     title: Internationalization;
@@ -9,4 +8,4 @@ export interface ReplyArgs {
     descriptionArgs?: string[];
 }
 
-export type LevelReplyArgs = { level: ReplyLevel } & ReplyArgs;
+export type LevelReplyArgs = { level: LoggingLevel } & ReplyArgs;

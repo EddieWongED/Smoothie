@@ -8,7 +8,7 @@ import type {
     JSONEncodable,
 } from "discord.js";
 import type { Stream } from "node:stream";
-import type { ReplyLevel } from "../commands/ReplyHandler.js";
+import type { LoggingLevel } from "../logging/Logging.js";
 
 export interface SmoothieEmbedOutput {
     embeds?: (JSONEncodable<APIEmbed> | APIEmbed)[];
@@ -27,4 +27,4 @@ export interface EmbedArgs {
     description: string;
 }
 
-export type LevelEmbedArgs = EmbedArgs & { level: ReplyLevel };
+export type LevelEmbedArgs = EmbedArgs & { level: LoggingLevel };

@@ -40,6 +40,7 @@
         "discord.js": "^14.7.1",
         "dotenv": "^16.0.3",
         "glob": "^8.0.3",
+        "json-colorizer": "^2.2.2",
         "mongoose": "^6.9.0"
     }
 }

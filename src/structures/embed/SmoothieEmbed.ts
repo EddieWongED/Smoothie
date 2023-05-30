@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "@discordjs/builders";
 import { AttachmentBuilder } from "discord.js";
-import type { ReplyLevel } from "../../typings/structures/commands/ReplyHandler.js";
+import type { LoggingLevel } from "../../typings/structures/logging/Logging.js";
 import type {
     EmbedArgs,
     LevelEmbedArgs,
@@ -15,20 +15,7 @@ export default class SmoothieEmbed {
         description,
     }: LevelEmbedArgs): SmoothieEmbedOutput {
         const file = new AttachmentBuilder("./icons/mipmap-hdpi/smoothie.png");
-        switch (level) {
-            case "success": {
-                title = ":white_check_mark: " + title;
-                break;
-            }
-            case "warn": {
-                title = ":warning: " + title;
-                break;
-            }
-            case "error": {
-                title = ":no_entry: " + title;
-                break;
-            }
-        }
+        title = this._getPrefixedTitle(level, title);
         const embed = this._createBasicEmbed({
             title: title,
             description: description,
@@ -36,17 +23,17 @@ export default class SmoothieEmbed {
         return { embeds: [embed], files: [file] };
     }
 
-    static success({ title, description }: EmbedArgs): SmoothieEmbedOutput {
+    static info({ title, description }: EmbedArgs): SmoothieEmbedOutput {
         return this.create({
-            level: "success",
+            level: "info",
             title: title,
             description: description,
         });
     }
 
-    static info({ title, description }: EmbedArgs): SmoothieEmbedOutput {
+    static success({ title, description }: EmbedArgs): SmoothieEmbedOutput {
         return this.create({
-            level: "info",
+            level: "success",
             title: title,
             description: description,
         });
@@ -68,12 +55,12 @@ export default class SmoothieEmbed {
         });
     }
 
-    private static _getColor(level: ReplyLevel): number {
+    private static _getColor(level: LoggingLevel): number {
         switch (level) {
-            case "success":
-                return 0x34c759;
             case "info":
                 return 0x5856d6;
+            case "success":
+                return 0x34c759;
             case "warn":
                 return 0xff9f0a;
             case "error":
@@ -101,5 +88,22 @@ export default class SmoothieEmbed {
                 text: "Smoothie",
                 iconURL: "attachment://smoothie.png",
             });
+    }
+
+    private static _getPrefixedTitle(level: LoggingLevel, title: string) {
+        switch (level) {
+            case "success": {
+                return ":white_check_mark: " + title;
+            }
+            case "warn": {
+                return ":warning: " + title;
+            }
+            case "error": {
+                return ":no_entry: " + title;
+            }
+            default: {
+                return title;
+            }
+        }
     }
 }
