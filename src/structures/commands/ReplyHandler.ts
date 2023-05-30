@@ -49,11 +49,11 @@ export default class ReplyHandler {
             description,
             descriptionArgs
         );
-        const response = SmoothieEmbed.create(
-            level,
-            titleString,
-            descriptionString
-        );
+        const response = SmoothieEmbed.create({
+            level: level,
+            title: titleString,
+            description: descriptionString,
+        });
         let payload: CommandResponse;
         switch (this.payload.payloadType) {
             case "slash": {
@@ -157,11 +157,11 @@ export default class ReplyHandler {
             description,
             descriptionArgs
         );
-        const response = SmoothieEmbed.create(
-            level,
-            titleString,
-            descriptionString
-        );
+        const response = SmoothieEmbed.create({
+            level: level,
+            title: titleString,
+            description: descriptionString,
+        });
         let messagePayload: MessageCommandPayload;
         switch (this._currentPayload.payloadType) {
             case "slash": {
@@ -263,11 +263,11 @@ export default class ReplyHandler {
             description,
             descriptionArgs
         );
-        const response = SmoothieEmbed.create(
-            level,
-            titleString,
-            descriptionString
-        );
+        const response = SmoothieEmbed.create({
+            level: level,
+            title: titleString,
+            description: descriptionString,
+        });
         let messagePayload: MessageCommandPayload;
         switch (this._currentPayload.payloadType) {
             case "slash": {

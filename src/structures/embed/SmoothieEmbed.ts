@@ -1,15 +1,19 @@
 import { EmbedBuilder } from "@discordjs/builders";
 import { AttachmentBuilder } from "discord.js";
 import type { ReplyLevel } from "../../typings/structures/commands/ReplyHandler.js";
-import type SmoothieEmbedOutput from "../../typings/structures/embed/SmoothieEmbed.js";
+import type {
+    EmbedArgs,
+    LevelEmbedArgs,
+    SmoothieEmbedOutput,
+} from "../../typings/structures/embed/SmoothieEmbed.js";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class SmoothieEmbed {
-    static create(
-        level: ReplyLevel,
-        title: string,
-        description: string
-    ): SmoothieEmbedOutput {
+    static create({
+        level,
+        title,
+        description,
+    }: LevelEmbedArgs): SmoothieEmbedOutput {
         const file = new AttachmentBuilder("./icons/mipmap-hdpi/smoothie.png");
         switch (level) {
             case "success": {
@@ -25,26 +29,43 @@ export default class SmoothieEmbed {
                 break;
             }
         }
-        const embed = this._createBasicEmbed(title, description).setColor(
-            this._getColor(level)
-        );
+        const embed = this._createBasicEmbed({
+            title: title,
+            description: description,
+        }).setColor(this._getColor(level));
         return { embeds: [embed], files: [file] };
     }
 
-    static success(title: string, description: string): SmoothieEmbedOutput {
-        return this.create("success", title, description);
+    static success({ title, description }: EmbedArgs): SmoothieEmbedOutput {
+        return this.create({
+            level: "success",
+            title: title,
+            description: description,
+        });
     }
 
-    static info(title: string, description: string): SmoothieEmbedOutput {
-        return this.create("info", title, description);
+    static info({ title, description }: EmbedArgs): SmoothieEmbedOutput {
+        return this.create({
+            level: "info",
+            title: title,
+            description: description,
+        });
     }
 
-    static warn(title: string, description: string): SmoothieEmbedOutput {
-        return this.create("warn", title, description);
+    static warn({ title, description }: EmbedArgs): SmoothieEmbedOutput {
+        return this.create({
+            level: "warn",
+            title: title,
+            description: description,
+        });
     }
 
-    static error(title: string, description: string): SmoothieEmbedOutput {
-        return this.create("error", title, description);
+    static error({ title, description }: EmbedArgs): SmoothieEmbedOutput {
+        return this.create({
+            level: "error",
+            title: title,
+            description: description,
+        });
     }
 
     private static _getColor(level: ReplyLevel): number {
@@ -60,10 +81,10 @@ export default class SmoothieEmbed {
         }
     }
 
-    private static _createBasicEmbed(
-        title: string,
-        description: string
-    ): EmbedBuilder {
+    private static _createBasicEmbed({
+        title,
+        description,
+    }: EmbedArgs): EmbedBuilder {
         if (title.length > 256) {
             title = title.substring(0, 253) + "...";
         }

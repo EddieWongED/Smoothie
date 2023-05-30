@@ -8,8 +8,9 @@ import type {
     JSONEncodable,
 } from "discord.js";
 import type { Stream } from "node:stream";
+import type { ReplyLevel } from "../commands/ReplyHandler.js";
 
-export default interface SmoothieEmbedOutput {
+export interface SmoothieEmbedOutput {
     embeds?: (JSONEncodable<APIEmbed> | APIEmbed)[];
     files?: (
         | BufferResolvable
@@ -20,3 +21,10 @@ export default interface SmoothieEmbedOutput {
         | AttachmentPayload
     )[];
 }
+
+export interface EmbedArgs {
+    title: string;
+    description: string;
+}
+
+export type LevelEmbedArgs = EmbedArgs & { level: ReplyLevel };
