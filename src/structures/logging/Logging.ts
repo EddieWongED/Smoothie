@@ -17,8 +17,7 @@ export default class Logging {
     public static warn = (...args: unknown[]) =>
         console.warn(this._parseMessage("warn", ...args));
 
-    public static error = (...args: unknown[]) =>
-        console.error(this._parseMessage("error", ...args));
+    public static error = (...args: unknown[]) => console.error(...args);
 
     private static _getPrefix = (level: LoggingLevel): string => {
         const prefix = `[${new Date().toUTCString()}] [${level.toUpperCase()}] `;

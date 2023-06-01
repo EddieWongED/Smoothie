@@ -22,6 +22,14 @@ const en: InternationalizationList = {
     joinSuccessMessage: "Joined your voice channel successfully.",
     leaveFailedMessage: "Failed to leave your voice channel.",
     leaveSuccessMessage: "Left your voice channel successfully.",
+    createPlaylistFailedMessage: "Failed to create `%ARG%` playlist.",
+    createPlaylistSuccessMessage: "Created `%ARG%` playlist successfully.",
+    removePlaylistFailedMessage: "Failed to remove `%ARG%` playlist.",
+    removePlaylistSuccessMessage: "Removed `%ARG%` playlist successfully.",
+    confirmRemovePlaylistMessage:
+        "Are you sure you want to remove `%ARG%` playlist?",
+    cancelRemovePlaylistSuccessMessage:
+        "Cancel removing `%ARG%` playlist successfully.",
 
     // Error message
     noSuchCommandMessage: "There is no `%ARG%` command.",
@@ -34,10 +42,13 @@ const en: InternationalizationList = {
     noMatchChoiceMessage:
         "`%ARG%` does not accept `%ARG%` (%ARG%). Possible values(s): %ARG%",
     notInVoiceChannelMessage: "You are not in any voice channel!",
-
+    playlistAlreadyExistMessage: "Playlist `%ARG%` already exist!",
+    playlistDoesNotExistMessage: "Playlist `%ARG%` does not exist!",
     // Others
     successTitle: "Success!",
     errorTitle: "Error!",
+    confirmTitle: "Are you sure?",
+    cancelSuccessTitle: "Cancel Success!",
     loadingCommandTitle: "Loading...",
     loadingCommandMessage: "Loading `%ARG%` command...",
 };

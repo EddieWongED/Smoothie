@@ -4,7 +4,11 @@
         "moduleResolution": "NodeNext",
         "target": "ES2020",
         "sourceMap": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "preserveValueImports": false,
+        "importsNotUsedAsValues": "remove"
     },
     "extends": "@tsconfig/node18-strictest/tsconfig.json",
     "include": ["src/**/*", "environment.d.ts"]

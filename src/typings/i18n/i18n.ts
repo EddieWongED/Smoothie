@@ -19,6 +19,12 @@ export interface InternationalizationList {
     joinSuccessMessage: string;
     leaveFailedMessage: string;
     leaveSuccessMessage: string;
+    createPlaylistFailedMessage: string;
+    createPlaylistSuccessMessage: string;
+    removePlaylistFailedMessage: string;
+    removePlaylistSuccessMessage: string;
+    confirmRemovePlaylistMessage: string;
+    cancelRemovePlaylistSuccessMessage: string;
 
     // Error message
     noSuchCommandMessage: string;
@@ -28,10 +34,14 @@ export interface InternationalizationList {
     requireNumberMessage: string;
     noMatchChoiceMessage: string;
     notInVoiceChannelMessage: string;
+    playlistAlreadyExistMessage: string;
+    playlistDoesNotExistMessage: string;
 
     // Others
     successTitle: string;
     errorTitle: string;
+    confirmTitle: string;
+    cancelSuccessTitle: string;
     loadingCommandTitle: string;
     loadingCommandMessage: string;
 }

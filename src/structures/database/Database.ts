@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 import Logging from "../logging/Logging.js";
 import GuildDataController from "./GuildDataController.js";
+import GuildStatesController from "./GuildStatesController.js";
 
 export default class Database {
     guildData = new GuildDataController();
+    guildStates = new GuildStatesController();
 
     async connect() {
         try {

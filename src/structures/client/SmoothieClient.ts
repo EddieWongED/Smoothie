@@ -39,37 +39,49 @@ export class SmoothieClient extends Client {
     private async _registerEvents() {
         const paths = await subfilePathsOf("events");
         Logging.info("Start registering events...");
+        let successCount = 0;
         for (const path of paths) {
-            const event = await importDefault<
-                SmoothieEvent<keyof ClientEvents>
-            >(path);
-            if (!event) return;
-            Logging.info(`Registering ${event.event} event...`);
-            this.on(event.event, event.run);
-            Logging.info(`${event.event} event is registered.`);
+            try {
+                const event = await importDefault<
+                    SmoothieEvent<keyof ClientEvents>
+                >(path);
+                if (!event) return;
+                Logging.info(`Registering ${event.event} event...`);
+                this.on(event.event, event.run);
+                Logging.info(`${event.event} event is registered.`);
+                successCount++;
+            } catch (err) {
+                Logging.error(err);
+            }
         }
-        Logging.success(`Loaded all the events (total: ${paths.length}).`);
+        Logging.success(`Loaded ${successCount}/${paths.length} events.`);
     }
 
     private async _loadCommands() {
         const paths = await subfilePathsOf("commands");
         Logging.info("Start loading commands...");
+        let successCount = 0;
         for (const path of paths) {
-            const command = await importDefault<Command>(path);
-            if (!command) break;
-            Logging.info(`Loading ${command.name} command...`);
-            if (command.aliases) {
-                for (const alias of command.aliases) {
-                    this.commands.set(alias, command);
+            try {
+                const command = await importDefault<Command>(path);
+                if (!command) break;
+                Logging.info(`Loading ${command.name} command...`);
+                if (command.aliases) {
+                    for (const alias of command.aliases) {
+                        this.commands.set(alias, command);
+                    }
                 }
+                this.commands.set(command.name, command);
+                Logging.info(
+                    `${command.name} command (${
+                        command.aliases?.length ?? 0
+                    } alias(es)) is loaded.`
+                );
+                successCount++;
+            } catch (err) {
+                Logging.error(err);
             }
-            this.commands.set(command.name, command);
-            Logging.info(
-                `${command.name} command (${
-                    command.aliases?.length ?? 0
-                } alias(es)) is loaded.`
-            );
         }
-        Logging.success(`Loaded all the commands (total: ${paths.length}).`);
+        Logging.success(`Loaded ${successCount}/${paths.length} commands.`);
     }
 }

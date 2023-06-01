@@ -13,6 +13,10 @@ import type PingOptions from "../../commands/general/PingOptions.js";
 import type PrefixOptions from "../../commands/general/PrefixOptions.js";
 import type JoinOptions from "../../commands/music/JoinOptions.js";
 import type LeaveOptions from "../../commands/music/LeaveOptions.js";
+import type CreatePlaylistOptions from "../../commands/music/CreatePlaylistOptions.js";
+import type GuildStatesHandler from "../../../structures/database/GuildStatesHandler.js";
+import type RemovePlaylistOptions from "../../commands/music/RemovePlaylistOptions.js";
+import type TestOptions from "../../commands/dev/TestOptions.js";
 
 // Payload
 export type SlashCommandPayload = ChatInputCommandInteraction & {
@@ -37,22 +41,28 @@ export type NoOptions = Record<string, never>;
 
 /** Update when adding new command **/
 export enum Commands {
+    test = "test",
     ping = "ping",
     options = "options",
     language = "language",
     prefix = "prefix",
     join = "join",
     leave = "leave",
+    createPlaylist = "createPlaylist",
+    removePlaylist = "removePlaylist",
 }
 
 /** Update when adding new command **/
 interface CommandOptionsList {
+    [Commands.test]: TestOptions;
     [Commands.ping]: PingOptions;
     [Commands.options]: OptionsOptions;
     [Commands.language]: LanguageOptions;
     [Commands.prefix]: PrefixOptions;
     [Commands.join]: JoinOptions;
     [Commands.leave]: LeaveOptions;
+    [Commands.createPlaylist]: CreatePlaylistOptions;
+    [Commands.removePlaylist]: RemovePlaylistOptions;
 }
 
 export type CommandOptions = CommandOptionsList[CommandName];
@@ -64,6 +74,7 @@ interface CommandArgs<Name extends keyof CommandOptionsList> {
     payload: CommandPayload;
     options: CommandOptionsList[Name];
     guildData: GuildDataHandler;
+    guildStates: GuildStatesHandler;
     reply: ReplyHandler;
 }
 

@@ -1,5 +1,5 @@
+import type { GuildData } from "../../data/guild/GuildData.js";
 import { client } from "../../index.js";
-import type GuildData from "../../typings/models/GuildData.js";
 
 export default class GuildDataHandler {
     constructor(public guildId: string) {}

@@ -21,6 +21,12 @@ const zh_hk: InternationalizationList = {
     joinSuccessMessage: "成功進入您的語音頻道。",
     leaveFailedMessage: "無法離開您的語音頻道。",
     leaveSuccessMessage: "成功離開了您的語音頻道。",
+    createPlaylistFailedMessage: "無法建立 `%ARG%` 播放清單。",
+    createPlaylistSuccessMessage: "成功建立了 `%ARG%` 播放清單。",
+    removePlaylistFailedMessage: "無法移除 `%ARG%` 播放清單。",
+    removePlaylistSuccessMessage: "成功移除了 `%ARG%` 播放清單。",
+    confirmRemovePlaylistMessage: "您確定要移除 `%ARG%` 播放清單嗎？",
+    cancelRemovePlaylistSuccessMessage: "成功取消移除 `%ARG%` 播放清單。",
 
     // Error message
     noSuchCommandMessage: "沒有 `%ARG%` 這個指令。",
@@ -30,10 +36,14 @@ const zh_hk: InternationalizationList = {
     requireNumberMessage: "`%ARG%` 要一個數字。請再試一次。（%ARG%）",
     noMatchChoiceMessage: "`%ARG%` 不接受 `%ARG%`（%ARG%）。您可以輸入︰%ARG%",
     notInVoiceChannelMessage: "您不在任何一個語音頻道中！",
+    playlistAlreadyExistMessage: "播放清單 `%ARG%` 已存在！",
+    playlistDoesNotExistMessage: "播放清單 `%ARG%` 不存在！",
 
     // Others
     successTitle: "成功！",
     errorTitle: "錯誤...",
+    confirmTitle: "您確定嗎？",
+    cancelSuccessTitle: "取消成功！",
     loadingCommandTitle: "載入中...",
     loadingCommandMessage: "正在載入 `%ARG%` 指令...",
 };

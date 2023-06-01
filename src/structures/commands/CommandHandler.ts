@@ -14,11 +14,13 @@ import stringToBoolean from "../../utils/stringToBoolean.js";
 import type GuildDataHandler from "../database/GuildDataHandler.js";
 import ReplyHandler from "./ReplyHandler.js";
 import Logging from "../logging/Logging.js";
+import type GuildStatesHandler from "../database/GuildStatesHandler.js";
 
 export class CommandHandler {
     async handleSlashCommand(
         interaction: SlashCommandPayload,
-        guildData: GuildDataHandler
+        guildData: GuildDataHandler,
+        guildStates: GuildStatesHandler
     ) {
         try {
             // Create reply handler
@@ -61,6 +63,7 @@ export class CommandHandler {
                 payload: interaction,
                 options: options as CommandOptions,
                 guildData: guildData,
+                guildStates: guildStates,
                 reply: reply,
             });
         } catch (err) {
@@ -70,7 +73,8 @@ export class CommandHandler {
 
     async handleMessageCommand(
         message: MessageCommandPayload,
-        guildData: GuildDataHandler
+        guildData: GuildDataHandler,
+        guildStates: GuildStatesHandler
     ) {
         try {
             // Parse and retrieve command
@@ -267,6 +271,7 @@ export class CommandHandler {
                 payload: message,
                 options: options as CommandOptions,
                 guildData: guildData,
+                guildStates: guildStates,
                 reply: reply,
             });
         } catch (err) {

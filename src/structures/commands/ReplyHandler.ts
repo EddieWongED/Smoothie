@@ -11,14 +11,16 @@ import type {
     MessageCommandResponse,
     SlashCommandResponse,
 } from "../../typings/structures/commands/SmoothieCommand.js";
-import SmoothieEmbed from "../embed/SmoothieEmbed.js";
+import ConfirmEmbed from "../embed/ConfirmEmbed.js";
+import LevelEmbed from "../embed/LevelEmbed.js";
 import Logging from "../logging/Logging.js";
 
 export default class ReplyHandler {
     private _currentPayload?: CommandPayload;
     private _isEditable = false;
-
+    private _userId: string | undefined;
     constructor(public payload: CommandPayload, public language: Language) {
+        this._userId = payload.member?.user.id;
         switch (payload.payloadType) {
             case "slash": {
                 this._currentPayload = payload;
@@ -49,7 +51,7 @@ export default class ReplyHandler {
             description,
             descriptionArgs
         );
-        const response = SmoothieEmbed.create({
+        const response = LevelEmbed.create({
             level: level,
             title: titleString,
             description: descriptionString,
@@ -157,7 +159,7 @@ export default class ReplyHandler {
             description,
             descriptionArgs
         );
-        const response = SmoothieEmbed.create({
+        const response = LevelEmbed.create({
             level: level,
             title: titleString,
             description: descriptionString,
@@ -242,6 +244,65 @@ export default class ReplyHandler {
         });
     }
 
+    async confirm({
+        title,
+        description,
+        titleArgs = [],
+        descriptionArgs = [],
+    }: ReplyArgs): Promise<boolean> {
+        if (!this._currentPayload) {
+            Logging.warn(
+                "Nothing will happen if you call confirm function before replying."
+            );
+            return false;
+        }
+
+        // Create confirm embed
+        const titleString = getLocale(this.language, title, titleArgs);
+        const descriptionString = getLocale(
+            this.language,
+            description,
+            descriptionArgs
+        );
+        const response = ConfirmEmbed.create({
+            title: titleString,
+            description: descriptionString,
+            payload: this._currentPayload,
+        });
+        let messagePayload: MessageCommandPayload;
+        switch (this._currentPayload.payloadType) {
+            case "slash": {
+                messagePayload = (await this._currentPayload.followUp(
+                    response
+                )) as MessageCommandPayload;
+                break;
+            }
+            case "message": {
+                messagePayload = (await this._currentPayload.reply(
+                    response
+                )) as MessageCommandPayload;
+                break;
+            }
+        }
+        messagePayload.payloadType = "message";
+
+        try {
+            const choice = await messagePayload.awaitMessageComponent({
+                filter: (interaction) =>
+                    (this._userId === undefined ||
+                        interaction.user.id === this._userId) &&
+                    interaction.message.id === messagePayload.id,
+                time: ConfirmEmbed.time,
+            });
+            await choice.deferUpdate();
+            await messagePayload.delete();
+            return choice.customId === "confirm";
+        } catch (err) {
+            await messagePayload.delete();
+            return false;
+        }
+    }
+
     private async _edit({
         level,
         title,
@@ -263,7 +324,7 @@ export default class ReplyHandler {
             description,
             descriptionArgs
         );
-        const response = SmoothieEmbed.create({
+        const response = LevelEmbed.create({
             level: level,
             title: titleString,
             description: descriptionString,

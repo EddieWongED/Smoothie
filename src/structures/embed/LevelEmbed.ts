@@ -1,29 +1,33 @@
 import { EmbedBuilder } from "@discordjs/builders";
+import type { BaseMessageOptions } from "discord.js";
 import { AttachmentBuilder } from "discord.js";
 import type { LoggingLevel } from "../../typings/structures/logging/Logging.js";
 import type {
     EmbedArgs,
     LevelEmbedArgs,
-    SmoothieEmbedOutput,
-} from "../../typings/structures/embed/SmoothieEmbed.js";
+} from "../../typings/structures/embed/Embed.js";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export default class SmoothieEmbed {
+export default class LevelEmbed {
     static create({
         level,
         title,
         description,
-    }: LevelEmbedArgs): SmoothieEmbedOutput {
+    }: LevelEmbedArgs): BaseMessageOptions {
+        // Create File
         const file = new AttachmentBuilder("./icons/mipmap-hdpi/smoothie.png");
+
+        // Create Embed
         title = this._getPrefixedTitle(level, title);
         const embed = this._createBasicEmbed({
             title: title,
             description: description,
         }).setColor(this._getColor(level));
+
         return { embeds: [embed], files: [file] };
     }
 
-    static info({ title, description }: EmbedArgs): SmoothieEmbedOutput {
+    static info({ title, description }: EmbedArgs): BaseMessageOptions {
         return this.create({
             level: "info",
             title: title,
@@ -31,7 +35,7 @@ export default class SmoothieEmbed {
         });
     }
 
-    static success({ title, description }: EmbedArgs): SmoothieEmbedOutput {
+    static success({ title, description }: EmbedArgs): BaseMessageOptions {
         return this.create({
             level: "success",
             title: title,
@@ -39,7 +43,7 @@ export default class SmoothieEmbed {
         });
     }
 
-    static warn({ title, description }: EmbedArgs): SmoothieEmbedOutput {
+    static warn({ title, description }: EmbedArgs): BaseMessageOptions {
         return this.create({
             level: "warn",
             title: title,
@@ -47,7 +51,7 @@ export default class SmoothieEmbed {
         });
     }
 
-    static error({ title, description }: EmbedArgs): SmoothieEmbedOutput {
+    static error({ title, description }: EmbedArgs): BaseMessageOptions {
         return this.create({
             level: "error",
             title: title,

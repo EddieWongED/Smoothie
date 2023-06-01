@@ -1,22 +1,22 @@
 import mongoose from "mongoose";
-import type { GuildData } from "../../data/guild/GuildData.js";
-import GuildDataModel from "../../models/GuildDataModel.js";
+import type { GuildStates } from "../../data/guild/GuildStates.js";
+import GuildStatesModel from "../../models/GuildStatesModel.js";
 import Logging from "../logging/Logging.js";
 
-export default class GuildDataController {
-    async create(guildId: string | null): Promise<GuildData | null> {
+export default class GuildStatesController {
+    async create(guildId: string | null): Promise<GuildStates | null> {
         if (!guildId) return null;
 
         // Check if the data exists or not
-        const receivedGuildData = (await GuildDataModel.findOne({
+        const receivedGuildData = (await GuildStatesModel.findOne({
             guildId: guildId,
-        })) as unknown as GuildData | null;
+        })) as unknown as GuildStates | null;
         if (receivedGuildData) {
             return receivedGuildData;
         }
 
         // Create new data
-        const guildData = new GuildDataModel({
+        const guildData = new GuildStatesModel({
             // eslint-disable-next-line @typescript-eslint/naming-convention
             _id: new mongoose.Types.ObjectId(),
             guildId: guildId,
@@ -24,7 +24,7 @@ export default class GuildDataController {
 
         try {
             const data =
-                (await (guildData.save() as unknown)) as GuildData | null;
+                (await (guildData.save() as unknown)) as GuildStates | null;
             return data;
         } catch (err) {
             Logging.error(err);
@@ -32,13 +32,13 @@ export default class GuildDataController {
         return null;
     }
 
-    async read(guildId: string | null): Promise<GuildData | null> {
+    async read(guildId: string | null): Promise<GuildStates | null> {
         if (!guildId) return null;
 
         try {
-            const guildData = (await GuildDataModel.findOne({
+            const guildData = (await GuildStatesModel.findOne({
                 guildId: guildId,
-            })) as unknown as GuildData | null;
+            })) as unknown as GuildStates | null;
             if (!guildData) {
                 return this.create(guildId);
             }
@@ -49,21 +49,21 @@ export default class GuildDataController {
         return null;
     }
 
-    async update<Key extends keyof GuildData>(
+    async update<Key extends keyof GuildStates>(
         guildId: string | null,
         key: Key,
-        value: GuildData[Key]
-    ): Promise<GuildData | null> {
+        value: GuildStates[Key]
+    ): Promise<GuildStates | null> {
         if (!guildId) return null;
         if (key === "guildId") return null;
 
         try {
-            const data = await GuildDataModel.findOneAndUpdate(
+            const data = await GuildStatesModel.findOneAndUpdate(
                 { guildId: guildId },
                 { $set: { [key]: value } },
                 { returnOriginal: false, upsert: true }
             );
-            return data as unknown as GuildData | null;
+            return data as unknown as GuildStates | null;
         } catch (err) {
             Logging.error(err);
         }
@@ -73,7 +73,9 @@ export default class GuildDataController {
     async remove(guildId: string | null): Promise<boolean> {
         if (!guildId) return false;
         try {
-            const result = await GuildDataModel.deleteOne({ guildId: guildId });
+            const result = await GuildStatesModel.deleteOne({
+                guildId: guildId,
+            });
             return result.acknowledged && result.deletedCount >= 1;
         } catch (err) {
             Logging.error(err);
