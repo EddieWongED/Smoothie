@@ -39,9 +39,9 @@ export enum Commands {
     prefix = "prefix",
     join = "join",
     leave = "leave",
-    createPlaylist = "createPlaylist",
-    removePlaylist = "removePlaylist",
-    listPlaylist = "listPlaylist",
+    createPlaylist = "createplaylist",
+    removePlaylist = "removeplaylist",
+    listPlaylist = "listplaylist",
 }
 
 /** Update when adding new command **/

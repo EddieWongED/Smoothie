@@ -19,7 +19,7 @@ export const createPlaylistOptions: ApplicationCommandOptionData[] = [
 
 export default new SmoothieCommand(Commands.createPlaylist, {
     name: Commands.createPlaylist,
-    aliases: ["addPlaylist"],
+    aliases: ["addplaylist"],
     description: "Create a new playlist.",
     options: createPlaylistOptions,
     run: async ({ options, reply, guildData }) => {

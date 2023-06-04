@@ -91,7 +91,7 @@ export class CommandHandler {
                 .slice(prefix.length)
                 .replace(/  +/g, " ")
                 .split(" ");
-            const commandName = data[0] ? data[0] : " ";
+            const commandName = (data[0] ? data[0] : " ").toLowerCase();
             const args: string[] = data.length > 1 ? data.slice(1) : [];
             const command = client.commands.get(commandName);
 

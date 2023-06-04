@@ -3,7 +3,7 @@ import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 
 export default new SmoothieCommand(Commands.listPlaylist, {
     name: Commands.listPlaylist,
-    aliases: ["listPlaylists", "showPlaylist"],
+    aliases: ["listplaylists", "showplaylist"],
     description: "List all the playlists.",
     run: async ({ reply, guildData }) => {
         const playlists = await guildData.get("playlists");

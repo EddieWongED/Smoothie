@@ -41,8 +41,8 @@ const zh_hk: InternationalizationList = {
     playlistDoesNotExistMessage: "播放清單 `%ARG%` 不存在！",
     noPlaylistMessage: "您沒有任何播放清單！",
     noItemInListMessage: "列表中沒有物件！",
-    choosePageNotIntegerMessage: "您輸入的信息不是一個整數！請點擊再次按鈕！",
-    choosePageNotWithinRangeMessage: "您輸入的整數不在範圍內！請點擊再次按鈕！",
+    choosePageNotIntegerMessage: "您輸入的信息不是一個整數！請再次點擊按鈕！",
+    choosePageNotWithinRangeMessage: "您輸入的整數不在範圍內！請再次點擊按鈕！",
 
     // Others
     successTitle: "成功！",

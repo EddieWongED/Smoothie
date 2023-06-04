@@ -19,7 +19,7 @@ export const removePlaylistOptions: ApplicationCommandOptionData[] = [
 
 export default new SmoothieCommand(Commands.removePlaylist, {
     name: Commands.removePlaylist,
-    aliases: ["deletePlaylist"],
+    aliases: ["deleteplaylist"],
     description: "Remove a playlist.",
     options: removePlaylistOptions,
     run: async ({ options, reply, guildData }) => {
