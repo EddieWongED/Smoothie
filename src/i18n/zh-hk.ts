@@ -40,6 +40,7 @@ const zh_hk: InternationalizationList = {
     playlistAlreadyExistMessage: "播放清單 `%ARG%` 已存在！",
     playlistDoesNotExistMessage: "播放清單 `%ARG%` 不存在！",
     noPlaylistMessage: "您沒有任何播放清單！",
+    playlistNameNotEmptyMessage: "播放清單名字不能是空白！",
     noItemInListMessage: "列表中沒有物件！",
     choosePageNotIntegerMessage: "您輸入的信息不是一個整數！請再次點擊按鈕！",
     choosePageNotWithinRangeMessage: "您輸入的整數不在範圍內！請再次點擊按鈕！",
@@ -47,6 +48,7 @@ const zh_hk: InternationalizationList = {
     // Others
     successTitle: "成功！",
     errorTitle: "錯誤...",
+    errorCommandMessage: "運行 `%ARG%` 指令時出現了錯誤...",
     confirmTitle: "您確定嗎？",
     confirmFooter: "您有 %ARG% 分鐘的時間來決定",
     cancelSuccessTitle: "取消成功！",

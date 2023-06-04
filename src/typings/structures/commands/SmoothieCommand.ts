@@ -17,6 +17,7 @@ import type GuildStatesHandler from "../../../structures/database/GuildStatesHan
 import type RemovePlaylistOptions from "../../commands/music/RemovePlaylistOptions.js";
 import type TestOptions from "../../commands/dev/TestOptions.js";
 import type ListPlaylistOptions from "../../commands/music/ListPlaylistOptions.js";
+import type PlaylistOptions from "../../commands/music/PlaylistOptions.js";
 
 // Payload
 export type SlashCommandPayload = ChatInputCommandInteraction & {
@@ -39,6 +40,7 @@ export enum Commands {
     prefix = "prefix",
     join = "join",
     leave = "leave",
+    playlist = "playlist",
     createPlaylist = "createplaylist",
     removePlaylist = "removeplaylist",
     listPlaylist = "listplaylist",
@@ -53,6 +55,7 @@ interface CommandOptionsList {
     [Commands.prefix]: PrefixOptions;
     [Commands.join]: JoinOptions;
     [Commands.leave]: LeaveOptions;
+    [Commands.playlist]: PlaylistOptions;
     [Commands.createPlaylist]: CreatePlaylistOptions;
     [Commands.removePlaylist]: RemovePlaylistOptions;
     [Commands.listPlaylist]: ListPlaylistOptions;
