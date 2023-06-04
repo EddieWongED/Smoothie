@@ -38,6 +38,7 @@ export interface InternationalizationList {
     playlistAlreadyExistMessage: string;
     playlistDoesNotExistMessage: string;
     noPlaylistMessage: string;
+    playlistNameNotEmptyMessage: string;
     noItemInListMessage: string;
     choosePageNotIntegerMessage: string;
     choosePageNotWithinRangeMessage: string;
@@ -45,6 +46,7 @@ export interface InternationalizationList {
     // Others
     successTitle: string;
     errorTitle: string;
+    errorCommandMessage: string;
     confirmTitle: string;
     confirmFooter: string;
     cancelSuccessTitle: string;

@@ -24,6 +24,15 @@ export default new SmoothieCommand(Commands.removePlaylist, {
     options: removePlaylistOptions,
     run: async ({ options, reply, guildData }) => {
         const { name } = options;
+        // Check if name is empty or not
+        if (name.length === 0) {
+            await reply.error({
+                title: "errorTitle",
+                description: "playlistNameNotEmptyMessage",
+            });
+            return;
+        }
+
         const playlists = await guildData.get("playlists");
         if (!playlists) {
             await reply.error({

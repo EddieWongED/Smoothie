@@ -46,6 +46,7 @@ const en: InternationalizationList = {
     playlistAlreadyExistMessage: "Playlist `%ARG%` already exist!",
     playlistDoesNotExistMessage: "Playlist `%ARG%` does not exist!",
     noPlaylistMessage: "You do not have any playlist!",
+    playlistNameNotEmptyMessage: "Playlist's name cannot be empty!",
     noItemInListMessage: "There is no item in the list!",
     choosePageNotIntegerMessage:
         "The message you typed is not a integer! Please click the button and try again!",
@@ -55,6 +56,7 @@ const en: InternationalizationList = {
     // Others
     successTitle: "Success!",
     errorTitle: "Error!",
+    errorCommandMessage: "There is an error running `%ARG%` command...",
     confirmTitle: "Are you sure?",
     confirmFooter: "You have %ARG% minute(s) to decide",
     cancelSuccessTitle: "Cancel Success!",
