@@ -30,6 +30,7 @@ const en: InternationalizationList = {
         "Are you sure you want to remove `%ARG%` playlist?",
     cancelRemovePlaylistSuccessMessage:
         "Cancel removing `%ARG%` playlist successfully.",
+    listPlaylistFailedMessage: "Failed to list all the playlists.",
 
     // Error message
     noSuchCommandMessage: "There is no `%ARG%` command.",
@@ -44,13 +45,25 @@ const en: InternationalizationList = {
     notInVoiceChannelMessage: "You are not in any voice channel!",
     playlistAlreadyExistMessage: "Playlist `%ARG%` already exist!",
     playlistDoesNotExistMessage: "Playlist `%ARG%` does not exist!",
+    noPlaylistMessage: "You do not have any playlist!",
+    noItemInListMessage: "There is no item in the list!",
+    choosePageNotIntegerMessage:
+        "The message you typed is not a integer! Please click the button and try again!",
+    choosePageNotWithinRangeMessage:
+        "The integer you typed is not within the range! Please click the button and try again!",
+
     // Others
     successTitle: "Success!",
     errorTitle: "Error!",
     confirmTitle: "Are you sure?",
+    confirmFooter: "You have %ARG% minute(s) to decide",
     cancelSuccessTitle: "Cancel Success!",
     loadingCommandTitle: "Loading...",
     loadingCommandMessage: "Loading `%ARG%` command...",
+    choosePageTitle: "Please type which page you want to jump to",
+    choosePageMessage: "Range: 1 - %ARG%. You have a minute to respond.",
+    buttonDisableTimeFooter:
+        "Button will be disabled after idling for %ARG% minute(s)",
 };
 
 export default en;

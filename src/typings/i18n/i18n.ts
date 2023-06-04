@@ -25,6 +25,7 @@ export interface InternationalizationList {
     removePlaylistSuccessMessage: string;
     confirmRemovePlaylistMessage: string;
     cancelRemovePlaylistSuccessMessage: string;
+    listPlaylistFailedMessage: string;
 
     // Error message
     noSuchCommandMessage: string;
@@ -36,14 +37,22 @@ export interface InternationalizationList {
     notInVoiceChannelMessage: string;
     playlistAlreadyExistMessage: string;
     playlistDoesNotExistMessage: string;
+    noPlaylistMessage: string;
+    noItemInListMessage: string;
+    choosePageNotIntegerMessage: string;
+    choosePageNotWithinRangeMessage: string;
 
     // Others
     successTitle: string;
     errorTitle: string;
     confirmTitle: string;
+    confirmFooter: string;
     cancelSuccessTitle: string;
     loadingCommandTitle: string;
     loadingCommandMessage: string;
+    choosePageTitle: string;
+    choosePageMessage: string;
+    buttonDisableTimeFooter: string;
 }
 
 export enum Languages {

@@ -1,7 +1,6 @@
 import type {
     ChatInputApplicationCommandData,
     ChatInputCommandInteraction,
-    InteractionResponse,
     Message,
     PermissionResolvable,
 } from "discord.js";
@@ -17,6 +16,7 @@ import type CreatePlaylistOptions from "../../commands/music/CreatePlaylistOptio
 import type GuildStatesHandler from "../../../structures/database/GuildStatesHandler.js";
 import type RemovePlaylistOptions from "../../commands/music/RemovePlaylistOptions.js";
 import type TestOptions from "../../commands/dev/TestOptions.js";
+import type ListPlaylistOptions from "../../commands/music/ListPlaylistOptions.js";
 
 // Payload
 export type SlashCommandPayload = ChatInputCommandInteraction & {
@@ -26,15 +26,6 @@ export type SlashCommandPayload = ChatInputCommandInteraction & {
 export type MessageCommandPayload = Message & { payloadType: "message" };
 
 export type CommandPayload = SlashCommandPayload | MessageCommandPayload;
-
-// Response
-export type SlashCommandResponse = InteractionResponse & {
-    payloadType: "slash";
-};
-
-export type MessageCommandResponse = Message & { payloadType: "message" };
-
-export type CommandResponse = SlashCommandResponse | MessageCommandResponse;
 
 // Command options
 export type NoOptions = Record<string, never>;
@@ -50,6 +41,7 @@ export enum Commands {
     leave = "leave",
     createPlaylist = "createPlaylist",
     removePlaylist = "removePlaylist",
+    listPlaylist = "listPlaylist",
 }
 
 /** Update when adding new command **/
@@ -63,6 +55,7 @@ interface CommandOptionsList {
     [Commands.leave]: LeaveOptions;
     [Commands.createPlaylist]: CreatePlaylistOptions;
     [Commands.removePlaylist]: RemovePlaylistOptions;
+    [Commands.listPlaylist]: ListPlaylistOptions;
 }
 
 export type CommandOptions = CommandOptionsList[CommandName];

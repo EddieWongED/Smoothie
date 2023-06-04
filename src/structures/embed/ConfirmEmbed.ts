@@ -1,11 +1,8 @@
-import { EmbedBuilder } from "@discordjs/builders";
 import type { BaseMessageOptions } from "discord.js";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { AttachmentBuilder } from "discord.js";
-import type {
-    ConfirmEmbedArgs,
-    EmbedArgs,
-} from "../../typings/structures/embed/Embed.js";
+import type { ConfirmEmbedArgs } from "../../typings/structures/embed/Embed.js";
+import BasicEmbed from "./BasicEmbed.js";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class ConfirmEmbed {
@@ -15,14 +12,17 @@ export default class ConfirmEmbed {
     static create({
         title,
         description,
+        footer,
     }: ConfirmEmbedArgs): BaseMessageOptions {
         // Create file
         const file = new AttachmentBuilder("./icons/mipmap-hdpi/smoothie.png");
 
         // Create Embed
-        const embed = this._createBasicEmbed({
+        const embed = BasicEmbed.create({
             title: title,
             description: description,
+            footer: footer,
+            color: 0xcf000f,
         });
 
         // Create Component
@@ -46,28 +46,5 @@ export default class ConfirmEmbed {
             files: [file],
             components: [row],
         };
-    }
-
-    private static _createBasicEmbed({
-        title,
-        description,
-    }: EmbedArgs): EmbedBuilder {
-        if (title.length > 256) {
-            title = title.substring(0, 253) + "...";
-        }
-
-        if (description.length > 4096) {
-            description = description.substring(0, 4093) + "...";
-        }
-
-        return new EmbedBuilder()
-            .setTitle(title)
-            .setDescription(description)
-            .setTimestamp()
-            .setColor(0xcf000f)
-            .setFooter({
-                text: "Smoothie",
-                iconURL: "attachment://smoothie.png",
-            });
     }
 }

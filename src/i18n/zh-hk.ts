@@ -27,6 +27,7 @@ const zh_hk: InternationalizationList = {
     removePlaylistSuccessMessage: "成功移除了 `%ARG%` 播放清單。",
     confirmRemovePlaylistMessage: "您確定要移除 `%ARG%` 播放清單嗎？",
     cancelRemovePlaylistSuccessMessage: "成功取消移除 `%ARG%` 播放清單。",
+    listPlaylistFailedMessage: "無法列出所有播放清單。",
 
     // Error message
     noSuchCommandMessage: "沒有 `%ARG%` 這個指令。",
@@ -38,14 +39,22 @@ const zh_hk: InternationalizationList = {
     notInVoiceChannelMessage: "您不在任何一個語音頻道中！",
     playlistAlreadyExistMessage: "播放清單 `%ARG%` 已存在！",
     playlistDoesNotExistMessage: "播放清單 `%ARG%` 不存在！",
+    noPlaylistMessage: "您沒有任何播放清單！",
+    noItemInListMessage: "列表中沒有物件！",
+    choosePageNotIntegerMessage: "您輸入的信息不是一個整數！請點擊再次按鈕！",
+    choosePageNotWithinRangeMessage: "您輸入的整數不在範圍內！請點擊再次按鈕！",
 
     // Others
     successTitle: "成功！",
     errorTitle: "錯誤...",
     confirmTitle: "您確定嗎？",
+    confirmFooter: "您有 %ARG% 分鐘的時間來決定",
     cancelSuccessTitle: "取消成功！",
     loadingCommandTitle: "載入中...",
     loadingCommandMessage: "正在載入 `%ARG%` 指令...",
+    choosePageTitle: "請輸入您想跳轉到的頁面",
+    choosePageMessage: "範圍為 1 - %ARG%。你有一分鐘的時間來回應。",
+    buttonDisableTimeFooter: "閒置 %ARG% 分鐘後按鈕將會停用",
 };
 
 export default zh_hk;

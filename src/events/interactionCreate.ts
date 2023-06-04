@@ -4,7 +4,6 @@ import GuildDataHandler from "../structures/database/GuildDataHandler.js";
 import GuildStatesHandler from "../structures/database/GuildStatesHandler.js";
 import { SmoothieEvent } from "../structures/events/SmoothieEvent.js";
 import type { SlashCommandPayload } from "../typings/structures/commands/SmoothieCommand.js";
-import Logging from "../structures/logging/Logging.js";
 
 export default new SmoothieEvent(
     Events.InteractionCreate,
@@ -29,8 +28,6 @@ export default new SmoothieEvent(
                 guildData,
                 guildStates
             );
-        } else if (interaction.isButton()) {
-            Logging.info("A button is pressed.");
         }
         return;
     }

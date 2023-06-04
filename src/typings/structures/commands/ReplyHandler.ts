@@ -8,4 +8,17 @@ export interface ReplyArgs {
     descriptionArgs?: string[];
 }
 
+export type FollowUpArgs = { willEdit?: boolean } & ReplyArgs;
+
+export type SendArgs = { willEdit?: boolean } & ReplyArgs;
+
+export type QueryArgs = { userId?: string } & ReplyArgs;
+
 export type LevelReplyArgs = { level: LoggingLevel } & ReplyArgs;
+
+export interface ListReplyArgs {
+    title: Internationalization;
+    list: string[];
+    titleArgs?: string[];
+    itemsPerPage?: number;
+}

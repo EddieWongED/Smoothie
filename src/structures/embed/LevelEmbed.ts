@@ -1,11 +1,11 @@
-import { EmbedBuilder } from "@discordjs/builders";
 import type { BaseMessageOptions } from "discord.js";
 import { AttachmentBuilder } from "discord.js";
 import type { LoggingLevel } from "../../typings/structures/logging/Logging.js";
 import type {
-    EmbedArgs,
+    BasicEmbedArgs,
     LevelEmbedArgs,
 } from "../../typings/structures/embed/Embed.js";
+import BasicEmbed from "./BasicEmbed.js";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class LevelEmbed {
@@ -19,15 +19,16 @@ export default class LevelEmbed {
 
         // Create Embed
         title = this._getPrefixedTitle(level, title);
-        const embed = this._createBasicEmbed({
+        const embed = BasicEmbed.create({
             title: title,
             description: description,
-        }).setColor(this._getColor(level));
+            color: this._getColor(level),
+        });
 
         return { embeds: [embed], files: [file] };
     }
 
-    static info({ title, description }: EmbedArgs): BaseMessageOptions {
+    static info({ title, description }: BasicEmbedArgs): BaseMessageOptions {
         return this.create({
             level: "info",
             title: title,
@@ -35,7 +36,7 @@ export default class LevelEmbed {
         });
     }
 
-    static success({ title, description }: EmbedArgs): BaseMessageOptions {
+    static success({ title, description }: BasicEmbedArgs): BaseMessageOptions {
         return this.create({
             level: "success",
             title: title,
@@ -43,7 +44,7 @@ export default class LevelEmbed {
         });
     }
 
-    static warn({ title, description }: EmbedArgs): BaseMessageOptions {
+    static warn({ title, description }: BasicEmbedArgs): BaseMessageOptions {
         return this.create({
             level: "warn",
             title: title,
@@ -51,7 +52,7 @@ export default class LevelEmbed {
         });
     }
 
-    static error({ title, description }: EmbedArgs): BaseMessageOptions {
+    static error({ title, description }: BasicEmbedArgs): BaseMessageOptions {
         return this.create({
             level: "error",
             title: title,
@@ -70,28 +71,6 @@ export default class LevelEmbed {
             case "error":
                 return 0xcf000f;
         }
-    }
-
-    private static _createBasicEmbed({
-        title,
-        description,
-    }: EmbedArgs): EmbedBuilder {
-        if (title.length > 256) {
-            title = title.substring(0, 253) + "...";
-        }
-
-        if (description.length > 4096) {
-            description = description.substring(0, 4093) + "...";
-        }
-
-        return new EmbedBuilder()
-            .setTitle(title)
-            .setDescription(description)
-            .setTimestamp()
-            .setFooter({
-                text: "Smoothie",
-                iconURL: "attachment://smoothie.png",
-            });
     }
 
     private static _getPrefixedTitle(level: LoggingLevel, title: string) {

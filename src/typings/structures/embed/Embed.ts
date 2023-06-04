@@ -1,13 +1,21 @@
-import type { CommandPayload } from "../commands/SmoothieCommand.js";
+import type { RGBTuple } from "discord.js";
 import type { LoggingLevel } from "../logging/Logging.js";
 
-export interface EmbedArgs {
+export interface BasicEmbedArgs {
     title: string;
     description: string;
+    footer?: string;
+    color?: number | RGBTuple;
 }
 
-export type LevelEmbedArgs = EmbedArgs & { level: LoggingLevel };
+export type LevelEmbedArgs = BasicEmbedArgs & { level: LoggingLevel };
 
-export type ConfirmEmbedArgs = EmbedArgs & {
-    payload: CommandPayload;
-};
+export type ConfirmEmbedArgs = BasicEmbedArgs & { footer: string };
+
+export interface PaginationEmbedArgs {
+    title: string;
+    list: string[];
+    page: number;
+    footer: string;
+    itemsPerPage?: number;
+}

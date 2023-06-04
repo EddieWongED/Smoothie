@@ -26,7 +26,13 @@ export class CommandHandler {
             // Create reply handler
             const language =
                 (await guildData.get("language")) ?? defaultLanguage;
-            const reply = new ReplyHandler(interaction, language);
+            const textChannelId =
+                (await guildStates.get("textChannelId")) ?? null;
+            const reply = new ReplyHandler(
+                interaction,
+                language,
+                textChannelId
+            );
             await reply.info({
                 title: "loadingCommandTitle",
                 description: "loadingCommandMessage",
@@ -92,7 +98,9 @@ export class CommandHandler {
             // Create reply handler
             const language =
                 (await guildData.get("language")) ?? defaultLanguage;
-            const reply = new ReplyHandler(message, language);
+            const textChannelId =
+                (await guildStates.get("textChannelId")) ?? null;
+            const reply = new ReplyHandler(message, language, textChannelId);
             await reply.info({
                 title: "loadingCommandTitle",
                 description: "loadingCommandMessage",
