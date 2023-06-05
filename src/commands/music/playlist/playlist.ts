@@ -3,10 +3,10 @@ import type {
     ApplicationCommandStringOption,
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
-import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
-import type { Command } from "../../typings/structures/commands/SmoothieCommand.js";
-import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
-import { client } from "../../index.js";
+import { SmoothieCommand } from "../../../structures/commands/SmoothieCommand.js";
+import type { Command } from "../../../typings/structures/commands/SmoothieCommand.js";
+import { Commands } from "../../../typings/structures/commands/SmoothieCommand.js";
+import { client } from "../../../index.js";
 
 const actionOption: ApplicationCommandStringOption = {
     name: "action",

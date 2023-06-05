@@ -6,7 +6,6 @@ import { ApplicationCommandOptionType } from "discord.js";
 import { defaultLanguage } from "../../i18n/i18n.js";
 import { client } from "../../index.js";
 import type {
-    CommandOptions,
     MessageCommandPayload,
     SlashCommandPayload,
 } from "../../typings/structures/commands/SmoothieCommand.js";
@@ -67,7 +66,7 @@ export class CommandHandler {
 
             await command.run({
                 payload: interaction,
-                options: options as CommandOptions,
+                options: options,
                 guildData: guildData,
                 guildStates: guildStates,
                 reply: reply,
@@ -277,7 +276,7 @@ export class CommandHandler {
 
             await command.run({
                 payload: message,
-                options: options as CommandOptions,
+                options: options,
                 guildData: guildData,
                 guildStates: guildStates,
                 reply: reply,

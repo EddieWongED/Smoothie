@@ -26,13 +26,6 @@ void (async () => {
     for (const path of paths) {
         const command = await importDefault<Command>(path);
         if (!command) break;
-        if (command.aliases) {
-            for (const alias of command.aliases) {
-                const aliasCommand = Object.assign({}, command);
-                aliasCommand.name = alias;
-                commands.push(aliasCommand);
-            }
-        }
         commands.push(command);
     }
 
