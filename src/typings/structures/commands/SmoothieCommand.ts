@@ -12,12 +12,12 @@ import type PingOptions from "../../commands/general/PingOptions.js";
 import type PrefixOptions from "../../commands/general/PrefixOptions.js";
 import type JoinOptions from "../../commands/music/JoinOptions.js";
 import type LeaveOptions from "../../commands/music/LeaveOptions.js";
-import type CreatePlaylistOptions from "../../commands/music/CreatePlaylistOptions.js";
+import type CreatePlaylistOptions from "../../commands/music/playlist/CreatePlaylistOptions.js";
 import type GuildStatesHandler from "../../../structures/database/GuildStatesHandler.js";
-import type RemovePlaylistOptions from "../../commands/music/RemovePlaylistOptions.js";
+import type RemovePlaylistOptions from "../../commands/music/playlist/RemovePlaylistOptions.js";
 import type TestOptions from "../../commands/dev/TestOptions.js";
-import type ListPlaylistOptions from "../../commands/music/ListPlaylistOptions.js";
-import type PlaylistOptions from "../../commands/music/PlaylistOptions.js";
+import type ListPlaylistOptions from "../../commands/music/playlist/ListPlaylistOptions.js";
+import type PlaylistOptions from "../../commands/music/playlist/PlaylistOptions.js";
 
 // Payload
 export type SlashCommandPayload = ChatInputCommandInteraction & {
@@ -60,8 +60,6 @@ interface CommandOptionsList {
     [Commands.removePlaylist]: RemovePlaylistOptions;
     [Commands.listPlaylist]: ListPlaylistOptions;
 }
-
-export type CommandOptions = CommandOptionsList[CommandName];
 
 // Command
 export type CommandName = keyof CommandOptionsList;

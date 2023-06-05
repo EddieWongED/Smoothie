@@ -1,5 +1,5 @@
-import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
-import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
+import { SmoothieCommand } from "../../../structures/commands/SmoothieCommand.js";
+import { Commands } from "../../../typings/structures/commands/SmoothieCommand.js";
 
 export default new SmoothieCommand(Commands.listPlaylist, {
     name: Commands.listPlaylist,

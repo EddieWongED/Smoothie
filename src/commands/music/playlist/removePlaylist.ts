@@ -3,8 +3,8 @@ import type {
     ApplicationCommandStringOption,
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
-import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
-import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
+import { SmoothieCommand } from "../../../structures/commands/SmoothieCommand.js";
+import { Commands } from "../../../typings/structures/commands/SmoothieCommand.js";
 
 const nameOption: ApplicationCommandStringOption = {
     name: "name",
