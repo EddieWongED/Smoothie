@@ -66,6 +66,7 @@ export interface InternationalizationList {
     createdAtField: string;
     numberOfSongsField: string;
     topFiveSongsField: string;
+    totalDurationField: string;
 }
 
 export enum Languages {

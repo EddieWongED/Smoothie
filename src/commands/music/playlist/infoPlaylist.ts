@@ -7,6 +7,7 @@ import { SmoothieCommand } from "../../../structures/commands/SmoothieCommand.js
 import { Commands } from "../../../typings/structures/commands/SmoothieCommand.js";
 import { defaultLanguage, getLocale } from "../../../i18n/i18n.js";
 import BasicEmbed from "../../../structures/embed/BasicEmbed.js";
+import formatTime from "../../../utils/formatTime.js";
 
 const nameOption: ApplicationCommandStringOption = {
     name: "name",
@@ -99,6 +100,15 @@ export default new SmoothieCommand(Commands.infoPlaylist, {
                 {
                     name: getLocale(language, "numberOfSongsField"),
                     value: playlist.queue.length.toString(),
+                    inline: true,
+                },
+                {
+                    name: getLocale(language, "totalDurationField"),
+                    value: formatTime(
+                        playlist.queue
+                            .map((song) => song.duration)
+                            .reduce((a, b) => a + b, 0)
+                    ),
                     inline: true,
                 },
                 {

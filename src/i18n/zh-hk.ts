@@ -69,6 +69,7 @@ const zh_hk: InternationalizationList = {
     createdAtField: "創建於",
     numberOfSongsField: "歌曲數量",
     topFiveSongsField: "最常聽的五首歌曲",
+    totalDurationField: "總時長",
 };
 
 export default zh_hk;
