@@ -1,6 +1,5 @@
 import type { BaseMessageOptions } from "discord.js";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
-import { AttachmentBuilder } from "discord.js";
 import type { ConfirmEmbedArgs } from "../../typings/structures/embed/Embed.js";
 import BasicEmbed from "./BasicEmbed.js";
 
@@ -11,12 +10,9 @@ export default class ConfirmEmbed {
 
     static create({
         title,
-        description,
+        description = null,
         footer,
     }: ConfirmEmbedArgs): BaseMessageOptions {
-        // Create file
-        const file = new AttachmentBuilder("./icons/mipmap-hdpi/smoothie.png");
-
         // Create Embed
         const embed = BasicEmbed.create({
             title: title,
@@ -41,10 +37,8 @@ export default class ConfirmEmbed {
             confirmButton
         );
 
-        return {
-            embeds: [embed],
-            files: [file],
-            components: [row],
-        };
+        embed.components = [row];
+
+        return embed;
     }
 }

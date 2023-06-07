@@ -1,11 +1,12 @@
-import type { RGBTuple } from "discord.js";
+import type { APIEmbedField, RGBTuple } from "discord.js";
 import type { LoggingLevel } from "../logging/Logging.js";
 
 export interface BasicEmbedArgs {
     title: string;
-    description: string;
+    description?: string | null;
     footer?: string;
     color?: number | RGBTuple;
+    fields?: APIEmbedField[];
 }
 
 export type LevelEmbedArgs = BasicEmbedArgs & { level: LoggingLevel };

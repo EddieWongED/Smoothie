@@ -17,7 +17,7 @@ const languages: LanguageList = {
 export function getLocale(
     language: Language,
     message: Internationalization,
-    args: string[]
+    args: string[] = []
 ): string {
     const locale = languages[language][message];
     const noOfArgsNeeded = (locale.match(/%ARG%/g) ?? []).length;
