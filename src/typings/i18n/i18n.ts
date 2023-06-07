@@ -30,6 +30,8 @@ export interface InternationalizationList {
     currentInfoPlaylistFailedMessage: string;
     switchPlaylistFailedMessage: string;
     switchPlaylistSuccessMessage: string;
+    playFailedMessage: string;
+    playSuccessMessage: string;
 
     // Error message
     noSuchCommandMessage: string;
@@ -47,6 +49,7 @@ export interface InternationalizationList {
     choosePageNotIntegerMessage: string;
     choosePageNotWithinRangeMessage: string;
     noSonginPlaylistMessage: string;
+    invalidYouTubeURLMessage: string;
 
     // Others
     successTitle: string;

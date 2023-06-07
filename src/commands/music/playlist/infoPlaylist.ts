@@ -80,7 +80,7 @@ export default new SmoothieCommand(Commands.infoPlaylist, {
                 return song2.playCount - song1.playCount;
             })
             .slice(0, 5)
-            .map((song, i) => `${i}. ${song.title}`);
+            .map((song, i) => `${i + 1}. ${song.title} [${song.playCount}]`);
 
         const topFivePlayedSongsString = topFivePlayedSongs.length
             ? `\`\`\`md\n${topFivePlayedSongs.join("\n")}\n\`\`\``

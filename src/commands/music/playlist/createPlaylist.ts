@@ -44,11 +44,7 @@ export default new SmoothieCommand(Commands.createPlaylist, {
         }
 
         // Check if the playlist already exists
-        if (
-            !playlists.every((playlist) => {
-                return playlist.name !== name;
-            })
-        ) {
+        if (!playlists.every((playlist) => playlist.name !== name)) {
             await reply.error({
                 title: "errorTitle",
                 description: "playlistAlreadyExistMessage",

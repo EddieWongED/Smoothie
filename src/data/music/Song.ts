@@ -12,4 +12,7 @@ export class Song {
 
     @prop({ required: true, default: 0 })
     public playCount!: number;
+
+    @prop({ required: true, default: 0 })
+    public duration!: number;
 }
