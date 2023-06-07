@@ -79,6 +79,7 @@ const en: InternationalizationList = {
     createdAtField: "Created At",
     numberOfSongsField: "Number of Song(s)",
     topFiveSongsField: "Top 5 Most Listened Songs",
+    totalDurationField: "Total Duration",
 };
 
 export default en;
