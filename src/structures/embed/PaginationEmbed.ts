@@ -1,6 +1,5 @@
 import type { BaseMessageOptions } from "discord.js";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
-import { AttachmentBuilder } from "discord.js";
 import type { PaginationEmbedArgs } from "../../typings/structures/embed/Embed.js";
 import LevelEmbed from "./LevelEmbed.js";
 import BasicEmbed from "./BasicEmbed.js";
@@ -25,9 +24,6 @@ export default class PaginationEmbed {
                 description: "noItemInListMessage",
             });
         }
-
-        // Create file
-        const file = new AttachmentBuilder("./icons/mipmap-hdpi/smoothie.png");
 
         const maxPage = Math.ceil(list.length / itemsPerPage);
 
@@ -85,10 +81,7 @@ export default class PaginationEmbed {
             choosePageButton
         );
 
-        return {
-            embeds: [embed],
-            files: [file],
-            components: [row],
-        };
+        embed.components = [row];
+        return embed;
     }
 }

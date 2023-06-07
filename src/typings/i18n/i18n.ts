@@ -26,6 +26,10 @@ export interface InternationalizationList {
     confirmRemovePlaylistMessage: string;
     cancelRemovePlaylistSuccessMessage: string;
     listPlaylistFailedMessage: string;
+    infoPlaylistFailedMessage: string;
+    currentInfoPlaylistFailedMessage: string;
+    switchPlaylistFailedMessage: string;
+    switchPlaylistSuccessMessage: string;
 
     // Error message
     noSuchCommandMessage: string;
@@ -42,6 +46,7 @@ export interface InternationalizationList {
     noItemInListMessage: string;
     choosePageNotIntegerMessage: string;
     choosePageNotWithinRangeMessage: string;
+    noSonginPlaylistMessage: string;
 
     // Others
     successTitle: string;
@@ -55,6 +60,9 @@ export interface InternationalizationList {
     choosePageTitle: string;
     choosePageMessage: string;
     buttonDisableTimeFooter: string;
+    createdAtField: string;
+    numberOfSongsField: string;
+    topFiveSongsField: string;
 }
 
 export enum Languages {

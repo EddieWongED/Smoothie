@@ -31,6 +31,11 @@ const en: InternationalizationList = {
     cancelRemovePlaylistSuccessMessage:
         "Cancel removing `%ARG%` playlist successfully.",
     listPlaylistFailedMessage: "Failed to list all the playlists.",
+    infoPlaylistFailedMessage: "Failed to show the info of `%ARG%` playlist.",
+    currentInfoPlaylistFailedMessage:
+        "Failed to show the info of current playlist.",
+    switchPlaylistFailedMessage: "Failed to switch to `%ARG%` playlist.",
+    switchPlaylistSuccessMessage: "Switch to `%ARG%` playlist successfully.",
 
     // Error message
     noSuchCommandMessage: "There is no `%ARG%` command.",
@@ -52,6 +57,7 @@ const en: InternationalizationList = {
         "The message you typed is not a integer! Please click the button and try again!",
     choosePageNotWithinRangeMessage:
         "The integer you typed is not within the range! Please click the button and try again!",
+    noSonginPlaylistMessage: "You don't have any songs in the playlist!",
 
     // Others
     successTitle: "Success!",
@@ -66,6 +72,9 @@ const en: InternationalizationList = {
     choosePageMessage: "Range: 1 - %ARG%. You have a minute to respond.",
     buttonDisableTimeFooter:
         "Button will be disabled after idling for %ARG% minute(s)",
+    createdAtField: "Created At",
+    numberOfSongsField: "Number of Song(s)",
+    topFiveSongsField: "Top 5 Most Listened Songs",
 };
 
 export default en;

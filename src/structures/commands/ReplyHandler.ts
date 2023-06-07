@@ -58,7 +58,7 @@ export default class ReplyHandler {
             title: titleString,
             description: descriptionString,
         });
-        return this._reply(embed);
+        return this.reply(embed);
     }
 
     async success({
@@ -78,7 +78,7 @@ export default class ReplyHandler {
             title: titleString,
             description: descriptionString,
         });
-        return this._reply(embed);
+        return this.reply(embed);
     }
 
     async warn({
@@ -98,7 +98,7 @@ export default class ReplyHandler {
             title: titleString,
             description: descriptionString,
         });
-        return this._reply(embed);
+        return this.reply(embed);
     }
 
     async error({
@@ -118,7 +118,7 @@ export default class ReplyHandler {
             title: titleString,
             description: descriptionString,
         });
-        return this._reply(embed);
+        return this.reply(embed);
     }
 
     async infoFollowUp({
@@ -139,7 +139,7 @@ export default class ReplyHandler {
             title: titleString,
             description: descriptionString,
         });
-        return this._followUp(embed, willEdit);
+        return this.followUp(embed, willEdit);
     }
 
     async successFollowUp({
@@ -160,7 +160,7 @@ export default class ReplyHandler {
             title: titleString,
             description: descriptionString,
         });
-        return this._followUp(embed, willEdit);
+        return this.followUp(embed, willEdit);
     }
 
     async warnFollowUp({
@@ -181,7 +181,7 @@ export default class ReplyHandler {
             title: titleString,
             description: descriptionString,
         });
-        return this._followUp(embed, willEdit);
+        return this.followUp(embed, willEdit);
     }
 
     async errorFollowUp({
@@ -202,7 +202,7 @@ export default class ReplyHandler {
             title: titleString,
             description: descriptionString,
         });
-        return this._followUp(embed, willEdit);
+        return this.followUp(embed, willEdit);
     }
 
     async infoSend({
@@ -223,7 +223,7 @@ export default class ReplyHandler {
             title: titleString,
             description: descriptionString,
         });
-        return this._send(embed, willEdit);
+        return this.send(embed, willEdit);
     }
 
     async successSend({
@@ -244,7 +244,7 @@ export default class ReplyHandler {
             title: titleString,
             description: descriptionString,
         });
-        return this._send(embed, willEdit);
+        return this.send(embed, willEdit);
     }
 
     async warnSend({
@@ -265,7 +265,7 @@ export default class ReplyHandler {
             title: titleString,
             description: descriptionString,
         });
-        return this._send(embed, willEdit);
+        return this.send(embed, willEdit);
     }
 
     async errorSend({
@@ -286,7 +286,7 @@ export default class ReplyHandler {
             title: titleString,
             description: descriptionString,
         });
-        return this._send(embed, willEdit);
+        return this.send(embed, willEdit);
     }
 
     async confirm({
@@ -309,7 +309,7 @@ export default class ReplyHandler {
             description: descriptionString,
             footer: footerString,
         });
-        const payload = await this._followUp(embed, false);
+        const payload = await this.followUp(embed, false);
 
         try {
             const choice = await payload.awaitMessageComponent({
@@ -384,7 +384,7 @@ export default class ReplyHandler {
             footer: footerString,
             itemsPerPage: itemsPerPage,
         });
-        const payload = await this._reply(embed);
+        const payload = await this.reply(embed);
 
         const collector = payload.channel.createMessageComponentCollector({
             filter: (interaction) => interaction.message.id === payload.id,
@@ -450,7 +450,7 @@ export default class ReplyHandler {
                 footer: footerString,
                 itemsPerPage: itemsPerPage,
             });
-            await this._reply(embed);
+            await this.reply(embed);
         });
 
         collector.on("end", async () => {
@@ -468,11 +468,11 @@ export default class ReplyHandler {
                     button.setDisabled(true);
                 });
             });
-            await this._reply(embed);
+            await this.reply(embed);
         });
     }
 
-    private async _reply(embed: BaseMessageOptions) {
+    async reply(embed: BaseMessageOptions) {
         if (this._isEditable) {
             return this._edit(embed);
         }
@@ -507,7 +507,7 @@ export default class ReplyHandler {
         return payload;
     }
 
-    private async _followUp(embed: BaseMessageOptions, willEdit = true) {
+    async followUp(embed: BaseMessageOptions, willEdit = true) {
         let payload: MessageCommandPayload;
         switch (this._currentPayload.payloadType) {
             case "slash": {
@@ -530,7 +530,7 @@ export default class ReplyHandler {
         return payload;
     }
 
-    private async _send(embed: BaseMessageOptions, willEdit = true) {
+    async send(embed: BaseMessageOptions, willEdit = true) {
         if (!this.textChannelId) {
             Logging.warn(
                 createGuildPrefix(this._guildId),

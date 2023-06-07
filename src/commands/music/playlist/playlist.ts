@@ -14,16 +14,19 @@ const actionOption: ApplicationCommandStringOption = {
     choices: [
         { name: "remove", value: "remove" },
         { name: "create", value: "create" },
+        { name: "info", value: "info" },
+        { name: "switch", value: "switch" },
         { name: "list", value: "list" },
     ],
-    description: "Action to be performed",
+    description: "Action to be performed.",
     required: true,
 };
 
 const nameOption: ApplicationCommandStringOption = {
     name: "name",
     type: ApplicationCommandOptionType.String,
-    description: "The name of the playlist to be removed / created / shown.",
+    description:
+        "The name of the playlist to be removed / created / shown / switched to.",
     required: false,
 };
 
@@ -34,7 +37,7 @@ export const playlistOptions: ApplicationCommandOptionData[] = [
 
 export default new SmoothieCommand(Commands.playlist, {
     name: Commands.playlist,
-    description: "Remove / Create / Show / List playlist.",
+    description: "Remove / Create / Show / Switch to / List / playlist.",
     options: playlistOptions,
     run: async ({ reply, guildData, guildStates, options, payload }) => {
         const { action, name } = options;
@@ -44,12 +47,20 @@ export default new SmoothieCommand(Commands.playlist, {
 
         let command: Command | undefined;
         switch (action) {
+            case "remove": {
+                command = client.commands.get(Commands.removePlaylist);
+                break;
+            }
             case "create": {
                 command = client.commands.get(Commands.createPlaylist);
                 break;
             }
-            case "remove": {
-                command = client.commands.get(Commands.removePlaylist);
+            case "info": {
+                command = client.commands.get(Commands.infoPlaylist);
+                break;
+            }
+            case "switch": {
+                command = client.commands.get(Commands.switchPlaylist);
                 break;
             }
             case "list": {

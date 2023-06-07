@@ -1,4 +1,4 @@
 export default interface PlaylistOptions {
-    action: "create" | "remove" | "list";
+    action: "remove" | "create" | "info" | "switch" | "list";
     name?: string;
 }

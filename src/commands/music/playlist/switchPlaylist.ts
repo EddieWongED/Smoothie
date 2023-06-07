@@ -9,19 +9,18 @@ import { Commands } from "../../../typings/structures/commands/SmoothieCommand.j
 const nameOption: ApplicationCommandStringOption = {
     name: "name",
     type: ApplicationCommandOptionType.String,
-    description: "The name of the playlist to be removed.",
+    description: "The name of the playlist you want to switch to.",
     required: true,
 };
 
-export const removePlaylistOptions: ApplicationCommandOptionData[] = [
+export const switchPlaylistOptions: ApplicationCommandOptionData[] = [
     nameOption,
 ];
 
-export default new SmoothieCommand(Commands.removePlaylist, {
-    name: Commands.removePlaylist,
-    aliases: ["deleteplaylist"],
-    description: "Remove a playlist.",
-    options: removePlaylistOptions,
+export default new SmoothieCommand(Commands.switchPlaylist, {
+    name: Commands.switchPlaylist,
+    description: "Switch to another playlist.",
+    options: switchPlaylistOptions,
     run: async ({ options, reply, guildData, guildStates }) => {
         const { name } = options;
         // Check if name is empty or not
@@ -37,7 +36,7 @@ export default new SmoothieCommand(Commands.removePlaylist, {
         if (!playlists) {
             await reply.error({
                 title: "errorTitle",
-                description: "removePlaylistFailedMessage",
+                description: "switchPlaylistFailedMessage",
                 descriptionArgs: [name],
             });
             return;
@@ -57,52 +56,22 @@ export default new SmoothieCommand(Commands.removePlaylist, {
             return;
         }
 
-        // Confirm removing the playlist
-        if (
-            !(await reply.confirm({
-                title: "confirmTitle",
-                description: "confirmRemovePlaylistMessage",
-                descriptionArgs: [name],
-            }))
-        ) {
+        // Update database
+        const newStates = await guildStates.update("currentPlaylistName", name);
+
+        if (newStates && newStates.currentPlaylistName === name) {
             await reply.success({
-                title: "cancelSuccessTitle",
-                description: "cancelRemovePlaylistSuccessMessage",
+                title: "successTitle",
+                description: "switchPlaylistSuccessMessage",
                 descriptionArgs: [name],
             });
-            return;
-        }
-
-        // Remove playlist
-        const filteredPlaylists = playlists.filter((playlist) => {
-            return playlist.name !== name;
-        });
-
-        // Check if the playlist is removed
-        if (filteredPlaylists.length === playlists.length) {
+        } else {
             await reply.error({
                 title: "errorTitle",
-                description: "removePlaylistFailedMessage",
+                description: "switchPlaylistFailedMessage",
                 descriptionArgs: [name],
             });
-            return;
         }
-
-        // Update database
-        await guildData.update("playlists", filteredPlaylists);
-
-        const firstPlaylist = filteredPlaylists[0];
-
-        await guildStates.update(
-            "currentPlaylistName",
-            firstPlaylist ? firstPlaylist.name : null
-        );
-
-        await reply.success({
-            title: "successTitle",
-            description: "removePlaylistSuccessMessage",
-            descriptionArgs: [name],
-        });
 
         return;
     },

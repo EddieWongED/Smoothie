@@ -4,7 +4,7 @@ export class Song {
     @prop({ required: true })
     public title!: string;
 
-    @prop({ required: true })
+    @prop({ required: true, default: new Date() })
     public addedAt!: Date;
 
     @prop({ required: true })

@@ -18,6 +18,8 @@ import type RemovePlaylistOptions from "../../commands/music/playlist/RemovePlay
 import type TestOptions from "../../commands/dev/TestOptions.js";
 import type ListPlaylistOptions from "../../commands/music/playlist/ListPlaylistOptions.js";
 import type PlaylistOptions from "../../commands/music/playlist/PlaylistOptions.js";
+import type InfoPlaylistOptions from "../../commands/music/playlist/InfoPlaylistOptions.js";
+import type SwitchPlaylistOptions from "../../commands/music/playlist/SwitchPlaylistOptions.js";
 
 // Payload
 export type SlashCommandPayload = ChatInputCommandInteraction & {
@@ -44,6 +46,8 @@ export enum Commands {
     createPlaylist = "createplaylist",
     removePlaylist = "removeplaylist",
     listPlaylist = "listplaylist",
+    infoPlaylist = "infoplaylist",
+    switchPlaylist = "switchplaylist",
 }
 
 /** Update when adding new command **/
@@ -59,6 +63,8 @@ interface CommandOptionsList {
     [Commands.createPlaylist]: CreatePlaylistOptions;
     [Commands.removePlaylist]: RemovePlaylistOptions;
     [Commands.listPlaylist]: ListPlaylistOptions;
+    [Commands.infoPlaylist]: InfoPlaylistOptions;
+    [Commands.switchPlaylist]: SwitchPlaylistOptions;
 }
 
 // Command

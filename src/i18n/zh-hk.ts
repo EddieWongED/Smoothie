@@ -28,6 +28,10 @@ const zh_hk: InternationalizationList = {
     confirmRemovePlaylistMessage: "您確定要移除 `%ARG%` 播放清單嗎？",
     cancelRemovePlaylistSuccessMessage: "成功取消移除 `%ARG%` 播放清單。",
     listPlaylistFailedMessage: "無法列出所有播放清單。",
+    infoPlaylistFailedMessage: "無法顯示 `%ARG%` 播放清單的信息。",
+    currentInfoPlaylistFailedMessage: "無法顯示播放中的播放清單的信息。",
+    switchPlaylistFailedMessage: "無法切換到 `%ARG%` 播放清單。",
+    switchPlaylistSuccessMessage: "成功切換到 `%ARG%` 播放清單。",
 
     // Error message
     noSuchCommandMessage: "沒有 `%ARG%` 這個指令。",
@@ -44,6 +48,7 @@ const zh_hk: InternationalizationList = {
     noItemInListMessage: "列表中沒有物件！",
     choosePageNotIntegerMessage: "您輸入的信息不是一個整數！請再次點擊按鈕！",
     choosePageNotWithinRangeMessage: "您輸入的整數不在範圍內！請再次點擊按鈕！",
+    noSonginPlaylistMessage: "您的播放清單中沒有任何歌曲！",
 
     // Others
     successTitle: "成功！",
@@ -57,6 +62,9 @@ const zh_hk: InternationalizationList = {
     choosePageTitle: "請輸入您想跳轉到的頁面",
     choosePageMessage: "範圍為 1 - %ARG%。你有一分鐘的時間來回應。",
     buttonDisableTimeFooter: "閒置 %ARG% 分鐘後按鈕將會停用",
+    createdAtField: "創建於",
+    numberOfSongsField: "歌曲數量",
+    topFiveSongsField: "最常聽的五首歌曲",
 };
 
 export default zh_hk;

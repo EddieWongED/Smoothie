@@ -1,5 +1,4 @@
 import type { BaseMessageOptions } from "discord.js";
-import { AttachmentBuilder } from "discord.js";
 import type { LoggingLevel } from "../../typings/structures/logging/Logging.js";
 import type {
     BasicEmbedArgs,
@@ -12,11 +11,8 @@ export default class LevelEmbed {
     static create({
         level,
         title,
-        description,
+        description = null,
     }: LevelEmbedArgs): BaseMessageOptions {
-        // Create File
-        const file = new AttachmentBuilder("./icons/mipmap-hdpi/smoothie.png");
-
         // Create Embed
         title = this._getPrefixedTitle(level, title);
         const embed = BasicEmbed.create({
@@ -25,10 +21,13 @@ export default class LevelEmbed {
             color: this._getColor(level),
         });
 
-        return { embeds: [embed], files: [file] };
+        return embed;
     }
 
-    static info({ title, description }: BasicEmbedArgs): BaseMessageOptions {
+    static info({
+        title,
+        description = null,
+    }: BasicEmbedArgs): BaseMessageOptions {
         return this.create({
             level: "info",
             title: title,
@@ -36,7 +35,10 @@ export default class LevelEmbed {
         });
     }
 
-    static success({ title, description }: BasicEmbedArgs): BaseMessageOptions {
+    static success({
+        title,
+        description = null,
+    }: BasicEmbedArgs): BaseMessageOptions {
         return this.create({
             level: "success",
             title: title,
@@ -44,7 +46,10 @@ export default class LevelEmbed {
         });
     }
 
-    static warn({ title, description }: BasicEmbedArgs): BaseMessageOptions {
+    static warn({
+        title,
+        description = null,
+    }: BasicEmbedArgs): BaseMessageOptions {
         return this.create({
             level: "warn",
             title: title,
@@ -52,7 +57,10 @@ export default class LevelEmbed {
         });
     }
 
-    static error({ title, description }: BasicEmbedArgs): BaseMessageOptions {
+    static error({
+        title,
+        description = null,
+    }: BasicEmbedArgs): BaseMessageOptions {
         return this.create({
             level: "error",
             title: title,

@@ -22,7 +22,7 @@ export default new SmoothieCommand(Commands.createPlaylist, {
     aliases: ["addplaylist"],
     description: "Create a new playlist.",
     options: createPlaylistOptions,
-    run: async ({ options, reply, guildData }) => {
+    run: async ({ options, reply, guildData, guildStates }) => {
         const { name } = options;
         // Check if name is empty or not
         if (name.length === 0) {
@@ -64,6 +64,14 @@ export default new SmoothieCommand(Commands.createPlaylist, {
             createdAt: new Date(),
         });
         await guildData.update("playlists", playlists);
+
+        if (playlists.length === 1) {
+            const firstPlaylist = playlists[0];
+            await guildStates.update(
+                "currentPlaylistName",
+                firstPlaylist ? firstPlaylist.name : null
+            );
+        }
 
         await reply.success({
             title: "successTitle",
