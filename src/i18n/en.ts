@@ -58,6 +58,10 @@ const en: InternationalizationList = {
     choosePageNotWithinRangeMessage:
         "The integer you typed is not within the range! Please click the button and try again!",
     noSonginPlaylistMessage: "You don't have any songs in the playlist!",
+    invalidYouTubeURLMessage: "Invalid YouTube URL!",
+    playFailedMessage: "Failed to play the song(s) with URL = `%ARG%`.",
+    playSuccessMessage:
+        "Added `%ARG%` new song(s) to the queue. `%ARG%` song(s) was/were already in the queue so they didn't get added.",
 
     // Others
     successTitle: "Success!",

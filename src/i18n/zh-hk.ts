@@ -32,6 +32,9 @@ const zh_hk: InternationalizationList = {
     currentInfoPlaylistFailedMessage: "無法顯示播放中的播放清單的信息。",
     switchPlaylistFailedMessage: "無法切換到 `%ARG%` 播放清單。",
     switchPlaylistSuccessMessage: "成功切換到 `%ARG%` 播放清單。",
+    playFailedMessage: "無法播放 URL = `%ARG%` 的音樂。",
+    playSuccessMessage:
+        "已將 `%ARG%` 首新歌曲添加到播放清單中。另外因為有 `%ARG%` 首歌曲已經在播放清單中，因此它們沒有被添加。",
 
     // Error message
     noSuchCommandMessage: "沒有 `%ARG%` 這個指令。",
@@ -49,6 +52,7 @@ const zh_hk: InternationalizationList = {
     choosePageNotIntegerMessage: "您輸入的信息不是一個整數！請再次點擊按鈕！",
     choosePageNotWithinRangeMessage: "您輸入的整數不在範圍內！請再次點擊按鈕！",
     noSonginPlaylistMessage: "您的播放清單中沒有任何歌曲！",
+    invalidYouTubeURLMessage: "無效的 YouTube URL！",
 
     // Others
     successTitle: "成功！",

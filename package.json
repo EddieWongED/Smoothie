@@ -43,6 +43,10 @@
         "dotenv": "^16.1.2",
         "glob": "^10.2.6",
         "json-colorizer": "^2.2.2",
-        "mongoose": "^7.2.2"
+        "mongoose": "^7.2.2",
+        "parse-url": "^8.1.0",
+        "play-dl": "^1.9.6",
+        "youtube-dl-exec": "^2.4.4",
+        "ytdl-core": "^4.11.4"
     }
 }
