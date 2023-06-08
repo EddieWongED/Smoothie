@@ -36,6 +36,8 @@ export default class PaginationEmbed {
 
         const description = `\`\`\`md\n${pageList.join("\n")}\n\`\`\``;
 
+        footer = `${page}/${maxPage} • ${footer}`;
+
         // Create Embed
         const embed = BasicEmbed.create({
             title: title,
