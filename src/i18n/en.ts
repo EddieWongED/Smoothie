@@ -36,6 +36,8 @@ const en: InternationalizationList = {
         "Failed to show the info of current playlist.",
     switchPlaylistFailedMessage: "Failed to switch to `%ARG%` playlist.",
     switchPlaylistSuccessMessage: "Switch to `%ARG%` playlist successfully.",
+    queueTitle: "`%ARG%`'s Queue",
+    queueFailedMessage: "Failed to show the queue of the current playlist.",
 
     // Error message
     noSuchCommandMessage: "There is no `%ARG%` command.",

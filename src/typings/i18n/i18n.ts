@@ -32,6 +32,8 @@ export interface InternationalizationList {
     switchPlaylistSuccessMessage: string;
     playFailedMessage: string;
     playSuccessMessage: string;
+    queueTitle: string;
+    queueFailedMessage: string;
 
     // Error message
     noSuchCommandMessage: string;

@@ -35,6 +35,8 @@ const zh_hk: InternationalizationList = {
     playFailedMessage: "無法播放 URL = `%ARG%` 的音樂。",
     playSuccessMessage:
         "已將 `%ARG%` 首新歌曲添加到播放清單中。另外因為有 `%ARG%` 首歌曲已經在播放清單中，因此它們沒有被添加。",
+    queueTitle: "`%ARG%` 歌單",
+    queueFailedMessage: "無法顯示目前播放清單的歌單。",
 
     // Error message
     noSuchCommandMessage: "沒有 `%ARG%` 這個指令。",
