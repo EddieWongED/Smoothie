@@ -49,6 +49,8 @@ const zh_hk: InternationalizationList = {
     pauseSuccessMessage: "成功暫停了歌曲。",
     unpauseFailedMessage: "無法繼續播放歌曲。",
     unpauseSuccessMessage: "成功繼續播放歌曲。",
+    retryFailedMessage: "無法播放第一首歌曲。",
+    retrySuccessMessage: "成功播放第一首歌曲 `%ARG%`。",
 
     // Error message
     noSuchCommandMessage: "沒有 `%ARG%` 這個指令。",
