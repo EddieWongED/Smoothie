@@ -55,7 +55,7 @@ export default class SmoothieVoiceConnection {
 
         // When Smoothie joins the voice channel
         this.connection.on(VoiceConnectionStatus.Ready, () => {
-            Logging.info(
+            Logging.success(
                 guildPrefix,
                 channelPrefix,
                 `Smoothie has joined to the voice channel.`
