@@ -29,5 +29,8 @@ export class GuildStates implements Base, TimeStamps {
     public playingNowMessageId!: string | null;
 
     @prop({ required: true, default: null })
+    public playingNowChannelId!: string | null;
+
+    @prop({ required: true, default: null })
     public queueMessageId!: string | null;
 }

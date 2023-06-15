@@ -9,10 +9,12 @@ import Database from "../database/Database.js";
 import type SmoothieVoiceConnection from "../music/SmoothieVoiceConnection.js";
 import importDefault from "../../utils/importDefault.js";
 import subfilePathsOf from "../../utils/subfilePathsOf.js";
+import type SmoothieAudioPlayer from "../music/SmoothieAudioPlayer.js";
 
 export class SmoothieClient extends Client {
     commands = new Collection<string, Command>();
     voiceConnections = new Collection<string, SmoothieVoiceConnection>();
+    audioPlayers = new Collection<string, SmoothieAudioPlayer>();
     commandHandler = new CommandHandler();
     database = new Database();
 

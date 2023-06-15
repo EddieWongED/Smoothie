@@ -1,14 +1,17 @@
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
+import QueueHandler from "../../structures/music/QueueHandler.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 
 export default new SmoothieCommand(Commands.queue, {
     name: Commands.queue,
     description: "Show the queue of the current playlist.",
-    run: async ({ guildData, guildStates, reply }) => {
-        const playlists = await guildData.get("playlists");
+    run: async ({ guildId, guildStates, reply }) => {
+        const queueHandler = new QueueHandler(guildId);
+        const queue = await queueHandler.fetch();
+
         const name = await guildStates.get("currentPlaylistName");
-        const playlist = playlists?.find((playlist) => playlist.name === name);
-        if (!name || !playlists || !playlist) {
+
+        if (!name || !queue) {
             await reply.error({
                 title: "errorTitle",
                 description: "queueFailedMessage",
@@ -17,7 +20,7 @@ export default new SmoothieCommand(Commands.queue, {
         }
 
         await reply.list({
-            list: playlist.queue.map((song) => song.title),
+            list: queue.map((song) => song.title),
             title: "queueTitle",
             titleArgs: [name],
         });

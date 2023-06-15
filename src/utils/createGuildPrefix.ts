@@ -3,8 +3,8 @@ import { client } from "../index.js";
 const createGuildPrefix = (guildId: string | null) => {
     if (!guildId) return "";
     const guild = client.guilds.cache.get(guildId);
-    const guildName = guild?.name;
-    if (!guildName) return "";
+    if (!guild) return "";
+    const guildName = guild.name;
     return `[${guildName} (${guildId})]`;
 };
 

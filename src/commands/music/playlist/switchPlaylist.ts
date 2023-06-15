@@ -5,6 +5,7 @@ import type {
 import { ApplicationCommandOptionType } from "discord.js";
 import { SmoothieCommand } from "../../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../../typings/structures/commands/SmoothieCommand.js";
+import { client } from "../../../index.js";
 
 const nameOption: ApplicationCommandStringOption = {
     name: "name",
@@ -21,7 +22,7 @@ export default new SmoothieCommand(Commands.switchPlaylist, {
     name: Commands.switchPlaylist,
     description: "Switch to another playlist.",
     options: switchPlaylistOptions,
-    run: async ({ options, reply, guildData, guildStates }) => {
+    run: async ({ guildId, options, reply, guildData, guildStates }) => {
         const { name } = options;
         // Check if name is empty or not
         if (name.length === 0) {
@@ -71,6 +72,14 @@ export default new SmoothieCommand(Commands.switchPlaylist, {
                 description: "switchPlaylistFailedMessage",
                 descriptionArgs: [name],
             });
+            return;
+        }
+
+        // Switch song
+        const player = client.audioPlayers.get(guildId);
+        if (player) {
+            player.forceStop();
+            await player.playFirst();
         }
 
         return;

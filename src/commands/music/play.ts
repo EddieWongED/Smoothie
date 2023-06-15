@@ -6,6 +6,8 @@ import { ApplicationCommandOptionType } from "discord.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import URLHandler from "../../structures/music/URLHandler.js";
+import QueueHandler from "../../structures/music/QueueHandler.js";
+import { client } from "../../index.js";
 
 const urlOption: ApplicationCommandStringOption = {
     name: "url",
@@ -35,7 +37,7 @@ export default new SmoothieCommand(Commands.play, {
     name: Commands.play,
     description: "Play the song of the provided YouTube URL.",
     options: playOptions,
-    run: async ({ reply, options, guildData, guildStates }) => {
+    run: async ({ guildId, reply, options, guildStates }) => {
         const { url } = options;
         let { when } = options;
         if (!when) {
@@ -52,20 +54,13 @@ export default new SmoothieCommand(Commands.play, {
             return;
         }
 
-        // Fetch the playlist
-        const playlists = await guildData.get("playlists");
+        // Create queue handler
+        const queueHandler = new QueueHandler(guildId);
+
+        // Fetch the name of the current playlist
         const currentPlaylistName = await guildStates.get(
             "currentPlaylistName"
         );
-
-        if (!playlists) {
-            await reply.error({
-                title: "errorTitle",
-                description: "playFailedMessage",
-                descriptionArgs: [url],
-            });
-            return;
-        }
 
         if (!currentPlaylistName) {
             await reply.error({
@@ -75,55 +70,33 @@ export default new SmoothieCommand(Commands.play, {
             return;
         }
 
-        const playlist = playlists.find(
-            (playlist) => playlist.name === currentPlaylistName
-        );
-
-        if (!playlist) {
+        const addedSongs = await queueHandler.add(newSongs, when);
+        if (!addedSongs) {
             await reply.error({
                 title: "errorTitle",
                 description: "playFailedMessage",
-                descriptionArgs: [url],
             });
             return;
         }
-
-        // Filter songs that already have
-        const filteredNewSongs = newSongs.filter((song) =>
-            playlist.queue.every((queuedSong) => queuedSong.url !== song.url)
-        );
-
-        // Remove songs that are in newSongs from the queue
-        const filteredQueue = playlist.queue.filter(
-            (song) => !newSongs.some((newSong) => song.url === newSong.url)
-        );
-
-        switch (when) {
-            case "now": {
-                playlist.queue = newSongs.concat(filteredQueue);
-                break;
-            }
-            case "next": {
-                playlist.queue = filteredQueue;
-                playlist.queue.splice(1, 0, ...newSongs);
-                break;
-            }
-            case "last": {
-                playlist.queue = filteredQueue.concat(newSongs);
-                break;
-            }
-        }
-
-        await guildData.update("playlists", playlists);
 
         await reply.success({
             title: "successTitle",
             description: "playSuccessMessage",
             descriptionArgs: [
-                filteredNewSongs.length.toString(),
-                (newSongs.length - filteredNewSongs.length).toString(),
+                addedSongs.length.toString(),
+                (newSongs.length - addedSongs.length).toString(),
             ],
         });
+
+        // Play song if no song is playing
+        const player = client.audioPlayers.get(guildId);
+        if (player) {
+            if (when === "now") {
+                await player.playFirst();
+            } else {
+                await player.start();
+            }
+        }
 
         return;
     },

@@ -1,4 +1,4 @@
-const formatTime = (seconds: number) => {
+export const formatTimeWithLetter = (seconds: number) => {
     seconds = Math.floor(seconds);
     const second = seconds % 60;
     const minute = Math.floor(seconds / 60) % 60;
@@ -26,4 +26,21 @@ const formatTime = (seconds: number) => {
     return container.join(" ");
 };
 
-export default formatTime;
+export const formatTimeWithColon = (seconds: number) => {
+    seconds = Math.floor(seconds);
+    const second = seconds % 60;
+    const minute = Math.floor(seconds / 60) % 60;
+    const hour = Math.floor(seconds / 60 / 60);
+
+    const secondString = ("0" + second.toString()).slice(-2);
+
+    let string;
+    if (hour == 0) {
+        string = `${minute}:${secondString}`;
+    } else {
+        const minuteString = ("0" + minute.toString()).slice(-2);
+        string = `${hour}:${minuteString}:${secondString}`;
+    }
+
+    return string;
+};

@@ -37,6 +37,18 @@ const zh_hk: InternationalizationList = {
         "已將 `%ARG%` 首新歌曲添加到播放清單中。另外因為有 `%ARG%` 首歌曲已經在播放清單中，因此它們沒有被添加。",
     queueTitle: "`%ARG%` 歌單",
     queueFailedMessage: "無法顯示目前播放清單的歌單。",
+    skipFailedMessage: "無法跳過當前歌曲。",
+    skipSuccessMessage: "成功跳過了 `%ARG%`。",
+    removeFailedMessage: "無法刪除該歌曲。",
+    removeSuccessMessage: "成功移除了 `%ARG%`。",
+    removeIndexOutOfRangeMessage:
+        "請在 `1` 和 `%ARG%` 之間選擇你想移除的歌曲。",
+    confirmRemoveSongMessage: "您確定要移除 `%ARG%` 嗎？",
+    cancelRemoveSongSuccessMessage: "成功取消移除 `%ARG%`。",
+    pauseFailedMessage: "無法暫停歌曲。",
+    pauseSuccessMessage: "成功暫停了歌曲。",
+    unpauseFailedMessage: "無法繼續播放歌曲。",
+    unpauseSuccessMessage: "成功繼續播放歌曲。",
 
     // Error message
     noSuchCommandMessage: "沒有 `%ARG%` 這個指令。",
@@ -55,6 +67,9 @@ const zh_hk: InternationalizationList = {
     choosePageNotWithinRangeMessage: "您輸入的整數不在範圍內！請再次點擊按鈕！",
     noSonginPlaylistMessage: "您的播放清單中沒有任何歌曲！",
     invalidYouTubeURLMessage: "無效的 YouTube URL！",
+    playSongFailedMessage:
+        "無法播放當前歌曲（`%ARG%`）。原因可能是歌曲是私人影片或已經被移除，又或者是網路問題。請用 retry 指令重試。如問題仍然存在，請從播放列表中刪除該歌曲。",
+    noUpComingSongMessage: "您沒有下一首歌曲！",
 
     // Others
     successTitle: "成功！",
@@ -72,6 +87,14 @@ const zh_hk: InternationalizationList = {
     numberOfSongsField: "歌曲數量",
     topFiveSongsField: "最常聽的五首歌曲",
     totalDurationField: "總時長",
+    uploadedByField: "上傳者",
+    addedAtField: "添加於",
+    playCountField: "播放次數",
+    playlistField: "播放清單",
+    upComingField: "即將播放",
+    playingNowTitle: "正在播放",
+    queueButton: "歌單",
+    playlistInfoButton: "播放清單",
 };
 
 export default zh_hk;
