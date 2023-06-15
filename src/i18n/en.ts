@@ -50,6 +50,8 @@ const en: InternationalizationList = {
     pauseSuccessMessage: "Paused the song successfully.",
     unpauseFailedMessage: "Failed to unpause the song.",
     unpauseSuccessMessage: "Unpause the song successfully.",
+    retryFailedMessage: "Failed to play the first song.",
+    retrySuccessMessage: "Played the first song `%ARG%` successfully.",
 
     // Error message
     noSuchCommandMessage: "There is no `%ARG%` command.",
