@@ -174,11 +174,12 @@ export default class SmoothieAudioPlayer {
             })();
         });
 
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        this.player.on(AudioPlayerStatus.Playing, (_oldState, newState) => {
+        this.player.on(AudioPlayerStatus.Playing, (oldState, newState) => {
             this._startTimer();
-            const song = newState.resource.metadata as Song;
-            Logging.info(this._guildPrefix, `Playing ${song.title}`);
+            if (oldState.status === AudioPlayerStatus.Buffering) {
+                const song = newState.resource.metadata as Song;
+                Logging.info(this._guildPrefix, `Playing ${song.title}`);
+            }
         });
 
         this.player.on(AudioPlayerStatus.Buffering, () => {
@@ -196,13 +197,6 @@ export default class SmoothieAudioPlayer {
 
         this.player.on("error", (err) => {
             Logging.error(this._guildPrefix, err);
-        });
-
-        this.player.on("stateChange", (oldState, newState) => {
-            Logging.info(
-                this._guildPrefix,
-                `Audio player state changed: ${oldState.status} -> ${newState.status}`
-            );
         });
     }
 
