@@ -48,7 +48,7 @@ export class SmoothieClient extends Client {
                     SmoothieEvent<keyof ClientEvents>
                 >(path);
                 if (!event) return;
-                Logging.info(`Registering ${event.event} event...`);
+                Logging.success(`Registering ${event.event} event...`);
                 this.on(event.event, event.run);
                 Logging.info(`${event.event} event is registered.`);
                 successCount++;
@@ -74,7 +74,7 @@ export class SmoothieClient extends Client {
                     }
                 }
                 this.commands.set(command.name, command);
-                Logging.info(
+                Logging.success(
                     `${command.name} command (${
                         command.aliases?.length ?? 0
                     } alias(es)) is loaded.`
