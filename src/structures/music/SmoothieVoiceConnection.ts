@@ -7,15 +7,18 @@ import Logging from "../logging/Logging.js";
 import createGuildPrefix from "../../utils/createGuildPrefix.js";
 import createChannelPrefix from "../../utils/createChannelPrefix.js";
 import SmoothieAudioPlayer from "./SmoothieAudioPlayer.js";
+import GuildStatesHandler from "../database/GuildStatesHandler.js";
 
 export default class SmoothieVoiceConnection {
     channelId: string | null = null;
     connection: VoiceConnection | undefined = undefined;
     player: SmoothieAudioPlayer;
+    private _guildStates: GuildStatesHandler;
 
     constructor(public guildId: string) {
         this.player = new SmoothieAudioPlayer(guildId);
         client.audioPlayers.set(guildId, this.player);
+        this._guildStates = new GuildStatesHandler(guildId);
     }
 
     async connect(channelId: string): Promise<boolean> {
@@ -65,14 +68,18 @@ export default class SmoothieVoiceConnection {
         this.connection.subscribe(this.player.player);
 
         this.channelId = channelId;
+
+        // Update database voiceChannelId
+        await this._guildStates.update("voiceChannelId", channelId);
         return true;
     }
 
-    disconnect(): boolean {
+    async disconnect() {
         if (!this.connection) return true;
         this.connection.destroy();
         this.connection = undefined;
         this.channelId = null;
+        await this._guildStates.update("voiceChannelId", null);
         return true;
     }
 }
