@@ -77,7 +77,7 @@ const en: InternationalizationList = {
     playSuccessMessage:
         "Added `%ARG%` new song(s) to the queue. `%ARG%` song(s) was/were already in the queue so they didn't get added.",
     playSongFailedMessage:
-        "Failed to play the current song (`%ARG%`). It may be an private video, deleted video, or network problem. Please try again with the retry command. If the problem persists, please remove the song from the playlist.",
+        "Failed to play the current song (`%ARG%`). It may be an private video, deleted video, or network problem. Please try again with the retry command. If the problem persists, please skip the song or remove the song from the playlist.",
     noUpComingSongMessage: "You don't have any up coming song!",
 
     // Others
