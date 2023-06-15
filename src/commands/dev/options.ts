@@ -40,7 +40,7 @@ const booleanOption: ApplicationCommandBooleanOptionData = {
     required: false,
 };
 
-const optionsOptions: ApplicationCommandOptionData[] = [
+export const optionsOptions: ApplicationCommandOptionData[] = [
     numberOption,
     integerOption,
     stringOption,

@@ -66,7 +66,7 @@ export default class PaginationEmbed {
             .setCustomId("choosePage")
             .setEmoji("#️⃣")
             .setStyle(ButtonStyle.Success)
-            .setDisabled(page <= 1);
+            .setDisabled(maxPage <= 1);
 
         const row = new ActionRowBuilder<ButtonBuilder>().setComponents(
             firstPageButton,

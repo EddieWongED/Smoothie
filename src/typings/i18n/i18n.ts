@@ -34,6 +34,17 @@ export interface InternationalizationList {
     playSuccessMessage: string;
     queueTitle: string;
     queueFailedMessage: string;
+    skipFailedMessage: string;
+    skipSuccessMessage: string;
+    removeFailedMessage: string;
+    removeSuccessMessage: string;
+    removeIndexOutOfRangeMessage: string;
+    confirmRemoveSongMessage: string;
+    cancelRemoveSongSuccessMessage: string;
+    pauseFailedMessage: string;
+    pauseSuccessMessage: string;
+    unpauseFailedMessage: string;
+    unpauseSuccessMessage: string;
 
     // Error message
     noSuchCommandMessage: string;
@@ -52,6 +63,8 @@ export interface InternationalizationList {
     choosePageNotWithinRangeMessage: string;
     noSonginPlaylistMessage: string;
     invalidYouTubeURLMessage: string;
+    playSongFailedMessage: string;
+    noUpComingSongMessage: string;
 
     // Others
     successTitle: string;
@@ -69,6 +82,14 @@ export interface InternationalizationList {
     numberOfSongsField: string;
     topFiveSongsField: string;
     totalDurationField: string;
+    uploadedByField: string;
+    addedAtField: string;
+    playCountField: string;
+    playlistField: string;
+    upComingField: string;
+    playingNowTitle: string;
+    queueButton: string;
+    playlistInfoButton: string;
 }
 
 export enum Languages {

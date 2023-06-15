@@ -4,8 +4,7 @@ import type {
     ButtonBuilder,
     TextChannel,
 } from "discord.js";
-import { getLocale } from "../../i18n/i18n.js";
-import type { Language } from "../../typings/i18n/i18n.js";
+import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import type {
     FollowUpArgs,
     ListReplyArgs,
@@ -24,21 +23,31 @@ import Logging from "../logging/Logging.js";
 import createGuildPrefix from "../../utils/createGuildPrefix.js";
 import { client } from "../../index.js";
 import isInteger from "../../utils/isInteger.js";
+import GuildDataHandler from "../database/GuildDataHandler.js";
+import GuildStatesHandler from "../database/GuildStatesHandler.js";
 
 export default class ReplyHandler {
-    private _currentPayload: CommandPayload;
+    private _currentPayload: CommandPayload | undefined;
     private _isEditable = false;
     private _userId: string | undefined;
-    private _guildId: string | null;
+    private _guildId: string;
+    private _guildPrefix: string;
+    private _guildData: GuildDataHandler;
+    private _guildStates: GuildStatesHandler;
 
-    constructor(
-        payload: CommandPayload,
-        public language: Language,
-        public textChannelId: string | null
-    ) {
-        this._userId = payload.member?.user.id;
-        this._guildId = payload.guildId;
+    constructor({
+        payload,
+        guildId,
+    }: {
+        payload?: CommandPayload;
+        guildId: string;
+    }) {
+        this._guildId = guildId;
+        this._userId = payload?.member?.user.id;
         this._currentPayload = payload;
+        this._guildData = new GuildDataHandler(guildId);
+        this._guildStates = new GuildStatesHandler(guildId);
+        this._guildPrefix = createGuildPrefix(this._guildId);
     }
 
     async info({
@@ -47,9 +56,11 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
     }: ReplyArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
-            this.language,
+            language,
             description,
             descriptionArgs
         );
@@ -67,9 +78,11 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
     }: ReplyArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
-            this.language,
+            language,
             description,
             descriptionArgs
         );
@@ -87,9 +100,11 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
     }: ReplyArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
-            this.language,
+            language,
             description,
             descriptionArgs
         );
@@ -107,9 +122,11 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
     }: ReplyArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
-            this.language,
+            language,
             description,
             descriptionArgs
         );
@@ -128,9 +145,11 @@ export default class ReplyHandler {
         descriptionArgs = [],
         willEdit = true,
     }: FollowUpArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
-            this.language,
+            language,
             description,
             descriptionArgs
         );
@@ -149,9 +168,11 @@ export default class ReplyHandler {
         descriptionArgs = [],
         willEdit = true,
     }: FollowUpArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
-            this.language,
+            language,
             description,
             descriptionArgs
         );
@@ -170,9 +191,11 @@ export default class ReplyHandler {
         descriptionArgs = [],
         willEdit = true,
     }: FollowUpArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
-            this.language,
+            language,
             description,
             descriptionArgs
         );
@@ -191,9 +214,11 @@ export default class ReplyHandler {
         descriptionArgs = [],
         willEdit = true,
     }: FollowUpArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
-            this.language,
+            language,
             description,
             descriptionArgs
         );
@@ -212,9 +237,11 @@ export default class ReplyHandler {
         descriptionArgs = [],
         willEdit = true,
     }: SendArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
-            this.language,
+            language,
             description,
             descriptionArgs
         );
@@ -233,9 +260,11 @@ export default class ReplyHandler {
         descriptionArgs = [],
         willEdit = true,
     }: SendArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
-            this.language,
+            language,
             description,
             descriptionArgs
         );
@@ -254,9 +283,11 @@ export default class ReplyHandler {
         descriptionArgs = [],
         willEdit = true,
     }: SendArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
-            this.language,
+            language,
             description,
             descriptionArgs
         );
@@ -275,9 +306,11 @@ export default class ReplyHandler {
         descriptionArgs = [],
         willEdit = true,
     }: SendArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
-            this.language,
+            language,
             description,
             descriptionArgs
         );
@@ -295,12 +328,14 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
     }: ReplyArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
-        const footerString = getLocale(this.language, "confirmFooter", [
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
+        const footerString = getLocale(language, "confirmFooter", [
             (ConfirmEmbed.time / 1000 / 60).toString(),
         ]);
         const descriptionString = getLocale(
-            this.language,
+            language,
             description,
             descriptionArgs
         );
@@ -310,7 +345,9 @@ export default class ReplyHandler {
             footer: footerString,
         });
         const payload = await this.followUp(embed, false);
+        if (!payload) return false;
 
+        let decision = false;
         try {
             const choice = await payload.awaitMessageComponent({
                 filter: (interaction) =>
@@ -320,12 +357,20 @@ export default class ReplyHandler {
                 time: ConfirmEmbed.time,
             });
             await choice.deferUpdate();
-            await payload.delete();
-            return choice.customId === "confirm";
+            decision = choice.customId === "confirm";
         } catch (err) {
-            await payload.delete();
-            return false;
+            decision = false;
         }
+
+        try {
+            await payload.delete();
+        } catch (err) {
+            Logging.warn(
+                this._guildPrefix,
+                "Failed to delete confirm message."
+            );
+        }
+        return decision;
     }
 
     async query({
@@ -357,7 +402,11 @@ export default class ReplyHandler {
             time: 60000,
         });
 
-        await queryMessage.delete();
+        try {
+            await queryMessage.delete();
+        } catch (err) {
+            Logging.warn(this._guildPrefix, "Failed to delete query message.");
+        }
 
         return messages.first()?.content;
     }
@@ -368,12 +417,12 @@ export default class ReplyHandler {
         titleArgs = [],
         itemsPerPage = 10,
     }: ListReplyArgs) {
-        const titleString = getLocale(this.language, title, titleArgs);
-        const footerString = getLocale(
-            this.language,
-            "buttonDisableTimeFooter",
-            [(PaginationEmbed.idleTime / 1000 / 60).toString()]
-        );
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
+        const footerString = getLocale(language, "buttonDisableTimeFooter", [
+            (PaginationEmbed.idleTime / 1000 / 60).toString(),
+        ]);
         const maxPage = Math.ceil(list.length / itemsPerPage);
         let page = 1;
 
@@ -385,6 +434,7 @@ export default class ReplyHandler {
             itemsPerPage: itemsPerPage,
         });
         const payload = await this.reply(embed);
+        if (!payload) return null;
 
         const collector = payload.channel.createMessageComponentCollector({
             filter: (interaction) => interaction.message.id === payload.id,
@@ -470,89 +520,140 @@ export default class ReplyHandler {
             });
             await this.reply(embed);
         });
+
+        return payload;
     }
 
     async reply(embed: BaseMessageOptions) {
+        // Send instead of reply if no playload is given
+        if (!this._currentPayload) {
+            return this.send(embed);
+        }
+
+        // Edit instead of reply if we can edit the payload
         if (this._isEditable) {
             return this._edit(embed);
         }
 
-        const payload = (await this._currentPayload.reply(
-            embed
-        )) as MessageCommandPayload;
-        payload.payloadType = "message";
-        this._isEditable = true;
-        this._currentPayload = payload;
-        return payload;
+        try {
+            const payload = (await this._currentPayload.reply(
+                embed
+            )) as MessageCommandPayload;
+            payload.payloadType = "message";
+            this._isEditable = true;
+            this._currentPayload = payload;
+            return payload;
+        } catch (err) {
+            Logging.warn(this._guildPrefix, "Failed to reply the message.");
+            return null;
+        }
     }
 
     private async _edit(embed: BaseMessageOptions) {
-        let payload: MessageCommandPayload;
-        switch (this._currentPayload.payloadType) {
-            case "slash": {
-                payload = (await this._currentPayload.editReply(
-                    embed
-                )) as MessageCommandPayload;
-                break;
-            }
-            case "message": {
-                payload = (await this._currentPayload.edit(
-                    embed
-                )) as MessageCommandPayload;
-                break;
-            }
+        // Return null if there is no payload is given
+        if (!this._currentPayload) {
+            return null;
         }
-        payload.payloadType = "message";
-        this._currentPayload = payload;
-        return payload;
+
+        try {
+            let payload: MessageCommandPayload;
+            switch (this._currentPayload.payloadType) {
+                case "slash": {
+                    payload = (await this._currentPayload.editReply(
+                        embed
+                    )) as MessageCommandPayload;
+                    break;
+                }
+                case "message": {
+                    payload = (await this._currentPayload.edit(
+                        embed
+                    )) as MessageCommandPayload;
+                    break;
+                }
+            }
+            payload.payloadType = "message";
+            this._currentPayload = payload;
+            return payload;
+        } catch (err) {
+            Logging.warn(this._guildPrefix, "Failed to edit the message.");
+            return null;
+        }
     }
 
     async followUp(embed: BaseMessageOptions, willEdit = true) {
-        let payload: MessageCommandPayload;
-        switch (this._currentPayload.payloadType) {
-            case "slash": {
-                payload = (await this._currentPayload.followUp(
-                    embed
-                )) as MessageCommandPayload;
-                break;
-            }
-            case "message": {
-                payload = (await this._currentPayload.reply(
-                    embed
-                )) as MessageCommandPayload;
-                break;
-            }
+        // Send instead of followUp if no playload is given
+        if (!this._currentPayload) {
+            return this.send(embed);
         }
-        payload.payloadType = "message";
-        if (willEdit) {
-            this._currentPayload = payload;
+
+        try {
+            let payload: MessageCommandPayload;
+            switch (this._currentPayload.payloadType) {
+                case "slash": {
+                    payload = (await this._currentPayload.followUp(
+                        embed
+                    )) as MessageCommandPayload;
+                    break;
+                }
+                case "message": {
+                    payload = (await this._currentPayload.reply(
+                        embed
+                    )) as MessageCommandPayload;
+                    break;
+                }
+            }
+            payload.payloadType = "message";
+            if (willEdit) {
+                this._currentPayload = payload;
+                this._isEditable = true;
+            }
+            return payload;
+        } catch (err) {
+            Logging.warn(
+                this._guildPrefix,
+                "Failed to send a follow up message."
+            );
+            return null;
         }
-        return payload;
     }
 
     async send(embed: BaseMessageOptions, willEdit = true) {
-        if (!this.textChannelId) {
+        const textChannelId = await this._guildStates.get("textChannelId");
+        if (!textChannelId) {
             Logging.warn(
-                createGuildPrefix(this._guildId),
+                this._guildPrefix,
                 "Unable to send the message because textChannelId is not found."
             );
             return null;
         }
-        const channel = client.channels.cache.get(this.textChannelId) as
+        const channel = client.channels.cache.get(textChannelId) as
             | TextChannel
             | undefined;
         if (!channel) {
             Logging.warn(
-                createGuildPrefix(this._guildId),
+                this._guildPrefix,
                 "Unable to send the message because the text channel is not found."
             );
             return null;
         }
-        const payload = (await channel.send(embed)) as MessageCommandPayload;
-        payload.payloadType = "message";
-        if (willEdit) {
-            this._currentPayload = payload;
+
+        try {
+            const payload = (await channel.send(
+                embed
+            )) as MessageCommandPayload;
+            payload.payloadType = "message";
+            if (willEdit) {
+                this._currentPayload = payload;
+                this._isEditable = true;
+            }
+            return payload;
+        } catch (err) {
+            Logging.warn(this._guildPrefix, "Failed to send a message.");
+            return null;
         }
-        return payload;
+    }
+
+    setPayload(payload: CommandPayload) {
+        this._currentPayload = payload;
     }
 }

@@ -7,11 +7,7 @@ import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 export default new SmoothieCommand(Commands.join, {
     name: Commands.join,
     description: "The bot will join your voice channel.",
-    run: async ({ payload, reply }) => {
-        const guildId = payload.guildId;
-        const adapterCreator = payload.guild?.voiceAdapterCreator;
-        if (!guildId || !adapterCreator) return;
-
+    run: async ({ guildId, payload, reply }) => {
         const member = payload.member as GuildMember;
         const voiceChannelId = member.voice.channel?.id;
         if (!voiceChannelId) {
@@ -24,14 +20,11 @@ export default new SmoothieCommand(Commands.join, {
 
         let voiceConnection = client.voiceConnections.get(guildId);
         if (!voiceConnection) {
-            voiceConnection = new SmoothieVoiceConnection(
-                guildId,
-                adapterCreator
-            );
+            voiceConnection = new SmoothieVoiceConnection(guildId);
             client.voiceConnections.set(guildId, voiceConnection);
         }
 
-        if (!voiceConnection.connect(voiceChannelId)) {
+        if (!(await voiceConnection.connect(voiceChannelId))) {
             await reply.error({
                 title: "errorTitle",
                 description: "joinFailedMessage",

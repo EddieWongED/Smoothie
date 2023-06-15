@@ -3,7 +3,6 @@ import type {
     BaseApplicationCommandOptionsData,
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
-import { defaultLanguage } from "../../i18n/i18n.js";
 import { client } from "../../index.js";
 import type {
     MessageCommandPayload,
@@ -23,24 +22,31 @@ export class CommandHandler {
     ) {
         try {
             // Create reply handler
-            const language =
-                (await guildData.get("language")) ?? defaultLanguage;
-            const textChannelId =
-                (await guildStates.get("textChannelId")) ?? null;
-            const reply = new ReplyHandler(
-                interaction,
-                language,
-                textChannelId
-            );
+            const guildId = interaction.guildId;
+            const commandName = interaction.commandName;
+
+            if (!guildId) return;
+
+            const reply = new ReplyHandler({
+                payload: interaction,
+                guildId: guildId,
+            });
             await reply.info({
                 title: "loadingCommandTitle",
                 description: "loadingCommandMessage",
-                descriptionArgs: [interaction.commandName],
+                descriptionArgs: [commandName],
             });
 
             // Retrieve command
-            const command = client.commands.get(interaction.commandName);
-            if (!command) return;
+            const command = client.commands.get(commandName);
+            if (!command) {
+                await reply.error({
+                    title: "errorTitle",
+                    description: "errorCommandMessage",
+                    descriptionArgs: [commandName],
+                });
+                return;
+            }
             const data = interaction.options.data;
 
             // Parse command options
@@ -65,6 +71,7 @@ export class CommandHandler {
             }
 
             await command.run({
+                guildId: guildId,
                 payload: interaction,
                 options: options,
                 guildData: guildData,
@@ -93,13 +100,15 @@ export class CommandHandler {
             const commandName = (data[0] ? data[0] : " ").toLowerCase();
             const args: string[] = data.length > 1 ? data.slice(1) : [];
             const command = client.commands.get(commandName);
+            const guildId = message.guildId;
 
             // Create reply handler
-            const language =
-                (await guildData.get("language")) ?? defaultLanguage;
-            const textChannelId =
-                (await guildStates.get("textChannelId")) ?? null;
-            const reply = new ReplyHandler(message, language, textChannelId);
+            if (!guildId) return;
+
+            const reply = new ReplyHandler({
+                payload: message,
+                guildId: guildId,
+            });
             await reply.info({
                 title: "loadingCommandTitle",
                 description: "loadingCommandMessage",
@@ -275,6 +284,7 @@ export class CommandHandler {
             }
 
             await command.run({
+                guildId: guildId,
                 payload: message,
                 options: options,
                 guildData: guildData,

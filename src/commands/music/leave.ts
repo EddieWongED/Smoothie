@@ -5,10 +5,7 @@ import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 export default new SmoothieCommand(Commands.leave, {
     name: Commands.leave,
     description: "The bot will leave your voice channel.",
-    run: async ({ payload, reply }) => {
-        const guildId = payload.guildId;
-        if (!guildId) return;
-
+    run: async ({ guildId, reply }) => {
         const voiceConnection = client.voiceConnections.get(guildId);
         if (!voiceConnection) {
             await reply.success({

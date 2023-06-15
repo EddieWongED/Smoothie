@@ -38,6 +38,18 @@ const en: InternationalizationList = {
     switchPlaylistSuccessMessage: "Switch to `%ARG%` playlist successfully.",
     queueTitle: "`%ARG%`'s Queue",
     queueFailedMessage: "Failed to show the queue of the current playlist.",
+    skipFailedMessage: "Failed to skip the current song.",
+    skipSuccessMessage: "Skipped `%ARG%` successfully.",
+    removeFailedMessage: "Failed to remove the required song.",
+    removeSuccessMessage: "Removed `%ARG%` successfully.",
+    removeIndexOutOfRangeMessage:
+        "Please choose between `1` and `%ARG%` as the index of the song you want to remove.",
+    confirmRemoveSongMessage: "Are you sure you want to remove `%ARG%`?",
+    cancelRemoveSongSuccessMessage: "Cancel removing `%ARG%` successfully.",
+    pauseFailedMessage: "Failed to pause the song.",
+    pauseSuccessMessage: "Paused the song successfully.",
+    unpauseFailedMessage: "Failed to unpause the song.",
+    unpauseSuccessMessage: "Unpause the song successfully.",
 
     // Error message
     noSuchCommandMessage: "There is no `%ARG%` command.",
@@ -64,6 +76,9 @@ const en: InternationalizationList = {
     playFailedMessage: "Failed to play the song(s) with URL = `%ARG%`.",
     playSuccessMessage:
         "Added `%ARG%` new song(s) to the queue. `%ARG%` song(s) was/were already in the queue so they didn't get added.",
+    playSongFailedMessage:
+        "Failed to play the current song (`%ARG%`). It may be an private video, deleted video, or network problem. Please try again with the retry command. If the problem persists, please remove the song from the playlist.",
+    noUpComingSongMessage: "You don't have any up coming song!",
 
     // Others
     successTitle: "Success!",
@@ -82,6 +97,14 @@ const en: InternationalizationList = {
     numberOfSongsField: "Number of Song(s)",
     topFiveSongsField: "Top 5 Most Listened Songs",
     totalDurationField: "Total Duration",
+    uploadedByField: "Uploaded By",
+    addedAtField: "Added At",
+    playCountField: "Play Count",
+    playlistField: "Playlist",
+    upComingField: "Up Coming",
+    playingNowTitle: "Playing Now",
+    queueButton: "Queue",
+    playlistInfoButton: "Playlist",
 };
 
 export default en;

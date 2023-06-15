@@ -39,7 +39,14 @@ export default new SmoothieCommand(Commands.playlist, {
     name: Commands.playlist,
     description: "Remove / Create / Show / Switch to / List / playlist.",
     options: playlistOptions,
-    run: async ({ reply, guildData, guildStates, options, payload }) => {
+    run: async ({
+        guildId,
+        reply,
+        guildData,
+        guildStates,
+        options,
+        payload,
+    }) => {
         const { action, name } = options;
         if (!name) {
             options.name = "";
@@ -70,6 +77,7 @@ export default new SmoothieCommand(Commands.playlist, {
         }
         if (!command) return;
         await command.run({
+            guildId: guildId,
             reply: reply,
             guildData: guildData,
             guildStates: guildStates,

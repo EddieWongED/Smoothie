@@ -22,6 +22,10 @@ import type InfoPlaylistOptions from "../../commands/music/playlist/InfoPlaylist
 import type SwitchPlaylistOptions from "../../commands/music/playlist/SwitchPlaylistOptions.js";
 import type PlayOptions from "../../commands/music/PlayOptions.js";
 import type QueueOptions from "../../commands/music/QueueOptions.js";
+import type SkipOptions from "../../commands/music/SkipOptions.js";
+import type RemoveOptions from "../../commands/music/RemoveOptions.js";
+import type PauseOptions from "../../commands/music/PauseOptions.js";
+import type UnpauseOptions from "../../commands/music/UnpauseOptions.js";
 
 // Payload
 export type SlashCommandPayload = ChatInputCommandInteraction & {
@@ -45,8 +49,12 @@ export enum Commands {
     join = "join",
     leave = "leave",
     play = "play",
+    pause = "pause",
+    unpause = "unpause",
     playlist = "playlist",
     queue = "queue",
+    skip = "skip",
+    remove = "remove",
     createPlaylist = "createplaylist",
     removePlaylist = "removeplaylist",
     listPlaylist = "listplaylist",
@@ -64,8 +72,12 @@ interface CommandOptionsList {
     [Commands.join]: JoinOptions;
     [Commands.leave]: LeaveOptions;
     [Commands.play]: PlayOptions;
+    [Commands.pause]: PauseOptions;
+    [Commands.unpause]: UnpauseOptions;
     [Commands.playlist]: PlaylistOptions;
     [Commands.queue]: QueueOptions;
+    [Commands.skip]: SkipOptions;
+    [Commands.remove]: RemoveOptions;
     [Commands.createPlaylist]: CreatePlaylistOptions;
     [Commands.removePlaylist]: RemovePlaylistOptions;
     [Commands.listPlaylist]: ListPlaylistOptions;
@@ -77,6 +89,7 @@ interface CommandOptionsList {
 export type CommandName = keyof CommandOptionsList;
 
 interface CommandArgs<Name extends keyof CommandOptionsList> {
+    guildId: string;
     payload: CommandPayload;
     options: CommandOptionsList[Name];
     guildData: GuildDataHandler;

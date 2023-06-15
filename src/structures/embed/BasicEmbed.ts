@@ -1,7 +1,6 @@
 import { EmbedBuilder } from "@discordjs/builders";
 import type { BasicEmbedArgs } from "../../typings/structures/embed/Embed.js";
 import type { BaseMessageOptions } from "discord.js";
-import { AttachmentBuilder } from "discord.js";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class BasicEmbed {
@@ -11,6 +10,9 @@ export default class BasicEmbed {
         footer,
         fields = [],
         color = 0x5856d6,
+        thumbnail = null,
+        author = null,
+        url = null,
     }: BasicEmbedArgs): BaseMessageOptions {
         footer = footer ? `Smoothie • ${footer}` : "Smoothie";
 
@@ -37,18 +39,19 @@ export default class BasicEmbed {
             return field;
         });
 
-        const file = new AttachmentBuilder("./icons/mipmap-hdpi/smoothie.png");
         const embed = new EmbedBuilder()
             .setTitle(title)
             .setDescription(description)
             .addFields(fields)
             .setTimestamp()
+            .setURL(url)
+            .setAuthor(author)
             .setColor(color)
+            .setThumbnail(thumbnail)
             .setFooter({
                 text: footer,
-                iconURL: "attachment://smoothie.png",
             });
 
-        return { embeds: [embed], files: [file] };
+        return { embeds: [embed], files: [] };
     }
 }

@@ -7,13 +7,12 @@ import { SmoothieCommand } from "../../../structures/commands/SmoothieCommand.js
 import { Commands } from "../../../typings/structures/commands/SmoothieCommand.js";
 import { defaultLanguage, getLocale } from "../../../i18n/i18n.js";
 import BasicEmbed from "../../../structures/embed/BasicEmbed.js";
-import formatTime from "../../../utils/formatTime.js";
+import { formatTimeWithLetter } from "../../../utils/formatTime.js";
 
 const nameOption: ApplicationCommandStringOption = {
     name: "name",
     type: ApplicationCommandOptionType.String,
-    description:
-        "The name of the playlist which you want the info of. If no name is given, the current playlist's info will be shown.",
+    description: "The name of the playlist which you want the info of.",
     required: false,
 };
 
@@ -104,7 +103,7 @@ export default new SmoothieCommand(Commands.infoPlaylist, {
                 },
                 {
                     name: getLocale(language, "totalDurationField"),
-                    value: formatTime(
+                    value: formatTimeWithLetter(
                         playlist.queue
                             .map((song) => song.duration)
                             .reduce((a, b) => a + b, 0)
