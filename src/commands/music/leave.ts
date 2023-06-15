@@ -15,7 +15,7 @@ export default new SmoothieCommand(Commands.leave, {
             return;
         }
 
-        if (!voiceConnection.disconnect()) {
+        if (!(await voiceConnection.disconnect())) {
             await reply.error({
                 title: "errorTitle",
                 description: "leaveFailedMessage",

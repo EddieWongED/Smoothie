@@ -82,4 +82,11 @@ export default class GuildStatesController {
         }
         return false;
     }
+
+    async readAll<Key extends keyof GuildStates>(key: Key) {
+        const result = (await GuildStatesModel.find({
+            [key]: { $ne: null },
+        })) as unknown as GuildStates[] | null;
+        return result;
+    }
 }
