@@ -27,6 +27,7 @@ import type RemoveOptions from "../../commands/music/RemoveOptions.js";
 import type PauseOptions from "../../commands/music/PauseOptions.js";
 import type UnpauseOptions from "../../commands/music/UnpauseOptions.js";
 import type RetryOptions from "../../commands/music/RetryOptions.js";
+import type ShuffleOptions from "../../commands/music/ShuffleOptions.js";
 
 // Payload
 export type SlashCommandPayload = ChatInputCommandInteraction & {
@@ -55,6 +56,7 @@ export enum Commands {
     playlist = "playlist",
     queue = "queue",
     skip = "skip",
+    shuffle = "shuffle",
     retry = "retry",
     remove = "remove",
     createPlaylist = "createplaylist",
@@ -79,6 +81,7 @@ interface CommandOptionsList {
     [Commands.playlist]: PlaylistOptions;
     [Commands.queue]: QueueOptions;
     [Commands.skip]: SkipOptions;
+    [Commands.shuffle]: ShuffleOptions;
     [Commands.retry]: RetryOptions;
     [Commands.remove]: RemoveOptions;
     [Commands.createPlaylist]: CreatePlaylistOptions;

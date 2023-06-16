@@ -38,6 +38,7 @@
         "@discordjs/opus": "^0.9.0",
         "@discordjs/voice": "^0.16.0",
         "@typegoose/typegoose": "^11.2.0",
+        "array-shuffle": "^3.0.0",
         "async-mutex": "^0.4.0",
         "chalk": "^5.2.0",
         "discord.js": "^14.11.0",

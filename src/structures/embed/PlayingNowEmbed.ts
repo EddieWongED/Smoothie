@@ -38,6 +38,11 @@ export default class PlayingNowEmbed {
             .setEmoji("⏭️")
             .setStyle(ButtonStyle.Primary);
 
+        const shuffleButton = new ButtonBuilder()
+            .setCustomId("shuffle")
+            .setEmoji("🔀")
+            .setStyle(ButtonStyle.Success);
+
         const pauseButton = new ButtonBuilder()
             .setCustomId("pause")
             .setEmoji("⏸️")
@@ -60,6 +65,7 @@ export default class PlayingNowEmbed {
 
         const row = new ActionRowBuilder<ButtonBuilder>().setComponents(
             skipButton,
+            shuffleButton,
             isPaused ? unpauseButton : pauseButton,
             queueButton,
             playlistInfoButton

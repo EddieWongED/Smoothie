@@ -1,3 +1,4 @@
+import arrayShuffle from "array-shuffle";
 import type { Song } from "../../data/music/Song.js";
 import type PlayOptions from "../../typings/commands/music/PlayOptions.js";
 import GuildDataHandler from "../database/GuildDataHandler.js";
@@ -121,5 +122,14 @@ export default class QueueHandler {
             return undefined;
         }
         return queue[index - 1];
+    }
+
+    async shuffle() {
+        const queue = await this.fetch();
+        if (!queue) return false;
+        const first = queue.slice(0, 1);
+        const rest = queue.slice(1);
+        const shuffled = first.concat(arrayShuffle(rest));
+        return await this.update(shuffled);
     }
 }
