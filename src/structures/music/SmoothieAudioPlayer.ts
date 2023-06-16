@@ -228,6 +228,21 @@ export default class SmoothieAudioPlayer {
                     });
                     break;
                 }
+                case "shuffle": {
+                    const command = client.commands.get(Commands.shuffle);
+                    const reply = new ReplyHandler({
+                        guildId: this.guildId,
+                    });
+                    await command?.run({
+                        guildId: this.guildId,
+                        guildData: this._guildData,
+                        guildStates: this._guildStates,
+                        payload: message,
+                        options: {},
+                        reply: reply,
+                    });
+                    break;
+                }
                 case "pause": {
                     this.pause();
                     this._clickedPauseOrUnpauseButton = true;

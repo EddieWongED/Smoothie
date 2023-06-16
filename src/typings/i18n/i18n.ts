@@ -47,6 +47,8 @@ export interface InternationalizationList {
     unpauseSuccessMessage: string;
     retryFailedMessage: string;
     retrySuccessMessage: string;
+    shuffleFailedMessage: string;
+    shuffleSuccessMessage: string;
 
     // Error message
     noSuchCommandMessage: string;
