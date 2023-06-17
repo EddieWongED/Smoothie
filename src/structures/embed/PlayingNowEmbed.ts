@@ -77,6 +77,7 @@ export default class PlayingNowEmbed {
     }
 
     private static _createProgressBar(playedFor: number, duration: number) {
+        playedFor = playedFor > duration ? duration : playedFor;
         const progress = Math.max(Math.min(playedFor / duration, 1), 0);
         const totalSquare = 17;
         const numOfWhite = Math.floor(progress * totalSquare);

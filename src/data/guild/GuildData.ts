@@ -6,6 +6,7 @@ import type {
     Base,
     TimeStamps,
 } from "@typegoose/typegoose/lib/defaultClasses.js";
+import { UserStats } from "../user/UserStats.js";
 
 export class GuildData implements Base, TimeStamps {
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -32,4 +33,7 @@ export class GuildData implements Base, TimeStamps {
 
     @prop({ type: () => [Playlist], required: true, default: [] })
     public playlists!: Playlist[];
+
+    @prop({ type: () => [UserStats], required: true, default: [] })
+    public userStats!: UserStats[];
 }
