@@ -416,6 +416,7 @@ export default class ReplyHandler {
         list,
         titleArgs = [],
         itemsPerPage = 10,
+        indexing = true,
     }: ListReplyArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -432,6 +433,7 @@ export default class ReplyHandler {
             page: page,
             footer: footerString,
             itemsPerPage: itemsPerPage,
+            indexing: indexing,
         });
         const payload = await this.reply(embed);
         if (!payload) return null;
@@ -499,6 +501,7 @@ export default class ReplyHandler {
                 page: page,
                 footer: footerString,
                 itemsPerPage: itemsPerPage,
+                indexing: indexing,
             });
             await this.reply(embed);
         });
@@ -510,6 +513,7 @@ export default class ReplyHandler {
                 page: page,
                 footer: footerString,
                 itemsPerPage: itemsPerPage,
+                indexing: indexing,
             });
             if (!embed.components) return;
             embed.components.forEach((component) => {
