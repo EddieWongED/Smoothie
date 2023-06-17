@@ -54,6 +54,8 @@ const en: InternationalizationList = {
     retrySuccessMessage: "Played the first song `%ARG%` successfully.",
     shuffleFailedMessage: "Failed to shuffle the queue.",
     shuffleSuccessMessage: "Shuffled the queue successfully.",
+    searchFailedMessage: "Cannot find songs that are similar to `%ARG%`.",
+    searchTitle: "Search Result of `%ARG%`",
 
     // Error message
     noSuchCommandMessage: "There is no `%ARG%` command.",

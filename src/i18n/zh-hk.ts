@@ -53,6 +53,8 @@ const zh_hk: InternationalizationList = {
     retrySuccessMessage: "成功播放第一首歌曲 `%ARG%`。",
     shuffleFailedMessage: "無法隨機播放歌單。",
     shuffleSuccessMessage: "成功隨機播放了歌單。",
+    searchFailedMessage: "找不到類似 `%ARG%` 的歌曲。",
+    searchTitle: "`%ARG%` 的搜尋結果",
 
     // Error message
     noSuchCommandMessage: "沒有 `%ARG%` 這個指令。",

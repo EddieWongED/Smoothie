@@ -68,10 +68,14 @@ export default class URLHandler {
                 const songs: Song[] = [
                     {
                         addedAt: new Date(),
-                        playCount: 0,
-                        title: result.videoDetails.title,
                         url: result.videoDetails.video_url,
+                        title: result.videoDetails.title,
+                        uploader: result.videoDetails.author.name,
+                        uploaderURL: result.videoDetails.author.channel_url,
+                        thumbnailURL:
+                            result.videoDetails.thumbnails[0]?.url ?? null,
                         duration: parseInt(result.videoDetails.lengthSeconds),
+                        playCount: 0,
                     },
                 ];
                 return songs;
@@ -104,10 +108,13 @@ export default class URLHandler {
 
                     songs.push({
                         addedAt: new Date(),
-                        playCount: 0,
-                        title: video.title,
                         url: video.url,
+                        title: video.title,
+                        uploader: video.channel,
+                        uploaderURL: video.channel_url,
+                        thumbnailURL: video.thumbnails[0]?.url ?? null,
                         duration: video.duration,
+                        playCount: 0,
                     });
                 }
                 return songs;

@@ -21,7 +21,6 @@ import type {
     MessageComponentType,
     TextChannel,
 } from "discord.js";
-import ytdl from "ytdl-core";
 import type { MessageCommandPayload } from "../../typings/structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 
@@ -315,10 +314,6 @@ export default class SmoothieAudioPlayer {
             }
         }
 
-        const info = await ytdl.getBasicInfo(song.url);
-        const thumbnail = info.videoDetails.thumbnails[0]?.url ?? null;
-        const authorName = info.videoDetails.author.name;
-        const authorURL = info.videoDetails.author.channel_url;
         const isPaused =
             this.player.state.status === AudioPlayerStatus.Paused ||
             this.player.state.status === AudioPlayerStatus.AutoPaused;
@@ -330,11 +325,13 @@ export default class SmoothieAudioPlayer {
         const fields: APIEmbedField[] = [];
 
         // Add uploaded to field
-        fields.push({
-            name: getLocale(language, "uploadedByField"),
-            value: `[${authorName}](${authorURL})`,
-            inline: true,
-        });
+        if (song.uploader && song.uploaderURL) {
+            fields.push({
+                name: getLocale(language, "uploadedByField"),
+                value: `[${song.uploader}](${song.uploaderURL})`,
+                inline: true,
+            });
+        }
 
         // Add song added date
         fields.push({
@@ -390,7 +387,7 @@ export default class SmoothieAudioPlayer {
             title: getLocale(language, "playingNowTitle"),
             description: `### [${song.title}](${song.url})`,
             fields: fields,
-            thumbnail: thumbnail,
+            thumbnail: song.thumbnailURL,
             playedFor: this.playedFor,
             duration: song.duration,
             isPaused: isPaused,
@@ -425,7 +422,7 @@ export default class SmoothieAudioPlayer {
                         title: "Playing Now",
                         description: `### [${song.title}](${song.url})`,
                         fields: fields,
-                        thumbnail: thumbnail,
+                        thumbnail: song.thumbnailURL,
                         playedFor: this.playedFor,
                         duration: song.duration,
                         isPaused: isPaused,

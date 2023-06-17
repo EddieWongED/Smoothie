@@ -21,4 +21,5 @@ export interface ListReplyArgs {
     list: string[];
     titleArgs?: string[];
     itemsPerPage?: number;
+    indexing?: boolean;
 }

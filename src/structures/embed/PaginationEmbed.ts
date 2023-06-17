@@ -14,6 +14,7 @@ export default class PaginationEmbed {
         page,
         footer,
         itemsPerPage = 10,
+        indexing = true,
     }: PaginationEmbedArgs): BaseMessageOptions {
         const maxPage = Math.ceil(list.length / itemsPerPage);
 
@@ -21,7 +22,10 @@ export default class PaginationEmbed {
         page = Math.min(Math.max(page, 1), maxPage);
 
         const pageList = list
-            .map((item, i) => `${i + 1}. ${item}`)
+            .map((item, i) => {
+                const index = indexing ? `${i + 1}. ` : "";
+                return `${index}${item}`;
+            })
             .slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
         const description =

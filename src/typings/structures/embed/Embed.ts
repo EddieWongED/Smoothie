@@ -22,6 +22,7 @@ export interface PaginationEmbedArgs {
     page: number;
     footer: string;
     itemsPerPage?: number;
+    indexing?: boolean;
 }
 
 export type PlayingNowEmbedArgs = BasicEmbedArgs & {

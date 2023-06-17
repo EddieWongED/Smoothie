@@ -3,6 +3,8 @@ import type { Song } from "../../data/music/Song.js";
 import type PlayOptions from "../../typings/commands/music/PlayOptions.js";
 import GuildDataHandler from "../database/GuildDataHandler.js";
 import GuildStatesHandler from "../database/GuildStatesHandler.js";
+import stringSimilarity from "string-similarity";
+import { Collection } from "discord.js";
 
 export default class QueueHandler {
     guildData: GuildDataHandler;
@@ -131,5 +133,28 @@ export default class QueueHandler {
         const rest = queue.slice(1);
         const shuffled = first.concat(arrayShuffle(rest));
         return await this.update(shuffled);
+    }
+
+    async search(query: string) {
+        const queue = await this.fetch();
+        if (!queue) return null;
+        const similarityMap = new Collection<string, number>();
+        queue.forEach((song, i) => {
+            const titleSimilarity = stringSimilarity.compareTwoStrings(
+                query.toLowerCase(),
+                song.title.toLowerCase()
+            );
+            let uploaderSimilarity = 0;
+            if (song.uploader) {
+                uploaderSimilarity = stringSimilarity.compareTwoStrings(
+                    query.toLowerCase(),
+                    song.uploader.toLowerCase()
+                );
+            }
+
+            const similarity = Math.max(titleSimilarity, uploaderSimilarity);
+            similarityMap.set(`${i + 1}. ${song.title}`, similarity);
+        });
+        return similarityMap;
     }
 }
