@@ -23,6 +23,7 @@ import type {
 } from "discord.js";
 import type { MessageCommandPayload } from "../../typings/structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
+import type { VoiceChannel } from "discord.js";
 
 export default class SmoothieAudioPlayer {
     player: AudioPlayer;
@@ -165,6 +166,18 @@ export default class SmoothieAudioPlayer {
                         Logging.warn(
                             this._guildPrefix,
                             "Failed to update play count."
+                        );
+                    }
+                    const song = oldState.resource.metadata as Song;
+                    if (
+                        !(await this._updateUsersListenCount(
+                            song.url,
+                            song.title
+                        ))
+                    ) {
+                        Logging.warn(
+                            this._guildPrefix,
+                            "Failed to update users listen count."
                         );
                     }
                     await this.playNext();
@@ -431,6 +444,9 @@ export default class SmoothieAudioPlayer {
                     });
                     await this._reply.reply(embed);
                     this._clickedPauseOrUnpauseButton = false;
+                    if (this.playedFor >= song.duration) {
+                        clearInterval(this._embedTimer);
+                    }
                 }
                 this._prevPlayedFor = this.playedFor;
             })();
@@ -449,5 +465,56 @@ export default class SmoothieAudioPlayer {
         if (!queue[0]) return false;
         queue[0].playCount += 1;
         return await this._queueHandler.update(queue);
+    }
+
+    private async _updateUsersListenCount(url: string, title: string) {
+        const userStats = await this._guildData.get("userStats");
+        if (!userStats) return false;
+        const channelId = client.voiceConnections.get(this.guildId)?.channelId;
+        if (!channelId) return false;
+
+        const channel = client.channels.cache.get(
+            channelId
+        ) as VoiceChannel | null;
+        if (!channel) return false;
+        const userIds = channel.members
+            .filter((member) => member.user !== client.user)
+            .map((member) => member.user.id);
+
+        for (const userId of userIds) {
+            const stats = userStats.find((stats) => stats.userId === userId);
+            // Create this user stats if it does not exist
+            if (!stats) {
+                userStats.push({
+                    userId: userId,
+                    songStats: [
+                        {
+                            url: url,
+                            title: title,
+                            listenCount: 1,
+                        },
+                    ],
+                });
+                continue;
+            }
+
+            // Create this song stats for this user if it does not exist
+            const songStats = stats.songStats.find(
+                (songStats) => songStats.url === url
+            );
+            if (!songStats) {
+                stats.songStats.push({
+                    url: url,
+                    title: title,
+                    listenCount: 1,
+                });
+                continue;
+            }
+            songStats.listenCount += 1;
+        }
+
+        await this._guildData.update("userStats", userStats);
+
+        return true;
     }
 }
