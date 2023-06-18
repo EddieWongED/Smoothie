@@ -300,33 +300,8 @@ export default class SmoothieAudioPlayer {
     }
 
     private async _sendPlayingNowMessage(song: Song) {
-        // Remove previous playing now message
-        const playingNowMessageId = await this._guildStates.get(
-            "playingNowMessageId"
-        );
-        const playingNowChannelId = await this._guildStates.get(
-            "playingNowChannelId"
-        );
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
-
-        if (playingNowMessageId && playingNowChannelId) {
-            try {
-                const channel = client.channels.cache.get(
-                    playingNowChannelId
-                ) as TextChannel | null;
-                const message = await channel?.messages.fetch(
-                    playingNowMessageId
-                );
-                await message?.delete();
-            } catch (err) {
-                Logging.warn(
-                    this._guildPrefix,
-                    "Failed to delete previous playing now message."
-                );
-            }
-        }
-
         const isPaused =
             this.player.state.status === AudioPlayerStatus.Paused ||
             this.player.state.status === AudioPlayerStatus.AutoPaused;
@@ -411,6 +386,31 @@ export default class SmoothieAudioPlayer {
         const message = await this._reply.send(embed);
         if (message) {
             this._registerPlayingNowButtons(message);
+            // Remove previous playing now message
+            const playingNowMessageId = await this._guildStates.get(
+                "playingNowMessageId"
+            );
+            const playingNowChannelId = await this._guildStates.get(
+                "playingNowChannelId"
+            );
+
+            if (playingNowMessageId && playingNowChannelId) {
+                try {
+                    const channel = client.channels.cache.get(
+                        playingNowChannelId
+                    ) as TextChannel | null;
+                    const message = await channel?.messages.fetch(
+                        playingNowMessageId
+                    );
+                    await message?.delete();
+                } catch (err) {
+                    Logging.warn(
+                        this._guildPrefix,
+                        "Failed to delete previous playing now message."
+                    );
+                }
+            }
+
             await this._guildStates.update("playingNowMessageId", message.id);
             await this._guildStates.update(
                 "playingNowChannelId",
@@ -432,7 +432,7 @@ export default class SmoothieAudioPlayer {
                         this.player.state.status ===
                             AudioPlayerStatus.AutoPaused;
                     const embed = PlayingNowEmbed.create({
-                        title: "Playing Now",
+                        title: getLocale(language, "playingNowTitle"),
                         description: `### [${song.title}](${song.url})`,
                         fields: fields,
                         thumbnail: song.thumbnailURL,

@@ -3,18 +3,17 @@ import { Events } from "discord.js";
 import { SmoothieEvent } from "../structures/events/SmoothieEvent.js";
 import Logging from "../structures/logging/Logging.js";
 import { client } from "../index.js";
-import GuildStatesHandler from "../structures/database/GuildStatesHandler.js";
 import SmoothieVoiceConnection from "../structures/music/SmoothieVoiceConnection.js";
+import GuildStatesController from "../structures/database/GuildStatesController.js";
 
 export default new SmoothieEvent(Events.ClientReady, async () => {
     Logging.success("Bot is online.");
     client.user?.setActivity("$play / slash command");
-    const guildStates = new GuildStatesHandler(null);
-    const collection = await guildStates.getAll("voiceChannelId");
-    if (!collection) return;
+    const collection = await GuildStatesController.getAll("voiceChannelId");
 
     collection.forEach((voiceChannelId, guildId) => {
         void (async () => {
+            if (!voiceChannelId) return;
             // Fetch the voice channel
             const channel = client.channels.cache.get(
                 voiceChannelId
