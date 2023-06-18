@@ -481,12 +481,15 @@ export default class SmoothieAudioPlayer {
             .filter((member) => member.user !== client.user)
             .map((member) => member.user.id);
 
+        if (userIds.length === 0) return;
+
         for (const userId of userIds) {
             const stats = userStats.find((stats) => stats.userId === userId);
             // Create this user stats if it does not exist
             if (!stats) {
                 userStats.push({
                     userId: userId,
+                    stayDuration: 0,
                     songStats: [
                         {
                             url: url,

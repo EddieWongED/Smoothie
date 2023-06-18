@@ -7,4 +7,8 @@ export class UserStats {
 
     @prop({ type: () => [SongStats], required: true, default: [] })
     public songStats!: SongStats[];
+
+    // In minutes
+    @prop({ required: true, default: 0 })
+    public stayDuration!: number;
 }
