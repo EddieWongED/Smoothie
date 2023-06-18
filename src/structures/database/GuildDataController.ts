@@ -1,83 +1,132 @@
-import mongoose from "mongoose";
+import { Collection } from "discord.js";
 import type { GuildData } from "../../data/guild/GuildData.js";
 import GuildDataModel from "../../models/GuildDataModel.js";
 import Logging from "../logging/Logging.js";
+import type { MutexInterface } from "async-mutex";
+import { Mutex, withTimeout } from "async-mutex";
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class GuildDataController {
-    async create(guildId: string | null): Promise<GuildData | null> {
-        if (!guildId) return null;
+    static readWriteMutex: MutexInterface = withTimeout(new Mutex(), 2000);
+    static readMutex: MutexInterface = withTimeout(new Mutex(), 2000);
+    static readCount = 0;
 
-        // Check if the data exists or not
-        const receivedGuildData = (await GuildDataModel.findOne({
-            guildId: guildId,
-        })) as unknown as GuildData | null;
-        if (receivedGuildData) {
-            return receivedGuildData;
+    static async get<Key extends keyof Omit<GuildData, "guildId">>(
+        guildId: string,
+        key: Key
+    ) {
+        // Readers–writers problem
+        // Acquire resource lock
+        await GuildDataController.readMutex.acquire();
+        GuildDataController.readCount++;
+        if (GuildDataController.readCount === 1) {
+            await GuildDataController.readWriteMutex.acquire();
         }
+        GuildDataController.readMutex.release();
 
-        // Create new data
-        const guildData = new GuildDataModel({
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            _id: new mongoose.Types.ObjectId(),
-            guildId: guildId,
-        });
-
+        // Start reading
+        let data: GuildData | null = null;
         try {
-            const data =
-                (await (guildData.save() as unknown)) as GuildData | null;
-            return data;
+            data = await GuildDataModel.findOne<GuildData>(
+                {
+                    guildId: guildId,
+                },
+                [key],
+                { upsert: true }
+            ).exec();
         } catch (err) {
             Logging.error(err);
         }
-        return null;
-    }
 
-    async read(guildId: string | null): Promise<GuildData | null> {
-        if (!guildId) return null;
-
-        try {
-            const guildData = (await GuildDataModel.findOne({
-                guildId: guildId,
-            })) as unknown as GuildData | null;
-            if (!guildData) {
-                return this.create(guildId);
-            }
-            return guildData;
-        } catch (err) {
-            Logging.error(err);
+        // Release resource lock
+        await GuildDataController.readMutex.acquire();
+        GuildDataController.readCount--;
+        if (GuildDataController.readCount === 0) {
+            GuildDataController.readWriteMutex.release();
         }
-        return null;
+        GuildDataController.readMutex.release();
+        if (!data) return null;
+        return data[key];
     }
 
-    async update<Key extends keyof GuildData>(
-        guildId: string | null,
+    static async update<Key extends keyof Omit<GuildData, "guildId">>(
+        guildId: string,
         key: Key,
         value: GuildData[Key]
-    ): Promise<GuildData | null> {
-        if (!guildId) return null;
-        if (key === "guildId") return null;
+    ) {
+        // Acquire resource lock
+        await GuildDataController.readWriteMutex.acquire();
 
+        // Start writing
+        let data: GuildData | null = null;
         try {
-            const data = await GuildDataModel.findOneAndUpdate(
+            data = await GuildDataModel.findOneAndUpdate<GuildData>(
                 { guildId: guildId },
                 { $set: { [key]: value } },
                 { returnOriginal: false, upsert: true }
-            );
-            return data as unknown as GuildData | null;
+            ).exec();
         } catch (err) {
             Logging.error(err);
         }
-        return null;
+
+        // Release resource lock
+        GuildDataController.readWriteMutex.release();
+        return data;
     }
 
-    async remove(guildId: string | null): Promise<boolean> {
-        if (!guildId) return false;
+    static async remove(guildId: string) {
+        // Acquire resource lock
+        await GuildDataController.readWriteMutex.acquire();
+
+        // Start writing
+        let data = false;
         try {
-            const result = await GuildDataModel.deleteOne({ guildId: guildId });
-            return result.acknowledged && result.deletedCount >= 1;
+            const result = await GuildDataModel.deleteOne({
+                guildId: guildId,
+            }).exec();
+            data = result.acknowledged && result.deletedCount >= 1;
         } catch (err) {
             Logging.error(err);
         }
-        return false;
+
+        // Release resource lock
+        GuildDataController.readWriteMutex.release();
+        return data;
+    }
+
+    static async getAll<Key extends keyof Omit<GuildData, "guildId">>(
+        key: Key
+    ) {
+        // Readers–writers problem
+        // Acquire resource lock
+        await GuildDataController.readMutex.acquire();
+        GuildDataController.readCount++;
+        if (GuildDataController.readCount === 1) {
+            await GuildDataController.readWriteMutex.acquire();
+        }
+        GuildDataController.readMutex.release();
+
+        // Start reading
+        const collection = new Collection<string, GuildData[Key]>();
+        try {
+            const result = await GuildDataModel.find<GuildData>({}, [
+                "guildId",
+                key,
+            ]);
+            result.forEach((guildStates) => {
+                collection.set(guildStates.guildId, guildStates[key]);
+            });
+        } catch (err) {
+            Logging.error(err);
+        }
+
+        // Release resource lock
+        await GuildDataController.readMutex.acquire();
+        GuildDataController.readCount--;
+        if (GuildDataController.readCount === 0) {
+            GuildDataController.readWriteMutex.release();
+        }
+        GuildDataController.readMutex.release();
+        return collection;
     }
 }
