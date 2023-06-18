@@ -8,16 +8,22 @@ import createGuildPrefix from "../../utils/createGuildPrefix.js";
 import createChannelPrefix from "../../utils/createChannelPrefix.js";
 import SmoothieAudioPlayer from "./SmoothieAudioPlayer.js";
 import GuildStatesHandler from "../database/GuildStatesHandler.js";
+import type { VoiceChannel } from "discord.js";
+import GuildDataHandler from "../database/GuildDataHandler.js";
+import { clearInterval } from "timers";
 
 export default class SmoothieVoiceConnection {
     channelId: string | null = null;
     connection: VoiceConnection | undefined = undefined;
     player: SmoothieAudioPlayer;
+    private _guildData: GuildDataHandler;
     private _guildStates: GuildStatesHandler;
+    private _stayTimer?: NodeJS.Timer;
 
     constructor(public guildId: string) {
         this.player = new SmoothieAudioPlayer(guildId);
         client.audioPlayers.set(guildId, this.player);
+        this._guildData = new GuildDataHandler(guildId);
         this._guildStates = new GuildStatesHandler(guildId);
     }
 
@@ -71,6 +77,9 @@ export default class SmoothieVoiceConnection {
 
         // Update database voiceChannelId
         await this._guildStates.update("voiceChannelId", channelId);
+
+        // Start user staying count
+        this._startStayingTimer();
         return true;
     }
 
@@ -79,7 +88,46 @@ export default class SmoothieVoiceConnection {
         this.connection.destroy();
         this.connection = undefined;
         this.channelId = null;
+        clearInterval(this._stayTimer);
         await this._guildStates.update("voiceChannelId", null);
         return true;
+    }
+
+    private _startStayingTimer() {
+        this._stayTimer = setInterval(() => {
+            void (async () => {
+                if (!this.channelId) return;
+                const channel = client.channels.cache.get(
+                    this.channelId
+                ) as VoiceChannel | null;
+                if (!channel) return;
+                const userStats = await this._guildData.get("userStats");
+                if (!userStats) return;
+
+                const userIds = channel.members
+                    .filter((member) => member.user !== client.user)
+                    .map((member) => member.user.id);
+
+                if (userIds.length === 0) return;
+
+                for (const userId of userIds) {
+                    const stats = userStats.find(
+                        (stats) => stats.userId === userId
+                    );
+                    // Create this user stats if it does not exist
+                    if (!stats) {
+                        userStats.push({
+                            userId: userId,
+                            stayDuration: 1,
+                            songStats: [],
+                        });
+                        continue;
+                    }
+                    stats.stayDuration += 1;
+                }
+
+                await this._guildData.update("userStats", userStats);
+            })();
+        }, 60000);
     }
 }

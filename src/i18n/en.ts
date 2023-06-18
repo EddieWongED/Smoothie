@@ -56,6 +56,13 @@ const en: InternationalizationList = {
     shuffleSuccessMessage: "Shuffled the queue successfully.",
     searchFailedMessage: "Cannot find songs that are similar to `%ARG%`.",
     searchTitle: "Search Result of `%ARG%`",
+    stayRankTitle: "Ranking of Hanging Around in Voice Channel",
+    stayRankFailedMessage:
+        "Failed to show the ranking of hanging around in voice channel.",
+    queueRankTitle:
+        "Ranking of The Number of Times Played of Each Song in `%ARG%` Playlist",
+    queueRankFailedMessage:
+        "Failed to show the ranking of the number of times played of each song in the playlist.",
 
     // Error message
     noSuchCommandMessage: "There is no `%ARG%` command.",
@@ -78,12 +85,13 @@ const en: InternationalizationList = {
     choosePageNotWithinRangeMessage:
         "The integer you typed is not within the range! Please click the button and try again!",
     noSonginPlaylistMessage: "You don't have any songs in the playlist!",
-    invalidYouTubeURLMessage: "Invalid YouTube URL!",
+    invalidYouTubeURLMessage:
+        "Invalid YouTube URL! The reason maybe is because it is a private / age-restricted / deleted video.",
     playFailedMessage: "Failed to play the song(s) with URL = `%ARG%`.",
     playSuccessMessage:
         "Added `%ARG%` new song(s) to the queue. `%ARG%` song(s) was/were already in the queue so they didn't get added.",
     playSongFailedMessage:
-        "Failed to play the current song (`%ARG%`). It may be an private video, deleted video, or network problem. Please try again with the retry command. If the problem persists, please skip the song or remove the song from the playlist.",
+        "Failed to play the current song (`%ARG%`). It may be a private / age-restricted / deleted video, or network problem. Please try again with the retry command. If the problem persists, please skip the song or remove the song from the playlist.",
     noUpComingSongMessage: "You don't have any up coming song!",
 
     // Others

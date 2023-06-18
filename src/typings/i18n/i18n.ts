@@ -51,6 +51,10 @@ export interface InternationalizationList {
     shuffleSuccessMessage: string;
     searchFailedMessage: string;
     searchTitle: string;
+    stayRankTitle: string;
+    stayRankFailedMessage: string;
+    queueRankTitle: string;
+    queueRankFailedMessage: string;
 
     // Error message
     noSuchCommandMessage: string;

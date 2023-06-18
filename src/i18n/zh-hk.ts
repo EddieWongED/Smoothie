@@ -55,6 +55,10 @@ const zh_hk: InternationalizationList = {
     shuffleSuccessMessage: "成功隨機播放了歌單。",
     searchFailedMessage: "找不到類似 `%ARG%` 的歌曲。",
     searchTitle: "`%ARG%` 的搜尋結果",
+    stayRankTitle: "逗留在語音通道的排名",
+    stayRankFailedMessage: "無法顯示逗留在語音通道的排名。",
+    queueRankTitle: "`%ARG%` 播放列表中每首歌曲播放次數的排名",
+    queueRankFailedMessage: "無法顯示播放列表中每首歌曲播放次數的排名。",
 
     // Error message
     noSuchCommandMessage: "沒有 `%ARG%` 這個指令。",
@@ -72,9 +76,10 @@ const zh_hk: InternationalizationList = {
     choosePageNotIntegerMessage: "您輸入的信息不是一個整數！請再次點擊按鈕！",
     choosePageNotWithinRangeMessage: "您輸入的整數不在範圍內！請再次點擊按鈕！",
     noSonginPlaylistMessage: "您的播放清單中沒有任何歌曲！",
-    invalidYouTubeURLMessage: "無效的 YouTube URL！",
+    invalidYouTubeURLMessage:
+        "無效的 YouTube URL！原因可能是歌曲是私人 / 年齡限制 / 已移除限制影片。",
     playSongFailedMessage:
-        "無法播放當前歌曲（`%ARG%`）。原因可能是歌曲是私人影片或已經被移除，又或者是網路問題。請用 retry 指令重試。如問題仍然存在，請跳過該歌曲或從播放列表中刪除該歌曲。",
+        "無法播放當前歌曲（`%ARG%`）。原因可能是歌曲是私人 / 年齡限制 / 已移除限制影片，又或者是網路問題。請用 retry 指令重試。如問題仍然存在，請跳過該歌曲或從播放列表中刪除該歌曲。",
     noUpComingSongMessage: "您沒有下一首歌曲！",
 
     // Others
