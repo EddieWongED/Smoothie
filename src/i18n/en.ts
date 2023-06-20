@@ -56,9 +56,9 @@ const en: InternationalizationList = {
     shuffleSuccessMessage: "Shuffled the queue successfully.",
     searchFailedMessage: "Cannot find songs that are similar to `%ARG%`.",
     searchTitle: "Search Result of `%ARG%`",
-    stayRankTitle: "Ranking of Hanging Around in Voice Channel",
+    stayRankTitle: "Ranking of Hanging Around in Voice Channel with Smoothie",
     stayRankFailedMessage:
-        "Failed to show the ranking of hanging around in voice channel.",
+        "Failed to show the ranking of hanging around in voice channel with Smoothie.",
     queueRankTitle:
         "Ranking of The Number of Times Played of Each Song in `%ARG%` Playlist",
     queueRankFailedMessage:
