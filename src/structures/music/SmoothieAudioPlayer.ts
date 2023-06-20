@@ -43,6 +43,7 @@ export default class SmoothieAudioPlayer {
     private _prevPlayedFor = -1;
     private _clickedPauseOrUnpauseButton = false;
     private _isForceStop = false;
+    private _prevTime: DOMHighResTimeStamp;
 
     constructor(public guildId: string) {
         this.player = createAudioPlayer({
@@ -57,6 +58,7 @@ export default class SmoothieAudioPlayer {
         this._guildPrefix = createGuildPrefix(this.guildId);
         this._guildData = new GuildDataHandler(guildId);
         this._guildStates = new GuildStatesHandler(guildId);
+        this._prevTime = performance.now();
     }
 
     async start() {
@@ -454,8 +456,12 @@ export default class SmoothieAudioPlayer {
     }
 
     private _startTimer() {
+        this._prevTime = performance.now();
         this._musicTimer = setInterval(() => {
-            this.playedFor += 1;
+            const now = performance.now();
+            const timeElapsed = now - this._prevTime;
+            this.playedFor += timeElapsed / 1000;
+            this._prevTime = now;
         }, 1000);
     }
 

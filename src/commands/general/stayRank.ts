@@ -22,7 +22,7 @@ export default new SmoothieCommand(Commands.stayRank, {
                 .map(async (userStat) => {
                     const user = await client.users.fetch(userStat.userId);
                     return `${user.username}: ${formatTimeWithLetter(
-                        userStat.stayDuration * 60
+                        userStat.stayDuration
                     )}
                     `;
                 })
