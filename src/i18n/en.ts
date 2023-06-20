@@ -88,11 +88,14 @@ const en: InternationalizationList = {
     invalidYouTubeURLMessage:
         "Invalid YouTube URL! The reason maybe is because it is a private / age-restricted / deleted video.",
     playFailedMessage: "Failed to play the song(s) with URL = `%ARG%`.",
-    playSuccessMessage:
+    playSuccessMessage: "Played `%ARG%` successfully.",
+    playSingleSuccessMessage: "Added `%ARG%` successfully.",
+    playPlaylistSuccessMessage:
         "Added `%ARG%` new song(s) to the queue. `%ARG%` song(s) was/were already in the queue so they didn't get added.",
     playSongFailedMessage:
         "Failed to play the current song (`%ARG%`). It may be a private / age-restricted / deleted video, or network problem. Please try again with the retry command. If the problem persists, please skip the song or remove the song from the playlist.\nThe music player has been paused.",
     noUpComingSongMessage: "You don't have any up coming song!",
+    prevFailedMessage: "Failed to play the previous song.",
 
     // Others
     successTitle: "Success!",

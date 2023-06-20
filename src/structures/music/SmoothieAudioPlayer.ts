@@ -90,6 +90,19 @@ export default class SmoothieAudioPlayer {
         return this.play(song);
     }
 
+    async playPrev() {
+        const song = await this._queueHandler.prev();
+        if (!song) {
+            this.pause();
+            Logging.warn(
+                this._guildPrefix,
+                "Failed to fetch the previous song."
+            );
+            return null;
+        }
+        return this.play(song);
+    }
+
     async playNext() {
         const song = await this._queueHandler.next();
         if (!song) {
@@ -227,6 +240,31 @@ export default class SmoothieAudioPlayer {
         this._buttonsCollector.on("collect", async (interaction) => {
             await interaction.deferUpdate();
             switch (interaction.customId) {
+                case "prev": {
+                    const command = client.commands.get(Commands.prev);
+                    const reply = new ReplyHandler({
+                        guildId: this.guildId,
+                    });
+                    await command?.run({
+                        guildId: this.guildId,
+                        guildData: this._guildData,
+                        guildStates: this._guildStates,
+                        payload: message,
+                        options: {},
+                        reply: reply,
+                    });
+                    break;
+                }
+                case "pause": {
+                    this.pause();
+                    this._clickedPauseOrUnpauseButton = true;
+                    break;
+                }
+                case "unpause": {
+                    this.unpause();
+                    this._clickedPauseOrUnpauseButton = true;
+                    break;
+                }
                 case "skip": {
                     const command = client.commands.get(Commands.skip);
                     const reply = new ReplyHandler({
@@ -255,16 +293,6 @@ export default class SmoothieAudioPlayer {
                         options: {},
                         reply: reply,
                     });
-                    break;
-                }
-                case "pause": {
-                    this.pause();
-                    this._clickedPauseOrUnpauseButton = true;
-                    break;
-                }
-                case "unpause": {
-                    this.unpause();
-                    this._clickedPauseOrUnpauseButton = true;
                     break;
                 }
                 case "queue": {

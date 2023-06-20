@@ -32,6 +32,7 @@ import type SearchOptions from "../../commands/music/SearchOptions.js";
 import type RankOptions from "../../commands/general/RankOptions.js";
 import type StayRankOptions from "../../commands/general/StayRankOptions.js";
 import type QueueRankOptions from "../../commands/music/QueueRankOptions.js";
+import type PrevOptions from "../../commands/music/PrevOptions.js";
 
 // Payload
 export type SlashCommandPayload = ChatInputCommandInteraction & {
@@ -63,6 +64,7 @@ export enum Commands {
     queue = "queue",
     queueRank = "queuerank",
     skip = "skip",
+    prev = "prev",
     shuffle = "shuffle",
     search = "search",
     retry = "retry",
@@ -92,6 +94,7 @@ interface CommandOptionsList {
     [Commands.queue]: QueueOptions;
     [Commands.queueRank]: QueueRankOptions;
     [Commands.skip]: SkipOptions;
+    [Commands.prev]: PrevOptions;
     [Commands.shuffle]: ShuffleOptions;
     [Commands.search]: SearchOptions;
     [Commands.retry]: RetryOptions;
