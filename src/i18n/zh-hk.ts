@@ -33,7 +33,9 @@ const zh_hk: InternationalizationList = {
     switchPlaylistFailedMessage: "無法切換到 `%ARG%` 播放清單。",
     switchPlaylistSuccessMessage: "成功切換到 `%ARG%` 播放清單。",
     playFailedMessage: "無法播放 URL = `%ARG%` 的音樂。",
-    playSuccessMessage:
+    playSuccessMessage: "成功播放 `%ARG%`。",
+    playSingleSuccessMessage: "成功將 `%ARG%` 添加到播放清單中。",
+    playPlaylistSuccessMessage:
         "已將 `%ARG%` 首新歌曲添加到播放清單中。另外因為有 `%ARG%` 首歌曲已經在播放清單中，因此它們沒有被添加。",
     queueTitle: "`%ARG%` 歌單",
     queueFailedMessage: "無法顯示目前播放清單的歌單。",
@@ -59,6 +61,7 @@ const zh_hk: InternationalizationList = {
     stayRankFailedMessage: "無法顯示逗留在語音通道的排名。",
     queueRankTitle: "`%ARG%` 播放列表中每首歌曲播放次數的排名",
     queueRankFailedMessage: "無法顯示播放列表中每首歌曲播放次數的排名。",
+    prevFailedMessage: "無法播放上一首歌曲。",
 
     // Error message
     noSuchCommandMessage: "沒有 `%ARG%` 這個指令。",

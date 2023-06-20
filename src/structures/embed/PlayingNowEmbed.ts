@@ -33,15 +33,10 @@ export default class PlayingNowEmbed {
         });
 
         // Create Component
-        const skipButton = new ButtonBuilder()
-            .setCustomId("skip")
-            .setEmoji("⏭️")
+        const prevButton = new ButtonBuilder()
+            .setCustomId("prev")
+            .setEmoji("⏮️")
             .setStyle(ButtonStyle.Primary);
-
-        const shuffleButton = new ButtonBuilder()
-            .setCustomId("shuffle")
-            .setEmoji("🔀")
-            .setStyle(ButtonStyle.Success);
 
         const pauseButton = new ButtonBuilder()
             .setCustomId("pause")
@@ -53,25 +48,39 @@ export default class PlayingNowEmbed {
             .setEmoji("▶️")
             .setStyle(ButtonStyle.Danger);
 
+        const skipButton = new ButtonBuilder()
+            .setCustomId("skip")
+            .setEmoji("⏭️")
+            .setStyle(ButtonStyle.Primary);
+
+        const shuffleButton = new ButtonBuilder()
+            .setCustomId("shuffle")
+            .setEmoji("🔀")
+            .setStyle(ButtonStyle.Success);
+
         const queueButton = new ButtonBuilder()
             .setCustomId("queue")
             .setLabel(queueButtonText)
-            .setStyle(ButtonStyle.Secondary);
+            .setStyle(ButtonStyle.Primary);
 
         const playlistInfoButton = new ButtonBuilder()
             .setCustomId("playlistInfo")
             .setLabel(playlistInfoButtonText)
-            .setStyle(ButtonStyle.Success);
+            .setStyle(ButtonStyle.Secondary);
 
-        const row = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            skipButton,
-            shuffleButton,
+        const row1 = new ActionRowBuilder<ButtonBuilder>().setComponents(
+            prevButton,
             isPaused ? unpauseButton : pauseButton,
+            skipButton,
+            shuffleButton
+        );
+
+        const row2 = new ActionRowBuilder<ButtonBuilder>().setComponents(
             queueButton,
             playlistInfoButton
         );
 
-        embed.components = [row];
+        embed.components = [row1, row2];
 
         return embed;
     }

@@ -21,6 +21,16 @@ export default class QueueHandler {
         return queue[0];
     }
 
+    async prev() {
+        const queue = await this.fetch();
+        if (!queue) return undefined;
+        const last = queue.pop();
+        if (!last) return undefined;
+        queue.unshift(last);
+        await this.update(queue);
+        return queue[0];
+    }
+
     async next() {
         const queue = await this.fetch();
         if (!queue) return undefined;

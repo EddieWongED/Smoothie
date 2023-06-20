@@ -32,6 +32,8 @@ export interface InternationalizationList {
     switchPlaylistSuccessMessage: string;
     playFailedMessage: string;
     playSuccessMessage: string;
+    playSingleSuccessMessage: string;
+    playPlaylistSuccessMessage: string;
     queueTitle: string;
     queueFailedMessage: string;
     skipFailedMessage: string;
@@ -55,6 +57,7 @@ export interface InternationalizationList {
     stayRankFailedMessage: string;
     queueRankTitle: string;
     queueRankFailedMessage: string;
+    prevFailedMessage: string;
 
     // Error message
     noSuchCommandMessage: string;

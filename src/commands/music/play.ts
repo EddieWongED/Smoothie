@@ -79,14 +79,32 @@ export default new SmoothieCommand(Commands.play, {
             return;
         }
 
-        await reply.success({
-            title: "successTitle",
-            description: "playSuccessMessage",
-            descriptionArgs: [
-                addedSongs.length.toString(),
-                (newSongs.length - addedSongs.length).toString(),
-            ],
-        });
+        if (newSongs.length === 1 && addedSongs.length === 1) {
+            // Single
+            const song = addedSongs[0];
+            if (!song) {
+                await reply.error({
+                    title: "errorTitle",
+                    description: "playFailedMessage",
+                });
+                return;
+            }
+            await reply.success({
+                title: "successTitle",
+                description: "playSingleSuccessMessage",
+                descriptionArgs: [song.title],
+            });
+        } else {
+            // Playlist
+            await reply.success({
+                title: "successTitle",
+                description: "playPlaylistSuccessMessage",
+                descriptionArgs: [
+                    addedSongs.length.toString(),
+                    (newSongs.length - addedSongs.length).toString(),
+                ],
+            });
+        }
 
         // Play song if no song is playing
         const player = client.audioPlayers.get(guildId);
