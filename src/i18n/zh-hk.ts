@@ -79,7 +79,7 @@ const zh_hk: InternationalizationList = {
     invalidYouTubeURLMessage:
         "無效的 YouTube URL！原因可能是歌曲是私人 / 年齡限制 / 已移除限制影片。",
     playSongFailedMessage:
-        "無法播放當前歌曲（`%ARG%`）。原因可能是歌曲是私人 / 年齡限制 / 已移除限制影片，又或者是網路問題。請用 retry 指令重試。如問題仍然存在，請跳過該歌曲或從播放列表中刪除該歌曲。",
+        "無法播放當前歌曲（`%ARG%`）。原因可能是歌曲是私人 / 年齡限制 / 已移除限制影片，又或者是網路問題。請用 retry 指令重試。如問題仍然存在，請跳過該歌曲或從播放列表中刪除該歌曲。\n音樂播放器已暫停。",
     noUpComingSongMessage: "您沒有下一首歌曲！",
 
     // Others

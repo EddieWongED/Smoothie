@@ -19,12 +19,14 @@ export default class SmoothieVoiceConnection {
     private _guildData: GuildDataHandler;
     private _guildStates: GuildStatesHandler;
     private _stayTimer?: NodeJS.Timer;
+    private _prevTime: DOMHighResTimeStamp;
 
     constructor(public guildId: string) {
         this.player = new SmoothieAudioPlayer(guildId);
         client.audioPlayers.set(guildId, this.player);
         this._guildData = new GuildDataHandler(guildId);
         this._guildStates = new GuildStatesHandler(guildId);
+        this._prevTime = performance.now();
     }
 
     async connect(channelId: string): Promise<boolean> {
@@ -94,6 +96,7 @@ export default class SmoothieVoiceConnection {
     }
 
     private _startStayingTimer() {
+        this._prevTime = performance.now();
         this._stayTimer = setInterval(() => {
             void (async () => {
                 if (!this.channelId) return;
@@ -110,6 +113,9 @@ export default class SmoothieVoiceConnection {
 
                 if (userIds.length === 0) return;
 
+                const now = performance.now();
+                const timeElapsed = (now - this._prevTime) / 1000;
+
                 for (const userId of userIds) {
                     const stats = userStats.find(
                         (stats) => stats.userId === userId
@@ -118,16 +124,17 @@ export default class SmoothieVoiceConnection {
                     if (!stats) {
                         userStats.push({
                             userId: userId,
-                            stayDuration: 1,
+                            stayDuration: timeElapsed,
                             songStats: [],
                         });
                         continue;
                     }
-                    stats.stayDuration += 1;
+                    stats.stayDuration += timeElapsed;
                 }
 
                 await this._guildData.update("userStats", userStats);
+                this._prevTime = now;
             })();
-        }, 60000);
+        }, 30000);
     }
 }
