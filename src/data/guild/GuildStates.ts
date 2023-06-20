@@ -13,24 +13,24 @@ export class GuildStates implements Base, TimeStamps {
 
     public updatedAt!: Date;
 
-    @prop({ required: true, unique: true })
+    @prop({ required: true, unique: true, immutable: true })
     public guildId!: string;
 
-    @prop({ required: true, default: null })
+    @prop({ required: true, default: null, type: () => String })
     public currentPlaylistName!: string | null;
 
-    @prop({ required: true, default: null })
+    @prop({ required: true, default: null, type: () => String })
     public textChannelId!: string | null;
 
-    @prop({ required: true, default: null })
+    @prop({ required: true, default: null, type: () => String })
     public voiceChannelId!: string | null;
 
-    @prop({ required: true, default: null })
+    @prop({ required: true, default: null, type: () => String })
     public playingNowMessageId!: string | null;
 
-    @prop({ required: true, default: null })
+    @prop({ required: true, default: null, type: () => String })
     public playingNowChannelId!: string | null;
 
-    @prop({ required: true, default: null })
+    @prop({ required: true, default: null, type: () => String })
     public queueMessageId!: string | null;
 }
