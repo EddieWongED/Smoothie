@@ -4,7 +4,7 @@ export class Playlist {
     @prop({ required: true })
     public name!: string;
 
-    @prop({ required: true, default: new Date() })
+    @prop({ required: true, default: new Date(), immutable: true })
     public createdAt!: Date;
 
     @prop({ type: () => [Song], required: true, default: [] })

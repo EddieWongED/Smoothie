@@ -18,7 +18,7 @@ export class GuildData implements Base, TimeStamps {
 
     public updatedAt!: Date;
 
-    @prop({ required: true, unique: true })
+    @prop({ required: true, unique: true, immutable: true })
     public guildId!: string;
 
     @prop({ required: true, default: "$" })
