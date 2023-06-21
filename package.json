@@ -1,7 +1,7 @@
 {
-    "name": "nodejs-typescript-template",
+    "name": "smoothie",
     "version": "1.0.0",
-    "description": "Template project for typescript and nodejs.",
+    "description": "Discord.js v14 music bot using Typescript and MongoDB.",
     "main": "index.js",
     "type": "module",
     "scripts": {
@@ -18,9 +18,15 @@
         "clear-guild-commands": "tsc && node ./dist/scripts/commands/clearGuildSlashCommands.js",
         "import-songs": "tsc && node ./dist/scripts/music/importSongs.js"
     },
-    "keywords": [],
+    "keywords": [
+        "discord",
+        "discord.js",
+        "typescript",
+        "nodejs",
+        "mongodb"
+    ],
     "author": "",
-    "license": "ISC",
+    "license": "gpl-3.0",
     "devDependencies": {
         "@tsconfig/node18-strictest": "^1.0.0",
         "@types/glob": "^8.1.0",
