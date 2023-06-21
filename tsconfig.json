@@ -8,7 +8,9 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "preserveValueImports": false,
-        "importsNotUsedAsValues": "remove"
+        "importsNotUsedAsValues": "remove",
+        "resolveJsonModule": true,
+        "esModuleInterop": true
     },
     "extends": "@tsconfig/node18-strictest/tsconfig.json",
     "include": ["src/**/*", "environment.d.ts"]
