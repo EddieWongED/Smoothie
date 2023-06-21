@@ -4,6 +4,7 @@ import GuildStatesModel from "../../models/GuildStatesModel.js";
 import Logging from "../logging/Logging.js";
 import type { MutexInterface } from "async-mutex";
 import { Mutex, withTimeout } from "async-mutex";
+import mongoose from "mongoose";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class GuildStatesController {
@@ -34,6 +35,9 @@ export default class GuildStatesController {
                 [key],
                 { upsert: true }
             ).exec();
+            if (!data) {
+                data = await GuildStatesController._create(guildId);
+            }
         } catch (err) {
             Logging.error(err);
         }
@@ -128,5 +132,21 @@ export default class GuildStatesController {
         }
         GuildStatesController.readMutex.release();
         return collection;
+    }
+
+    private static async _create(guildId: string) {
+        // Create new data
+        const data = new GuildStatesModel({
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            _id: new mongoose.Types.ObjectId(),
+            guildId: guildId,
+        });
+
+        try {
+            return (await data.save()) as GuildStates | null;
+        } catch (err) {
+            Logging.error(err);
+        }
+        return null;
     }
 }
