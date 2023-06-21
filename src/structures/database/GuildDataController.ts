@@ -4,6 +4,7 @@ import GuildDataModel from "../../models/GuildDataModel.js";
 import Logging from "../logging/Logging.js";
 import type { MutexInterface } from "async-mutex";
 import { Mutex, withTimeout } from "async-mutex";
+import mongoose from "mongoose";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class GuildDataController {
@@ -31,9 +32,11 @@ export default class GuildDataController {
                 {
                     guildId: guildId,
                 },
-                [key],
-                { upsert: true }
+                [key]
             ).exec();
+            if (!data) {
+                data = await GuildDataController._create(guildId);
+            }
         } catch (err) {
             Logging.error(err);
         }
@@ -128,5 +131,21 @@ export default class GuildDataController {
         }
         GuildDataController.readMutex.release();
         return collection;
+    }
+
+    private static async _create(guildId: string) {
+        // Create new data
+        const data = new GuildDataModel({
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            _id: new mongoose.Types.ObjectId(),
+            guildId: guildId,
+        });
+
+        try {
+            return (await data.save()) as GuildData | null;
+        } catch (err) {
+            Logging.error(err);
+        }
+        return null;
     }
 }
