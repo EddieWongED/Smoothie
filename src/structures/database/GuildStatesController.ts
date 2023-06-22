@@ -32,8 +32,7 @@ export default class GuildStatesController {
                 {
                     guildId: guildId,
                 },
-                [key],
-                { upsert: true }
+                [key]
             ).exec();
             if (!data) {
                 data = await GuildStatesController._create(guildId);
