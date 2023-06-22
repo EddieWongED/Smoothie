@@ -31,6 +31,7 @@ const en: InternationalizationList = {
     cancelRemovePlaylistSuccessMessage:
         "Cancel removing `%ARG%` playlist successfully.",
     listPlaylistFailedMessage: "Failed to list all the playlists.",
+    listPlaylistTitle: "Playlists",
     infoPlaylistFailedMessage: "Failed to show the info of `%ARG%` playlist.",
     currentInfoPlaylistFailedMessage:
         "Failed to show the info of current playlist.",

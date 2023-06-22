@@ -26,6 +26,7 @@ export interface InternationalizationList {
     confirmRemovePlaylistMessage: string;
     cancelRemovePlaylistSuccessMessage: string;
     listPlaylistFailedMessage: string;
+    listPlaylistTitle: string;
     infoPlaylistFailedMessage: string;
     currentInfoPlaylistFailedMessage: string;
     switchPlaylistFailedMessage: string;
