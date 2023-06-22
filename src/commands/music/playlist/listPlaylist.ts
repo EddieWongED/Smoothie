@@ -25,7 +25,7 @@ export default new SmoothieCommand(Commands.listPlaylist, {
         }
 
         const playlistTitles = playlists.map((playlist) => playlist.name);
-        await reply.list({ title: "successTitle", list: playlistTitles });
+        await reply.list({ title: "listPlaylistTitle", list: playlistTitles });
         return;
     },
 });

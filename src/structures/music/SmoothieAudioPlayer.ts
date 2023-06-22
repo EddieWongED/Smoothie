@@ -474,7 +474,10 @@ export default class SmoothieAudioPlayer {
                     });
                     await this._reply.reply(embed);
                     this._clickedPauseOrUnpauseButton = false;
-                    if (this.playedFor >= song.duration) {
+                    if (
+                        this.playedFor >= song.duration &&
+                        song.duration !== 0
+                    ) {
                         clearInterval(this._embedTimer);
                     }
                 }

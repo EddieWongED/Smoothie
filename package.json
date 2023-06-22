@@ -12,11 +12,11 @@
         "lint": "eslint . --ext .ts",
         "lint-and-fix": "eslint . --ext .ts --fix",
         "format": "prettier --config .prettierrc --write \"**/*.+(js|ts|json)\"",
-        "register-global-commands": "tsc && node ./dist/scripts/commands/registerGlobalSlashCommands.js",
-        "register-guild-commands": "tsc && node ./dist/scripts/commands/registerGuildSlashCommands.js",
-        "clear-global-commands": "tsc && node ./dist/scripts/commands/clearGlobalSlashCommands.js",
-        "clear-guild-commands": "tsc && node ./dist/scripts/commands/clearGuildSlashCommands.js",
-        "import-songs": "tsc && node ./dist/scripts/music/importSongs.js"
+        "register-global-commands": "node ./dist/scripts/commands/registerGlobalSlashCommands.js",
+        "register-guild-commands": "node ./dist/scripts/commands/registerGuildSlashCommands.js",
+        "clear-global-commands": "node ./dist/scripts/commands/clearGlobalSlashCommands.js",
+        "clear-guild-commands": "node ./dist/scripts/commands/clearGuildSlashCommands.js",
+        "import-songs": "node ./dist/scripts/music/importSongs.js"
     },
     "keywords": [
         "discord",

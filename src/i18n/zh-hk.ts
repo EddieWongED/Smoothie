@@ -28,6 +28,7 @@ const zh_hk: InternationalizationList = {
     confirmRemovePlaylistMessage: "您確定要移除 `%ARG%` 播放清單嗎？",
     cancelRemovePlaylistSuccessMessage: "成功取消移除 `%ARG%` 播放清單。",
     listPlaylistFailedMessage: "無法列出所有播放清單。",
+    listPlaylistTitle: "播放清單",
     infoPlaylistFailedMessage: "無法顯示 `%ARG%` 播放清單的信息。",
     currentInfoPlaylistFailedMessage: "無法顯示播放中的播放清單的信息。",
     switchPlaylistFailedMessage: "無法切換到 `%ARG%` 播放清單。",

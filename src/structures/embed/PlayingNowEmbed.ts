@@ -86,9 +86,16 @@ export default class PlayingNowEmbed {
     }
 
     private static _createProgressBar(playedFor: number, duration: number) {
+        const totalCharacters = 40;
+
+        if (duration === 0) {
+            return `${"⎯".repeat(totalCharacters)}🔘 ${formatTimeWithColon(
+                playedFor
+            )}`;
+        }
         playedFor = playedFor > duration ? duration : playedFor;
         const progress = Math.max(Math.min(playedFor / duration, 1), 0);
-        const totalCharacters = 40;
+
         const radioButtonIndex = Math.floor(progress * totalCharacters);
         return `${"⎯".repeat(radioButtonIndex)}🔘${"⎯".repeat(
             totalCharacters - radioButtonIndex

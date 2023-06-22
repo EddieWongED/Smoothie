@@ -99,6 +99,10 @@ export default class SmoothieVoiceConnection {
         this._prevTime = performance.now();
         this._stayTimer = setInterval(() => {
             void (async () => {
+                const now = performance.now();
+                const timeElapsed = (now - this._prevTime) / 1000;
+                this._prevTime = now;
+
                 if (!this.channelId) return;
                 const channel = client.channels.cache.get(
                     this.channelId
@@ -112,9 +116,6 @@ export default class SmoothieVoiceConnection {
                     .map((member) => member.user.id);
 
                 if (userIds.length === 0) return;
-
-                const now = performance.now();
-                const timeElapsed = (now - this._prevTime) / 1000;
 
                 for (const userId of userIds) {
                     const stats = userStats.find(
@@ -133,7 +134,6 @@ export default class SmoothieVoiceConnection {
                 }
 
                 await this._guildData.update("userStats", userStats);
-                this._prevTime = now;
             })();
         }, 30000);
     }
