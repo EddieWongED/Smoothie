@@ -7,6 +7,8 @@ import type { Command } from "../../typings/structures/commands/SmoothieCommand.
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import { client } from "../../index.js";
+import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
+import getLocalizationMap from "../../utils/getLocalizationMap.js";
 
 const actionOption: ApplicationCommandStringOption = {
     name: "action",
@@ -15,7 +17,8 @@ const actionOption: ApplicationCommandStringOption = {
         { name: "stay", value: "stay" },
         { name: "queue", value: "queue" },
     ],
-    description: "Action to be performed.",
+    description: getLocale(defaultLanguage, "rankActionOptionDescription"),
+    descriptionLocalizations: getLocalizationMap("rankActionOptionDescription"),
     required: true,
 };
 
@@ -24,7 +27,8 @@ export const rankOptions: ApplicationCommandOptionData[] = [actionOption];
 export default new SmoothieCommand(Commands.rank, {
     name: Commands.rank,
     aliases: ["ranking"],
-    description: "Show some ranking within the guild.",
+    description: getLocale(defaultLanguage, "rankDescription"),
+    descriptionLocalizations: getLocalizationMap("rankDescription"),
     options: rankOptions,
     run: async ({
         guildId,

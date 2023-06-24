@@ -6,7 +6,6 @@ import type {
 } from "discord.js";
 import type ReplyHandler from "../../../structures/commands/ReplyHandler.js";
 import type GuildDataHandler from "../../../structures/database/GuildDataHandler.js";
-import type OptionsOptions from "../../commands/dev/OptionsOptions.js";
 import type LanguageOptions from "../../commands/general/LanguageOptions.js";
 import type PingOptions from "../../commands/general/PingOptions.js";
 import type PrefixOptions from "../../commands/general/PrefixOptions.js";
@@ -33,6 +32,7 @@ import type RankOptions from "../../commands/general/RankOptions.js";
 import type StayRankOptions from "../../commands/general/StayRankOptions.js";
 import type QueueRankOptions from "../../commands/music/QueueRankOptions.js";
 import type PrevOptions from "../../commands/music/PrevOptions.js";
+import type HelpOptions from "../../commands/general/HelpOptions.js";
 
 // Payload
 export type SlashCommandPayload = ChatInputCommandInteraction & {
@@ -48,9 +48,9 @@ export type NoOptions = Record<string, never>;
 
 /** Update when adding new command **/
 export enum Commands {
+    help = "help",
     test = "test",
     ping = "ping",
-    options = "options",
     language = "language",
     prefix = "prefix",
     rank = "rank",
@@ -78,9 +78,9 @@ export enum Commands {
 
 /** Update when adding new command **/
 interface CommandOptionsList {
+    [Commands.help]: HelpOptions;
     [Commands.test]: TestOptions;
     [Commands.ping]: PingOptions;
-    [Commands.options]: OptionsOptions;
     [Commands.language]: LanguageOptions;
     [Commands.prefix]: PrefixOptions;
     [Commands.rank]: RankOptions;

@@ -59,6 +59,50 @@ export interface InternationalizationList {
     queueRankTitle: string;
     queueRankFailedMessage: string;
     prevFailedMessage: string;
+    helpMessage: string;
+    helpFailedMessage: string;
+
+    // Command Description
+    helpCommandOptionDescription: string;
+    helpDescription: string;
+    testDescription: string;
+    languageLanguageOptionDescription: string;
+    languageDescription: string;
+    pingDescription: string;
+    prefixPrefixOptionDescription: string;
+    prefixDescription: string;
+    rankActionOptionDescription: string;
+    rankDescription: string;
+    stayRankDescription: string;
+    createPlaylistNameOptionDescription: string;
+    createPlaylistDescription: string;
+    infoPlaylistNameOptionDescription: string;
+    infoPlaylistDescription: string;
+    listPlaylistDescription: string;
+    playlistActionOptionDescription: string;
+    playlistNameOptionDescription: string;
+    playlistDescription: string;
+    removePlaylistNameOptionDescription: string;
+    removePlaylistDescription: string;
+    switchPlaylistNameOptionDescription: string;
+    switchPlaylistDescription: string;
+    joinDescription: string;
+    leaveDescription: string;
+    pauseDescription: string;
+    playURLOptionDescription: string;
+    playWhenOptionDescription: string;
+    playDescription: string;
+    prevDescription: string;
+    queueDescription: string;
+    queueRankDescription: string;
+    removeIndexOptionDescription: string;
+    removeDescription: string;
+    retryDescription: string;
+    searchQueryOptionDescription: string;
+    searchDescription: string;
+    shuffleDescription: string;
+    skipDescription: string;
+    unpauseDescription: string;
 
     // Error message
     noSuchCommandMessage: string;
@@ -92,6 +136,8 @@ export interface InternationalizationList {
     choosePageTitle: string;
     choosePageMessage: string;
     buttonDisableTimeFooter: string;
+    selectMenuDisableTimeFooter: string;
+    selectMenuPlaceholder: string;
     createdAtField: string;
     numberOfSongsField: string;
     topFiveSongsField: string;
@@ -104,11 +150,16 @@ export interface InternationalizationList {
     playingNowTitle: string;
     queueButton: string;
     playlistInfoButton: string;
+    genericCommandTitle: string;
+    possibleValueDescription: string;
+    requiredFieldFooter: string;
+    syntaxField: string;
+    aliasesField: string;
 }
 
 export enum Languages {
-    en = "en",
-    zh_hk = "zh-hk",
+    en_us = "en-US",
+    zh_tw = "zh-TW",
 }
 
 export type LanguageList = {

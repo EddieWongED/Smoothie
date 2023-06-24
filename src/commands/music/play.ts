@@ -8,11 +8,14 @@ import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import URLHandler from "../../structures/music/URLHandler.js";
 import QueueHandler from "../../structures/music/QueueHandler.js";
 import { client } from "../../index.js";
+import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
+import getLocalizationMap from "../../utils/getLocalizationMap.js";
 
 const urlOption: ApplicationCommandStringOption = {
     name: "url",
     type: ApplicationCommandOptionType.String,
-    description: "The YouTube URL of the song.",
+    description: getLocale(defaultLanguage, "playURLOptionDescription"),
+    descriptionLocalizations: getLocalizationMap("playURLOptionDescription"),
     required: true,
 };
 
@@ -24,7 +27,8 @@ const whenOption: ApplicationCommandStringOption = {
         { name: "next", value: "next" },
         { name: "last", value: "last" },
     ],
-    description: "When should the song be played.",
+    description: getLocale(defaultLanguage, "playWhenOptionDescription"),
+    descriptionLocalizations: getLocalizationMap("playWhenOptionDescription"),
     required: false,
 };
 
@@ -35,7 +39,8 @@ export const playOptions: ApplicationCommandOptionData[] = [
 
 export default new SmoothieCommand(Commands.play, {
     name: Commands.play,
-    description: "Play the song of the provided YouTube URL.",
+    description: getLocale(defaultLanguage, "playDescription"),
+    descriptionLocalizations: getLocalizationMap("playDescription"),
     options: playOptions,
     run: async ({ guildId, reply, options, guildStates }) => {
         const { url } = options;

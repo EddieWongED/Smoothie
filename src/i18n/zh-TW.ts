@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import type { InternationalizationList } from "../typings/i18n/i18n.js";
 
-const zh_hk: InternationalizationList = {
+const zh_TW: InternationalizationList = {
     // Command message
     pingMessage: "Pong！",
     optionsTitle: "`%ARG%`",
@@ -61,8 +61,54 @@ const zh_hk: InternationalizationList = {
     stayRankTitle: "和 Smoothie 逗留在語音通道的排名",
     stayRankFailedMessage: "無法顯示和 Smoothie 逗留在語音通道的排名。",
     queueRankTitle: "`%ARG%` 播放列表中每首歌曲播放次數的排名",
-    queueRankFailedMessage: "無法顯示播放列表中每首歌曲播放次數的排名。",
+    queueRankFailedMessage: "無法顯示播放清單中每首歌曲播放次數的排名。",
     prevFailedMessage: "無法播放上一首歌曲。",
+    helpMessage: "請選擇您想了解那個命令。",
+    helpFailedMessage: "無法運行 `help` 指令。",
+
+    // Command Description
+    helpCommandOptionDescription: "您想要了解相關信息的命令。",
+    helpDescription: "提供有關其他命令的信息。",
+    testDescription: "僅供開發者測試！",
+    languageLanguageOptionDescription: "語言代碼。",
+    languageDescription: "顯示 / 更改語言。",
+    pingDescription: "回覆 pong！",
+    prefixPrefixOptionDescription: "更改 prefix。",
+    prefixDescription: "顯示 / 更改 prefix。",
+    rankActionOptionDescription: "要執行的動作。",
+    rankDescription: "顯示公會內的一些排名。",
+    stayRankDescription: "顯示在語音通道停留時長的排名。",
+    createPlaylistNameOptionDescription: "播放清單的名字。",
+    createPlaylistDescription: "創建一個新的播放清單。",
+    infoPlaylistNameOptionDescription: "您想要獲取其信息的播放列表的名字。",
+    infoPlaylistDescription:
+        "顯示播放清單的信息。如果沒有輸入名稱，將顯示當前播放清單的信息。",
+    listPlaylistDescription: "列出所有播放清單。",
+    playlistActionOptionDescription: "要執行的動作。",
+    playlistNameOptionDescription:
+        "要刪除 / 創建 / 顯示 / 切換播放清單的名字。",
+    playlistDescription: "刪除 / 創建 / 顯示 / 切換播放清單。",
+    removePlaylistNameOptionDescription: "要刪除的播放清單的名字。",
+    removePlaylistDescription: "刪除一個播放清單。",
+    switchPlaylistNameOptionDescription: "您要切換到的播放清單的名字。",
+    switchPlaylistDescription: "切換到另一個播放清單。",
+    joinDescription: "加入您的語音頻道。",
+    leaveDescription: "離開你的語音頻道。",
+    pauseDescription: "暫停當前歌曲。",
+    playURLOptionDescription: "歌曲的 YouTube URL。",
+    playWhenOptionDescription: "應該什麼時候播放這首歌曲。",
+    playDescription: "播放所提供的 YouTube URL 的歌曲。",
+    prevDescription: "播放上一首歌曲。",
+    queueDescription: "顯示當前播放清單的歌單。",
+    queueRankDescription: "顯示當前歌單中每首歌曲的播放次數排名。",
+    removeIndexOptionDescription: "要刪除的歌曲的索引。",
+    removeDescription: "從歌單中刪除歌曲。",
+    retryDescription: "嘗試再次播放第一首歌曲。可用於播放歌曲出現錯誤的時候。",
+    searchQueryOptionDescription: "您要從歌單中搜尋的歌曲的關鍵字。",
+    searchDescription: "從歌單中搜尋歌曲。",
+    shuffleDescription: "隨機播放歌單。",
+    skipDescription: "跳過當前歌曲。",
+    unpauseDescription: "恢復當前歌曲。",
 
     // Error message
     noSuchCommandMessage: "沒有 `%ARG%` 這個指令。",
@@ -98,6 +144,8 @@ const zh_hk: InternationalizationList = {
     choosePageTitle: "請輸入您想跳轉到的頁面",
     choosePageMessage: "範圍為 1 - %ARG%。你有一分鐘的時間來回應。",
     buttonDisableTimeFooter: "閒置 %ARG% 分鐘後按鈕將會停用",
+    selectMenuDisableTimeFooter: "選擇清單將在 %ARG% 分鐘後停用",
+    selectMenuPlaceholder: "清單",
     createdAtField: "創建於",
     numberOfSongsField: "歌曲數量",
     topFiveSongsField: "最常聽的五首歌曲",
@@ -110,6 +158,11 @@ const zh_hk: InternationalizationList = {
     playingNowTitle: "正在播放",
     queueButton: "歌單",
     playlistInfoButton: "播放清單",
+    genericCommandTitle: "`%ARG%` 指令",
+    possibleValueDescription: "可能的數值：",
+    requiredFieldFooter: "* 必填項目",
+    syntaxField: "句法",
+    aliasesField: "别名",
 };
 
-export default zh_hk;
+export default zh_TW;

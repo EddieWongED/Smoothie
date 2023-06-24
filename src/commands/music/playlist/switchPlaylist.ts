@@ -6,11 +6,19 @@ import { ApplicationCommandOptionType } from "discord.js";
 import { SmoothieCommand } from "../../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../../typings/structures/commands/SmoothieCommand.js";
 import { client } from "../../../index.js";
+import { defaultLanguage, getLocale } from "../../../i18n/i18n.js";
+import getLocalizationMap from "../../../utils/getLocalizationMap.js";
 
 const nameOption: ApplicationCommandStringOption = {
     name: "name",
     type: ApplicationCommandOptionType.String,
-    description: "The name of the playlist you want to switch to.",
+    description: getLocale(
+        defaultLanguage,
+        "switchPlaylistNameOptionDescription"
+    ),
+    descriptionLocalizations: getLocalizationMap(
+        "switchPlaylistNameOptionDescription"
+    ),
     required: true,
 };
 
@@ -20,7 +28,8 @@ export const switchPlaylistOptions: ApplicationCommandOptionData[] = [
 
 export default new SmoothieCommand(Commands.switchPlaylist, {
     name: Commands.switchPlaylist,
-    description: "Switch to another playlist.",
+    description: getLocale(defaultLanguage, "switchPlaylistDescription"),
+    descriptionLocalizations: getLocalizationMap("switchPlaylistDescription"),
     options: switchPlaylistOptions,
     run: async ({ guildId, options, reply, guildData, guildStates }) => {
         const { name } = options;

@@ -1,11 +1,14 @@
+import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import { client } from "../../index.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import { formatTimeWithLetter } from "../../utils/formatTime.js";
+import getLocalizationMap from "../../utils/getLocalizationMap.js";
 
 export default new SmoothieCommand(Commands.stayRank, {
     name: Commands.stayRank,
-    description: "Show the ranking of voice channel stay duration.",
+    description: getLocale(defaultLanguage, "stayRankDescription"),
+    descriptionLocalizations: getLocalizationMap("stayRankDescription"),
     run: async ({ guildData, reply }) => {
         const userStats = await guildData.get("userStats");
         if (!userStats) {

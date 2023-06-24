@@ -1,10 +1,13 @@
+import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import QueueHandler from "../../structures/music/QueueHandler.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
+import getLocalizationMap from "../../utils/getLocalizationMap.js";
 
 export default new SmoothieCommand(Commands.queue, {
     name: Commands.queue,
-    description: "Show the queue of the current playlist.",
+    description: getLocale(defaultLanguage, "queueDescription"),
+    descriptionLocalizations: getLocalizationMap("queueDescription"),
     run: async ({ guildId, guildStates, reply }) => {
         const queueHandler = new QueueHandler(guildId);
         const queue = await queueHandler.fetch();

@@ -1,4 +1,9 @@
-import type { APIEmbedAuthor, APIEmbedField, RGBTuple } from "discord.js";
+import type {
+    APIEmbedAuthor,
+    APIEmbedField,
+    APISelectMenuOption,
+    RGBTuple,
+} from "discord.js";
 import type { LoggingLevel } from "../logging/Logging.js";
 
 export interface BasicEmbedArgs {
@@ -13,6 +18,13 @@ export interface BasicEmbedArgs {
 }
 
 export type LevelEmbedArgs = BasicEmbedArgs & { level: LoggingLevel };
+
+export type OptionsEmbedArgs = BasicEmbedArgs & {
+    options: APISelectMenuOption[];
+    placeholder?: string;
+    minValues?: number;
+    maxValues?: number;
+};
 
 export type ConfirmEmbedArgs = BasicEmbedArgs;
 

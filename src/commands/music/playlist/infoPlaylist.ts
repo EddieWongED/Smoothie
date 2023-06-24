@@ -8,11 +8,18 @@ import { Commands } from "../../../typings/structures/commands/SmoothieCommand.j
 import { defaultLanguage, getLocale } from "../../../i18n/i18n.js";
 import BasicEmbed from "../../../structures/embed/BasicEmbed.js";
 import { formatTimeWithLetter } from "../../../utils/formatTime.js";
+import getLocalizationMap from "../../../utils/getLocalizationMap.js";
 
 const nameOption: ApplicationCommandStringOption = {
     name: "name",
     type: ApplicationCommandOptionType.String,
-    description: "The name of the playlist which you want the info of.",
+    description: getLocale(
+        defaultLanguage,
+        "infoPlaylistNameOptionDescription"
+    ),
+    descriptionLocalizations: getLocalizationMap(
+        "infoPlaylistNameOptionDescription"
+    ),
     required: false,
 };
 
@@ -20,8 +27,8 @@ export const infoPlaylistOptions: ApplicationCommandOptionData[] = [nameOption];
 
 export default new SmoothieCommand(Commands.infoPlaylist, {
     name: Commands.infoPlaylist,
-    description:
-        "Show the info of a playlist. If no name is given, the current playlist's info will be shown.",
+    description: getLocale(defaultLanguage, "infoPlaylistDescription"),
+    descriptionLocalizations: getLocalizationMap("infoPlaylistDescription"),
     options: infoPlaylistOptions,
     run: async ({ options, reply, guildData, guildStates }) => {
         let { name } = options;

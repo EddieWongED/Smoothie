@@ -6,11 +6,16 @@ import { ApplicationCommandOptionType } from "discord.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import QueueHandler from "../../structures/music/QueueHandler.js";
+import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
+import getLocalizationMap from "../../utils/getLocalizationMap.js";
 
 const queryOption: ApplicationCommandStringOption = {
     name: "query",
     type: ApplicationCommandOptionType.String,
-    description: "The keywords of songs you want to search from your queue.",
+    description: getLocale(defaultLanguage, "searchQueryOptionDescription"),
+    descriptionLocalizations: getLocalizationMap(
+        "searchQueryOptionDescription"
+    ),
     required: true,
 };
 
@@ -18,7 +23,8 @@ export const searchOptions: ApplicationCommandOptionData[] = [queryOption];
 
 export default new SmoothieCommand(Commands.search, {
     name: Commands.search,
-    description: "Search songs from your queue.",
+    description: getLocale(defaultLanguage, "searchDescription"),
+    descriptionLocalizations: getLocalizationMap("searchDescription"),
     options: searchOptions,
     run: async ({ guildId, reply, options }) => {
         const { query } = options;

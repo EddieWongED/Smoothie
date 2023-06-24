@@ -1,11 +1,14 @@
+import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import { client } from "../../index.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
+import getLocalizationMap from "../../utils/getLocalizationMap.js";
 
 export default new SmoothieCommand(Commands.prev, {
     name: Commands.prev,
     aliases: ["previous"],
-    description: "Play the previous song.",
+    description: getLocale(defaultLanguage, "prevDescription"),
+    descriptionLocalizations: getLocalizationMap("prevDescription"),
     run: async ({ guildId, reply }) => {
         const player = client.audioPlayers.get(guildId);
         const song = await player?.playPrev();

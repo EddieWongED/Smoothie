@@ -1,6 +1,7 @@
 import type { InternationalizationList } from "../typings/i18n/i18n.js";
 
-const en: InternationalizationList = {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const en_US: InternationalizationList = {
     // Command message
     pingMessage: "Pong!",
     optionsTitle: "`%ARG%`",
@@ -64,6 +65,59 @@ const en: InternationalizationList = {
         "Ranking of The Number of Times Played of Each Song in `%ARG%` Playlist",
     queueRankFailedMessage:
         "Failed to show the ranking of the number of times played of each song in the playlist.",
+    helpMessage: "Choose which command you want to know the information about.",
+    helpFailedMessage: "Failed to run the `help` command.",
+
+    // Command Description
+    helpCommandOptionDescription: "The command you want the information about.",
+    helpDescription: "Provide information on other commands.",
+    testDescription: "For developer testing only!",
+    languageLanguageOptionDescription: "The language code.",
+    languageDescription: "Show / Change language.",
+    pingDescription: "Reply with pong!",
+    prefixPrefixOptionDescription: "Change command prefix.",
+    prefixDescription: "Show / Change prefix.",
+    rankActionOptionDescription: "Action to be performed.",
+    rankDescription: "Show some ranking within the guild.",
+    stayRankDescription: "Show the ranking of voice channel stay duration.",
+    createPlaylistNameOptionDescription: "The name of the playlist.",
+    createPlaylistDescription: "Create a new playlist.",
+    infoPlaylistNameOptionDescription:
+        "The name of the playlist which you want the info of.",
+    infoPlaylistDescription:
+        "Show the info of a playlist. If no name is given, the current playlist's info will be shown.",
+    listPlaylistDescription: "List all the playlists.",
+    playlistActionOptionDescription: "Action to be performed.",
+    playlistNameOptionDescription:
+        "The name of the playlist to be removed / created / shown / switched to.",
+    playlistDescription:
+        "Remove / Create / Show / Switch to / List / playlist.",
+    removePlaylistNameOptionDescription:
+        "The name of the playlist to be removed.",
+    removePlaylistDescription: "Remove a playlist.",
+    switchPlaylistNameOptionDescription:
+        "The name of the playlist you want to switch to.",
+    switchPlaylistDescription: "Switch to another playlist.",
+    joinDescription: "Join your voice channel.",
+    leaveDescription: "Leave your voice channel.",
+    pauseDescription: "Pause the current song.",
+    playURLOptionDescription: "The YouTube URL of the song.",
+    playWhenOptionDescription: "When should the song be played.",
+    playDescription: "Play the song of the provided YouTube URL.",
+    prevDescription: "Play the previous song.",
+    queueDescription: "Show the queue of the current playlist.",
+    queueRankDescription:
+        "Show the ranking of the number of times played of each song in the current queue.",
+    removeIndexOptionDescription: "The index of the song to be removed.",
+    removeDescription: "Remove a song from the list.",
+    retryDescription:
+        "Try to play the first song again. Useful when there was error playing the song before.",
+    searchQueryOptionDescription:
+        "The keywords of songs you want to search from your queue.",
+    searchDescription: "Search songs from your queue.",
+    shuffleDescription: "Shuffle the current queue.",
+    skipDescription: "Skip the current song.",
+    unpauseDescription: "Unpause the current song.",
 
     // Error message
     noSuchCommandMessage: "There is no `%ARG%` command.",
@@ -111,6 +165,9 @@ const en: InternationalizationList = {
     choosePageMessage: "Range: 1 - %ARG%. You have a minute to respond.",
     buttonDisableTimeFooter:
         "Button will be disabled after idling for %ARG% minute(s)",
+    selectMenuDisableTimeFooter:
+        "Select Menu will be disable after %ARG% minute(s)",
+    selectMenuPlaceholder: "Menu",
     createdAtField: "Created At",
     numberOfSongsField: "Number of Song(s)",
     topFiveSongsField: "Top 5 Most Listened Songs",
@@ -123,6 +180,11 @@ const en: InternationalizationList = {
     playingNowTitle: "Playing Now",
     queueButton: "Queue",
     playlistInfoButton: "Playlist",
+    genericCommandTitle: "`%ARG%` Command",
+    possibleValueDescription: "Possible Value(s): ",
+    requiredFieldFooter: "* Required field",
+    syntaxField: "Syntax",
+    aliasesField: "Alias(es)",
 };
 
-export default en;
+export default en_US;
