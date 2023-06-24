@@ -7,6 +7,8 @@ import type {
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
 import { Languages } from "../../typings/i18n/i18n.js";
+import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
+import getLocalizationMap from "../../utils/getLocalizationMap.js";
 
 const languageOption: ApplicationCommandStringOption = {
     name: "language",
@@ -17,7 +19,13 @@ const languageOption: ApplicationCommandStringOption = {
         } as ApplicationCommandOptionChoiceData<string>;
     }),
     type: ApplicationCommandOptionType.String,
-    description: "The language code.",
+    description: getLocale(
+        defaultLanguage,
+        "languageLanguageOptionDescription"
+    ),
+    descriptionLocalizations: getLocalizationMap(
+        "languageLanguageOptionDescription"
+    ),
     required: false,
 };
 
@@ -26,7 +34,8 @@ export const languageOptions: ApplicationCommandOptionData[] = [languageOption];
 export default new SmoothieCommand(Commands.language, {
     name: Commands.language,
     aliases: ["lang"],
-    description: "Show / Change language.",
+    description: getLocale(defaultLanguage, "languageDescription"),
+    descriptionLocalizations: getLocalizationMap("languageDescription"),
     options: languageOptions,
     run: async ({ options, guildData, reply }) => {
         const { language } = options;

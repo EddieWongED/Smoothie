@@ -1,3 +1,4 @@
+import type { APISelectMenuOption } from "discord.js";
 import type { Internationalization } from "../../i18n/i18n.js";
 import type { LoggingLevel } from "../logging/Logging.js";
 
@@ -13,6 +14,10 @@ export type FollowUpArgs = { willEdit?: boolean } & ReplyArgs;
 export type SendArgs = { willEdit?: boolean } & ReplyArgs;
 
 export type QueryArgs = { userId?: string } & ReplyArgs;
+
+export type OptionsArgs = {
+    options: APISelectMenuOption[];
+} & ReplyArgs;
 
 export type LevelReplyArgs = { level: LoggingLevel } & ReplyArgs;
 

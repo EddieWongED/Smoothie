@@ -26,7 +26,7 @@ export class GuildData implements Base, TimeStamps {
 
     @prop({
         required: true,
-        default: Languages.en,
+        default: Languages.en_us,
         enum: Object.values(Languages),
     })
     public language!: Language;

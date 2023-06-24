@@ -52,6 +52,6 @@ export default class BasicEmbed {
                 text: footer,
             });
 
-        return { embeds: [embed], files: [] };
+        return { embeds: [embed], files: [], components: [] };
     }
 }

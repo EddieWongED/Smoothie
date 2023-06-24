@@ -6,12 +6,12 @@ import type {
     LanguageList,
 } from "../typings/i18n/i18n.js";
 import { Languages } from "../typings/i18n/i18n.js";
-import en from "./en.js";
-import zh_hk from "./zh-hk.js";
+import en_US from "./en-US.js";
+import zh_TW from "./zh-TW.js";
 
 const languages: LanguageList = {
-    [Languages.en]: en,
-    [Languages.zh_hk]: zh_hk,
+    [Languages.en_us]: en_US,
+    [Languages.zh_tw]: zh_TW,
 };
 
 export function getLocale(
@@ -35,4 +35,4 @@ export function getLocale(
     });
 }
 
-export const defaultLanguage = Languages.en as Language;
+export const defaultLanguage = Languages.en_us as Language;

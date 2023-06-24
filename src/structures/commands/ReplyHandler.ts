@@ -2,12 +2,19 @@ import type {
     ActionRowBuilder,
     BaseMessageOptions,
     ButtonBuilder,
+    Collection,
+    Message,
+    Snowflake,
+    StringSelectMenuBuilder,
+    StringSelectMenuInteraction,
     TextChannel,
 } from "discord.js";
+import { ComponentType } from "discord.js";
 import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import type {
     FollowUpArgs,
     ListReplyArgs,
+    OptionsArgs,
     QueryArgs,
     ReplyArgs,
     SendArgs,
@@ -25,6 +32,7 @@ import { client } from "../../index.js";
 import isInteger from "../../utils/isInteger.js";
 import GuildDataHandler from "../database/GuildDataHandler.js";
 import GuildStatesHandler from "../database/GuildStatesHandler.js";
+import OptionsEmbed from "../embed/OptionsEmbed.js";
 
 export default class ReplyHandler {
     private _currentPayload: CommandPayload | undefined;
@@ -349,15 +357,16 @@ export default class ReplyHandler {
 
         let decision = false;
         try {
-            const choice = await payload.awaitMessageComponent({
+            const interaction = await payload.awaitMessageComponent({
                 filter: (interaction) =>
                     (this._userId === undefined ||
                         interaction.user.id === this._userId) &&
-                    interaction.message.id === payload.id,
+                    interaction.message.id === payload.id &&
+                    interaction.componentType === ComponentType.Button,
                 time: ConfirmEmbed.time,
             });
-            await choice.deferUpdate();
-            decision = choice.customId === "confirm";
+            await interaction.deferUpdate();
+            decision = interaction.customId === "confirm";
         } catch (err) {
             decision = false;
         }
@@ -390,17 +399,24 @@ export default class ReplyHandler {
             descriptionArgs: descriptionArgs,
             willEdit: false,
         });
-        if (!queryMessage) return undefined;
+        if (!queryMessage) return null;
 
         const channel = queryMessage.channel as TextChannel;
-        const messages = await channel.awaitMessages({
-            filter: (message) =>
-                userId !== undefined &&
-                message.member?.id !== undefined &&
-                userId === message.member.id,
-            max: 1,
-            time: 60000,
-        });
+        let messages: Collection<Snowflake, Message> | null = null;
+
+        try {
+            messages = await channel.awaitMessages({
+                filter: (message) =>
+                    userId !== undefined &&
+                    message.member?.id !== undefined &&
+                    userId === message.member.id,
+                max: 1,
+                time: 60000,
+            });
+        } catch (err) {
+            messages = null;
+        }
+        if (!messages) return null;
 
         try {
             await queryMessage.delete();
@@ -409,6 +425,67 @@ export default class ReplyHandler {
         }
 
         return messages.first()?.content;
+    }
+
+    async options({
+        title,
+        description,
+        titleArgs = [],
+        descriptionArgs = [],
+        options,
+    }: OptionsArgs) {
+        const language =
+            (await this._guildData.get("language")) ?? defaultLanguage;
+        const titleString = getLocale(language, title, titleArgs);
+        const descriptionString = getLocale(
+            language,
+            description,
+            descriptionArgs
+        );
+        const placeholder = getLocale(language, "selectMenuPlaceholder", []);
+        const footerString = getLocale(
+            language,
+            "selectMenuDisableTimeFooter",
+            [(OptionsEmbed.time / 1000 / 60).toString()]
+        );
+
+        const embed = OptionsEmbed.create({
+            title: titleString,
+            description: descriptionString,
+            footer: footerString,
+            options: options,
+            placeholder: placeholder,
+        });
+        const payload = await this.reply(embed);
+        if (!payload) return null;
+
+        let decision: string | null = null;
+        try {
+            const interaction = (await payload.awaitMessageComponent({
+                filter: (interaction) =>
+                    interaction.message.id === payload.id &&
+                    interaction.componentType === ComponentType.StringSelect,
+                time: OptionsEmbed.time,
+            })) as StringSelectMenuInteraction;
+            await interaction.deferUpdate();
+            if (interaction.customId.startsWith(OptionsEmbed.customIdPrefix)) {
+                decision = interaction.values[0] ? interaction.values[0] : null;
+            }
+        } catch (err) {
+            decision = null;
+        }
+
+        if (!embed.components) return null;
+        embed.components.forEach((component) => {
+            const row = component as ActionRowBuilder<StringSelectMenuBuilder>;
+            row.components.forEach((menu) => {
+                menu.setDisabled(true);
+            });
+        });
+
+        await this.reply(embed);
+
+        return decision;
     }
 
     async list({
@@ -579,6 +656,7 @@ export default class ReplyHandler {
             this._currentPayload = payload;
             return payload;
         } catch (err) {
+            Logging.error(err);
             Logging.warn(this._guildPrefix, "Failed to edit the message.");
             return null;
         }

@@ -7,11 +7,16 @@ import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import QueueHandler from "../../structures/music/QueueHandler.js";
 import { client } from "../../index.js";
+import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
+import getLocalizationMap from "../../utils/getLocalizationMap.js";
 
 const indexOption: ApplicationCommandNumericOptionData = {
     name: "index",
     type: ApplicationCommandOptionType.Integer,
-    description: "The index of the song to be removed.",
+    description: getLocale(defaultLanguage, "removeIndexOptionDescription"),
+    descriptionLocalizations: getLocalizationMap(
+        "removeIndexOptionDescription"
+    ),
     required: true,
 };
 
@@ -20,7 +25,8 @@ export const removeOptions: ApplicationCommandOptionData[] = [indexOption];
 export default new SmoothieCommand(Commands.remove, {
     name: Commands.remove,
     aliases: ["delete"],
-    description: "Remove a song from the list.",
+    description: getLocale(defaultLanguage, "removeDescription"),
+    descriptionLocalizations: getLocalizationMap("removeDescription"),
     options: removeOptions,
     run: async ({ options, guildId, reply }) => {
         const { index } = options;

@@ -3,10 +3,13 @@ import { client } from "../../index.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import SmoothieVoiceConnection from "../../structures/music/SmoothieVoiceConnection.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
+import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
+import getLocalizationMap from "../../utils/getLocalizationMap.js";
 
 export default new SmoothieCommand(Commands.join, {
     name: Commands.join,
-    description: "The bot will join your voice channel.",
+    description: getLocale(defaultLanguage, "joinDescription"),
+    descriptionLocalizations: getLocalizationMap("joinDescription"),
     run: async ({ guildId, payload, reply }) => {
         const member = payload.member as GuildMember;
         const voiceChannelId = member.voice.channel?.id;

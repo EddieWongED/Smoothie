@@ -7,6 +7,8 @@ import { SmoothieCommand } from "../../../structures/commands/SmoothieCommand.js
 import type { Command } from "../../../typings/structures/commands/SmoothieCommand.js";
 import { Commands } from "../../../typings/structures/commands/SmoothieCommand.js";
 import { client } from "../../../index.js";
+import { defaultLanguage, getLocale } from "../../../i18n/i18n.js";
+import getLocalizationMap from "../../../utils/getLocalizationMap.js";
 
 const actionOption: ApplicationCommandStringOption = {
     name: "action",
@@ -18,15 +20,20 @@ const actionOption: ApplicationCommandStringOption = {
         { name: "switch", value: "switch" },
         { name: "list", value: "list" },
     ],
-    description: "Action to be performed.",
+    description: getLocale(defaultLanguage, "playlistActionOptionDescription"),
+    descriptionLocalizations: getLocalizationMap(
+        "playlistActionOptionDescription"
+    ),
     required: true,
 };
 
 const nameOption: ApplicationCommandStringOption = {
     name: "name",
     type: ApplicationCommandOptionType.String,
-    description:
-        "The name of the playlist to be removed / created / shown / switched to.",
+    description: getLocale(defaultLanguage, "playlistNameOptionDescription"),
+    descriptionLocalizations: getLocalizationMap(
+        "playlistNameOptionDescription"
+    ),
     required: false,
 };
 
@@ -37,7 +44,8 @@ export const playlistOptions: ApplicationCommandOptionData[] = [
 
 export default new SmoothieCommand(Commands.playlist, {
     name: Commands.playlist,
-    description: "Remove / Create / Show / Switch to / List / playlist.",
+    description: getLocale(defaultLanguage, "playlistDescription"),
+    descriptionLocalizations: getLocalizationMap("playlistDescription"),
     options: playlistOptions,
     run: async ({
         guildId,
