@@ -112,11 +112,11 @@ const zh_TW: InternationalizationList = {
 
     // Error message
     noSuchCommandMessage: "沒有 `%ARG%` 這個指令。",
-    tooFewInputMessage: "輸入過少！（%ARG%）",
-    tooManyInputMessage: "輸入過多！（%ARG%）",
-    requireIntegerMessage: "`%ARG%` 要一個整數。請再試一次。（%ARG%）",
-    requireNumberMessage: "`%ARG%` 要一個數字。請再試一次。（%ARG%）",
-    noMatchChoiceMessage: "`%ARG%` 不接受 `%ARG%`（%ARG%）。您可以輸入︰%ARG%",
+    tooFewInputMessage: "輸入過少！",
+    tooManyInputMessage: "輸入過多！",
+    requireIntegerMessage: "`%ARG%` 要一個整數。請再試一次。",
+    requireNumberMessage: "`%ARG%` 要一個數字。請再試一次。",
+    noMatchChoiceMessage: "`%ARG%` 不符合任何 `%ARG%` 的可能值。",
     notInVoiceChannelMessage: "您不在任何一個語音頻道中！",
     playlistAlreadyExistMessage: "播放清單 `%ARG%` 已存在！",
     playlistDoesNotExistMessage: "播放清單 `%ARG%` 不存在！",

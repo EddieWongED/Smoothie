@@ -29,7 +29,6 @@ import PaginationEmbed from "../embed/PaginationEmbed.js";
 import Logging from "../logging/Logging.js";
 import createGuildPrefix from "../../utils/createGuildPrefix.js";
 import { client } from "../../index.js";
-import isInteger from "../../utils/isInteger.js";
 import GuildDataHandler from "../database/GuildDataHandler.js";
 import GuildStatesHandler from "../database/GuildStatesHandler.js";
 import OptionsEmbed from "../embed/OptionsEmbed.js";
@@ -549,7 +548,7 @@ export default class ReplyHandler {
 
                     if (!content) break;
 
-                    if (!isInteger(content)) {
+                    if (!Number.isInteger(Number(content))) {
                         await this.errorSend({
                             title: "errorTitle",
                             description: "choosePageNotIntegerMessage",

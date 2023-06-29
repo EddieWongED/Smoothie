@@ -1,9 +1,8 @@
 import { Events } from "discord.js";
-import { client } from "../index.js";
-import GuildDataHandler from "../structures/database/GuildDataHandler.js";
 import GuildStatesHandler from "../structures/database/GuildStatesHandler.js";
 import { SmoothieEvent } from "../structures/events/SmoothieEvent.js";
 import type { SlashCommandPayload } from "../typings/structures/commands/SmoothieCommand.js";
+import { CommandHandler } from "../structures/commands/CommandHandler.js";
 
 export default new SmoothieEvent(
     Events.InteractionCreate,
@@ -12,7 +11,6 @@ export default new SmoothieEvent(
             // Create guild data
             const guildId = interaction.guildId;
             if (!guildId) return;
-            const guildData = new GuildDataHandler(guildId);
             const guildStates = new GuildStatesHandler(guildId);
 
             const slashCommandPayload = interaction as SlashCommandPayload;
@@ -23,11 +21,7 @@ export default new SmoothieEvent(
                 await guildStates.update("textChannelId", channel.id);
             }
 
-            await client.commandHandler.handleSlashCommand(
-                slashCommandPayload,
-                guildData,
-                guildStates
-            );
+            await CommandHandler.handleSlashCommand(slashCommandPayload);
         }
         return;
     }
