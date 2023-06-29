@@ -8,7 +8,7 @@ import GuildStatesController from "../structures/database/GuildStatesController.
 
 export default new SmoothieEvent(Events.ClientReady, async () => {
     Logging.success("Bot is online.");
-    client.user?.setActivity("$play / slash command");
+    client.user?.setActivity("$help / slash command");
     const collection = await GuildStatesController.getAll("voiceChannelId");
 
     collection.forEach((voiceChannelId, guildId) => {

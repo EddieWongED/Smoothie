@@ -1,7 +1,6 @@
 import type {
     APIEmbedField,
     ApplicationCommandChoicesOption,
-    // ApplicationCommandOptionCgithoiceData,
     ApplicationCommandOptionData,
     ApplicationCommandStringOption,
     BaseApplicationCommandOptionsData,
@@ -15,14 +14,9 @@ import BasicEmbed from "../../structures/embed/BasicEmbed.js";
 import getLocalizationMap from "../../utils/getLocalizationMap.js";
 import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 
+// Cannot assign choices because there is a limit of 25 choices.
 const commandOption: ApplicationCommandStringOption = {
     name: "command",
-    // choices: Object.values(Commands).map((command) => {
-    //     return {
-    //         name: command,
-    //         value: command,
-    //     } as ApplicationCommandOptionChoiceData<string>;
-    // }),
     type: ApplicationCommandOptionType.String,
     description: getLocale(defaultLanguage, "helpCommandOptionDescription"),
     descriptionLocalizations: getLocalizationMap(

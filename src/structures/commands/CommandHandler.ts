@@ -1,6 +1,7 @@
 import type {
     ApplicationCommandChoicesOption,
     BaseApplicationCommandOptionsData,
+    CommandInteractionOption,
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
 import { client } from "../../index.js";
@@ -8,68 +9,64 @@ import type {
     MessageCommandPayload,
     SlashCommandPayload,
 } from "../../typings/structures/commands/SmoothieCommand.js";
+import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import stringToBoolean from "../../utils/stringToBoolean.js";
-import type GuildDataHandler from "../database/GuildDataHandler.js";
+import GuildDataHandler from "../database/GuildDataHandler.js";
 import ReplyHandler from "./ReplyHandler.js";
 import Logging from "../logging/Logging.js";
-import type GuildStatesHandler from "../database/GuildStatesHandler.js";
+import GuildStatesHandler from "../database/GuildStatesHandler.js";
+import type HelpOptions from "../../typings/commands/general/HelpOptions.js";
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class CommandHandler {
-    async handleSlashCommand(
-        interaction: SlashCommandPayload,
-        guildData: GuildDataHandler,
-        guildStates: GuildStatesHandler
-    ) {
-        try {
-            // Create reply handler
-            const guildId = interaction.guildId;
-            const commandName = interaction.commandName;
+    static async handleSlashCommand(interaction: SlashCommandPayload) {
+        const guildId = interaction.guildId;
+        if (!guildId) return;
 
-            if (!guildId) return;
+        const guildData = new GuildDataHandler(guildId);
+        const guildStates = new GuildStatesHandler(guildId);
 
-            const reply = new ReplyHandler({
-                payload: interaction,
-                guildId: guildId,
-            });
-            await reply.info({
-                title: "loadingCommandTitle",
-                description: "loadingCommandMessage",
+        const commandName = interaction.commandName;
+        // Create reply handler
+        const reply = new ReplyHandler({
+            payload: interaction,
+            guildId: guildId,
+        });
+
+        // Loading Embed
+        await reply.info({
+            title: "loadingCommandTitle",
+            description: "loadingCommandMessage",
+            descriptionArgs: [commandName],
+        });
+
+        // Retrieve command
+        const command = client.commands.get(commandName);
+        if (!command) {
+            await reply.error({
+                title: "errorTitle",
+                description: "noSuchCommandMessage",
                 descriptionArgs: [commandName],
             });
+            return;
+        }
+        const data = interaction.options.data;
 
-            // Retrieve command
-            const command = client.commands.get(commandName);
-            if (!command) {
-                await reply.error({
-                    title: "errorTitle",
-                    description: "errorCommandMessage",
-                    descriptionArgs: [commandName],
-                });
-                return;
-            }
-            const data = interaction.options.data;
-
-            // Parse command options
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const options: Record<string, any> = {};
-            for (const option of data) {
-                switch (option.type) {
-                    case ApplicationCommandOptionType.Integer:
-                    case ApplicationCommandOptionType.Number: {
-                        options[option.name] = option.value as number;
-                        break;
-                    }
-                    case ApplicationCommandOptionType.String: {
-                        options[option.name] = option.value as string;
-                        break;
-                    }
-                    case ApplicationCommandOptionType.Boolean: {
-                        options[option.name] = option.value as boolean;
-                        break;
-                    }
+        // Parse command options
+        const options: Record<string, CommandInteractionOption["value"]> = {};
+        for (const option of data) {
+            switch (option.type) {
+                case ApplicationCommandOptionType.Integer:
+                case ApplicationCommandOptionType.Number:
+                case ApplicationCommandOptionType.String:
+                case ApplicationCommandOptionType.Boolean: {
+                    options[option.name] = option.value;
+                    break;
                 }
             }
+        }
 
+        try {
             await command.run({
                 guildId: guildId,
                 payload: interaction,
@@ -79,16 +76,19 @@ export class CommandHandler {
                 reply: reply,
             });
         } catch (err) {
+            Logging.error(`Failed to run the command ${commandName}`);
             Logging.error(err);
         }
     }
 
-    async handleMessageCommand(
-        message: MessageCommandPayload,
-        guildData: GuildDataHandler,
-        guildStates: GuildStatesHandler
-    ) {
+    static async handleMessageCommand(message: MessageCommandPayload) {
         try {
+            const guildId = message.guildId;
+            if (!guildId) return;
+
+            const guildData = new GuildDataHandler(guildId);
+            const guildStates = new GuildStatesHandler(guildId);
+
             // Parse and retrieve command
             const prefix = await guildData.get("prefix");
             if (!prefix) return;
@@ -100,21 +100,21 @@ export class CommandHandler {
             const commandName = (data[0] ? data[0] : " ").toLowerCase();
             const args: string[] = data.length > 1 ? data.slice(1) : [];
             const command = client.commands.get(commandName);
-            const guildId = message.guildId;
 
             // Create reply handler
-            if (!guildId) return;
-
             const reply = new ReplyHandler({
                 payload: message,
                 guildId: guildId,
             });
+
+            // Loading Embed
             await reply.info({
                 title: "loadingCommandTitle",
                 description: "loadingCommandMessage",
                 descriptionArgs: [commandName],
             });
 
+            // Retrieve command
             if (!command) {
                 await reply.error({
                     title: "errorTitle",
@@ -125,161 +125,125 @@ export class CommandHandler {
             }
 
             // Parse command options
-            const commandOptions = command.options ?? [];
-            const maxOptionsLength = commandOptions.length;
-            const minOptionsLength = commandOptions.filter((option) => {
-                return (option as BaseApplicationCommandOptionsData).required;
-            }).length;
-            const optionNamesWithAngleBrackets = commandOptions.map(
-                (option) => {
+            const commandOptions = command.options;
+            const options: Record<string, CommandInteractionOption["value"]> =
+                {};
+
+            // Parse options if it exists
+            if (commandOptions) {
+                const maxOptionsLength = commandOptions.length;
+                const minOptionsLength = commandOptions.filter((option) => {
                     return (option as BaseApplicationCommandOptionsData)
-                        .required
-                        ? `<${option.name}>`
-                        : `<${option.name} (optional)>`;
-                }
-            );
+                        .required;
+                }).length;
 
-            let fullCommandString = `\`${prefix}${commandName} ${optionNamesWithAngleBrackets.join(
-                " "
-            )}\``;
-            if (commandOptions.length == 0) {
-                fullCommandString = `\`${prefix}${commandName}\``;
-            }
-
-            if (args.length < minOptionsLength) {
-                await reply.error({
-                    title: "errorTitle",
-                    description: "tooFewInputMessage",
-                    descriptionArgs: [fullCommandString],
-                });
-                return;
-            }
-
-            if (args.length > maxOptionsLength) {
-                await reply.error({
-                    title: "errorTitle",
-                    description: "tooManyInputMessage",
-                    descriptionArgs: [fullCommandString],
-                });
-                return;
-            }
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const options: Record<string, any> = {};
-            for (const [i, arg] of args.entries()) {
-                const option = commandOptions[i];
-                if (!option) return;
-
-                // Check if there is choices in this input
-                let choices: (string | number)[] | undefined;
-                if (command.options) {
-                    const commandChoices = (
-                        command.options[i] as ApplicationCommandChoicesOption
-                    ).choices;
-                    if (commandChoices) {
-                        choices = commandChoices.map((data) => data.value);
-                    }
+                // Check if there are too few options
+                if (args.length < minOptionsLength) {
+                    await reply.error({
+                        title: "errorTitle",
+                        description: "tooFewInputMessage",
+                    });
+                    await CommandHandler._sendHelpCommand({
+                        payload: message,
+                        guildId: guildId,
+                        command: commandName,
+                    });
+                    return;
                 }
 
-                switch (option.type) {
-                    case ApplicationCommandOptionType.Integer: {
-                        const number = Number(arg);
-                        if (Number.isNaN(number) || !Number.isInteger(number)) {
-                            await reply.error({
-                                title: "errorTitle",
-                                description: "requireIntegerMessage",
-                                descriptionArgs: [
-                                    option.name,
-                                    fullCommandString,
-                                ],
-                            });
-                            return;
-                        }
+                // Check if there are too many options
+                if (args.length > maxOptionsLength) {
+                    await reply.error({
+                        title: "errorTitle",
+                        description: "tooManyInputMessage",
+                    });
+                    await CommandHandler._sendHelpCommand({
+                        payload: message,
+                        guildId: guildId,
+                        command: commandName,
+                    });
+                    return;
+                }
 
-                        // If choices exist, check if the input matches the choices or not
-                        if (choices) {
-                            if (!(choices as number[]).includes(number)) {
+                // Parse options
+                for (const [i, arg] of args.entries()) {
+                    const option = commandOptions[i];
+                    if (!option) return;
+
+                    // Perform type checking and parse input into its type
+                    let input: CommandInteractionOption["value"];
+                    switch (option.type) {
+                        case ApplicationCommandOptionType.Integer: {
+                            if (!Number.isInteger(Number(arg))) {
                                 await reply.error({
                                     title: "errorTitle",
-                                    description: "noMatchChoiceMessage",
-                                    descriptionArgs: [
-                                        option.name,
-                                        number.toString(),
-                                        fullCommandString,
-                                        choices
-                                            .map((choice) => `\`${choice}\``)
-                                            .join(", "),
-                                    ],
+                                    description: "requireIntegerMessage",
+                                    descriptionArgs: [option.name],
+                                });
+                                await CommandHandler._sendHelpCommand({
+                                    payload: message,
+                                    guildId: guildId,
+                                    command: commandName,
                                 });
                                 return;
                             }
+                            input = parseInt(arg);
+                            break;
                         }
-                        options[option.name] = number;
-                        break;
-                    }
-                    case ApplicationCommandOptionType.Number: {
-                        const number = Number(arg);
-                        if (Number.isNaN(number)) {
-                            await reply.error({
-                                title: "errorTitle",
-                                description: "requireNumberMessage",
-                                descriptionArgs: [
-                                    option.name,
-                                    fullCommandString,
-                                ],
-                            });
-                            return;
-                        }
-
-                        // If choices exist, check if the input matches the choices or not
-                        if (choices) {
-                            if (!(choices as number[]).includes(number)) {
+                        case ApplicationCommandOptionType.Number: {
+                            if (Number.isNaN(arg)) {
                                 await reply.error({
                                     title: "errorTitle",
-                                    description: "noMatchChoiceMessage",
-                                    descriptionArgs: [
-                                        option.name,
-                                        number.toString(),
-                                        fullCommandString,
-                                        choices
-                                            .map((choice) => `\`${choice}\``)
-                                            .join(", "),
-                                    ],
+                                    description: "requireNumberMessage",
+                                    descriptionArgs: [option.name],
+                                });
+                                await CommandHandler._sendHelpCommand({
+                                    payload: message,
+                                    guildId: guildId,
+                                    command: commandName,
                                 });
                                 return;
                             }
+                            input = Number(arg);
+                            break;
                         }
-                        options[option.name] = number;
-                        break;
+                        case ApplicationCommandOptionType.String: {
+                            input = arg;
+                            break;
+                        }
+                        case ApplicationCommandOptionType.Boolean: {
+                            input = stringToBoolean(arg);
+                            break;
+                        }
                     }
-                    case ApplicationCommandOptionType.String: {
-                        const string = arg;
 
-                        // If choices exist, check if the input matches the choices or not
-                        if (choices) {
-                            if (!(choices as string[]).includes(string)) {
-                                await reply.error({
-                                    title: "errorTitle",
-                                    description: "noMatchChoiceMessage",
-                                    descriptionArgs: [
-                                        option.name,
-                                        string,
-                                        fullCommandString,
-                                        choices
-                                            .map((choice) => `\`${choice}\``)
-                                            .join(", "),
-                                    ],
-                                });
-                                return;
-                            }
-                        }
-                        options[option.name] = arg;
-                        break;
+                    if (input === undefined) return;
+
+                    // Check if there is choices in this input
+                    const choices = (
+                        commandOptions[i] as ApplicationCommandChoicesOption
+                    ).choices?.map((data) => data.value);
+
+                    // If choices exist, check if the input matches the choices or not
+                    if (
+                        choices &&
+                        typeof input !== "boolean" &&
+                        !choices.includes(input)
+                    ) {
+                        await reply.error({
+                            title: "errorTitle",
+                            description: "noMatchChoiceMessage",
+                            descriptionArgs: [input.toString(), option.name],
+                        });
+                        await CommandHandler._sendHelpCommand({
+                            payload: message,
+                            guildId: guildId,
+                            command: commandName,
+                        });
+                        return;
                     }
-                    case ApplicationCommandOptionType.Boolean: {
-                        options[option.name] = stringToBoolean(arg);
-                        break;
-                    }
+
+                    options[option.name] = input;
                 }
             }
 
@@ -294,5 +258,29 @@ export class CommandHandler {
         } catch (err) {
             Logging.error(err);
         }
+    }
+
+    private static async _sendHelpCommand({
+        payload,
+        guildId,
+        command,
+    }: {
+        payload: MessageCommandPayload;
+        guildId: string;
+        command: string;
+    }) {
+        const guildData = new GuildDataHandler(guildId);
+        const guildStates = new GuildStatesHandler(guildId);
+
+        const helpCommand = client.commands.get(Commands.help);
+        if (!helpCommand) return;
+        await helpCommand.run({
+            guildId: guildId,
+            reply: new ReplyHandler({ guildId: guildId }),
+            guildData: guildData,
+            guildStates: guildStates,
+            options: { command: command } as HelpOptions,
+            payload: payload,
+        });
     }
 }

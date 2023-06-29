@@ -1,9 +1,9 @@
 import { Events } from "discord.js";
-import { client } from "../index.js";
 import GuildDataHandler from "../structures/database/GuildDataHandler.js";
 import GuildStatesHandler from "../structures/database/GuildStatesHandler.js";
 import { SmoothieEvent } from "../structures/events/SmoothieEvent.js";
 import type { MessageCommandPayload } from "../typings/structures/commands/SmoothieCommand.js";
+import { CommandHandler } from "../structures/commands/CommandHandler.js";
 
 export default new SmoothieEvent(Events.MessageCreate, async (message) => {
     if (message.author.bot) return;
@@ -25,11 +25,7 @@ export default new SmoothieEvent(Events.MessageCreate, async (message) => {
             await guildStates.update("textChannelId", channelId);
         }
 
-        await client.commandHandler.handleMessageCommand(
-            messageCommandPayload,
-            guildData,
-            guildStates
-        );
+        await CommandHandler.handleMessageCommand(messageCommandPayload);
     }
     return;
 });

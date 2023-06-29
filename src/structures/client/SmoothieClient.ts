@@ -3,7 +3,6 @@ import type { Command } from "../../typings/structures/commands/SmoothieCommand.
 import type { SmoothieEvent } from "../events/SmoothieEvent.js";
 
 import { Client, Collection, GatewayIntentBits } from "discord.js";
-import { CommandHandler } from "../commands/CommandHandler.js";
 import Logging from "../logging/Logging.js";
 import Database from "../database/Database.js";
 import type SmoothieVoiceConnection from "../music/SmoothieVoiceConnection.js";
@@ -15,7 +14,6 @@ export class SmoothieClient extends Client {
     commands = new Collection<string, Command>();
     voiceConnections = new Collection<string, SmoothieVoiceConnection>();
     audioPlayers = new Collection<string, SmoothieAudioPlayer>();
-    commandHandler = new CommandHandler();
     database = new Database();
 
     constructor() {

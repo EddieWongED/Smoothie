@@ -121,14 +121,12 @@ const en_US: InternationalizationList = {
 
     // Error message
     noSuchCommandMessage: "There is no `%ARG%` command.",
-    tooFewInputMessage: "Too few input! (%ARG%)",
-    tooManyInputMessage: "Too many input! (%ARG%)",
-    requireIntegerMessage:
-        "`%ARG%` requires an integer. Please try again. (%ARG%)",
-    requireNumberMessage:
-        "`%ARG%` requires a number. Please try again. (%ARG%)",
+    tooFewInputMessage: "Too few input!",
+    tooManyInputMessage: "Too many input!",
+    requireIntegerMessage: "`%ARG%` requires an integer. Please try again.",
+    requireNumberMessage: "`%ARG%` requires a number. Please try again.",
     noMatchChoiceMessage:
-        "`%ARG%` does not accept `%ARG%` (%ARG%). Possible values(s): %ARG%",
+        "`%ARG%` does not match any possible value(s) of `%ARG%`.",
     notInVoiceChannelMessage: "You are not in any voice channel!",
     playlistAlreadyExistMessage: "Playlist `%ARG%` already exist!",
     playlistDoesNotExistMessage: "Playlist `%ARG%` does not exist!",
