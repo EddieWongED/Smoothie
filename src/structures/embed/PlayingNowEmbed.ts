@@ -3,6 +3,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import type { PlayingNowEmbedArgs } from "../../typings/structures/embed/Embed.js";
 import BasicEmbed from "./BasicEmbed.js";
 import { formatTimeWithColon } from "../../utils/formatTime.js";
+import { Emojis } from "../../typings/emoji/Emoji.js";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class PlayingNowEmbed {
@@ -23,7 +24,7 @@ export default class PlayingNowEmbed {
 
         // Create Embed
         const embed = BasicEmbed.create({
-            title: title,
+            title: `${Emojis.youtube} ${title}`,
             description: description ? `${description}\n${progressBar}` : null,
             fields: fields,
             color: 0x3a9bdc,
@@ -35,27 +36,27 @@ export default class PlayingNowEmbed {
         // Create Component
         const prevButton = new ButtonBuilder()
             .setCustomId("prev")
-            .setEmoji("⏮️")
+            .setEmoji(Emojis.trackPrevious)
             .setStyle(ButtonStyle.Primary);
 
         const pauseButton = new ButtonBuilder()
             .setCustomId("pause")
-            .setEmoji("⏸️")
+            .setEmoji(Emojis.pause)
             .setStyle(ButtonStyle.Danger);
 
         const unpauseButton = new ButtonBuilder()
             .setCustomId("unpause")
-            .setEmoji("▶️")
+            .setEmoji(Emojis.next)
             .setStyle(ButtonStyle.Danger);
 
         const skipButton = new ButtonBuilder()
             .setCustomId("skip")
-            .setEmoji("⏭️")
+            .setEmoji(Emojis.skip)
             .setStyle(ButtonStyle.Primary);
 
         const shuffleButton = new ButtonBuilder()
             .setCustomId("shuffle")
-            .setEmoji("🔀")
+            .setEmoji(Emojis.shuffle)
             .setStyle(ButtonStyle.Success);
 
         const queueButton = new ButtonBuilder()
@@ -86,21 +87,35 @@ export default class PlayingNowEmbed {
     }
 
     private static _createProgressBar(playedFor: number, duration: number) {
-        const totalCharacters = 40;
+        const totalCharacters = 17;
 
+        // When there is no duration (e.g. livestream), display full progress bar
         if (duration === 0) {
-            return `${"⎯".repeat(totalCharacters)}🔘 ${formatTimeWithColon(
-                playedFor
-            )}`;
+            return `${
+                Emojis.leftProgressFilled
+            }${Emojis.centerProgressFilled.repeat(totalCharacters - 2)}${
+                Emojis.rightProgressFilled
+            } ${formatTimeWithColon(playedFor)}`;
         }
+
         playedFor = playedFor > duration ? duration : playedFor;
         const progress = Math.max(Math.min(playedFor / duration, 1), 0);
+        const index = Math.floor(progress * totalCharacters);
+        const numOfFilledCenter = Math.max(index - 1, 0);
+        const numOfEmptyCenter = totalCharacters - 2 - numOfFilledCenter;
 
-        const radioButtonIndex = Math.floor(progress * totalCharacters);
-        return `${"⎯".repeat(radioButtonIndex)}🔘${"⎯".repeat(
-            totalCharacters - radioButtonIndex
-        )} ${formatTimeWithColon(playedFor)} / ${formatTimeWithColon(
+        let str: string =
+            index === 0 ? Emojis.leftProgressEmpty : Emojis.leftProgressFilled;
+        str += Emojis.centerProgressFilled.repeat(numOfFilledCenter);
+        str += Emojis.centerProgressEmpty.repeat(numOfEmptyCenter);
+        str +=
+            index === totalCharacters
+                ? Emojis.rightProgressFilled
+                : Emojis.rightProgressEmpty;
+        str += ` ${formatTimeWithColon(playedFor)} / ${formatTimeWithColon(
             duration
         )}`;
+
+        return str;
     }
 }

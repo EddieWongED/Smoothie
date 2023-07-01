@@ -5,6 +5,7 @@ import type {
     LevelEmbedArgs,
 } from "../../typings/structures/embed/Embed.js";
 import BasicEmbed from "./BasicEmbed.js";
+import { Emojis } from "../../typings/emoji/Emoji.js";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class LevelEmbed {
@@ -84,13 +85,13 @@ export default class LevelEmbed {
     private static _getPrefixedTitle(level: LoggingLevel, title: string) {
         switch (level) {
             case "success": {
-                return ":white_check_mark: " + title;
+                return `${Emojis.tick} ${title}`;
             }
             case "warn": {
-                return ":warning: " + title;
+                return `${Emojis.warning} ${title}`;
             }
             case "error": {
-                return ":no_entry: " + title;
+                return `${Emojis.error} ${title}`;
             }
             default: {
                 return title;

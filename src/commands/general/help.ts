@@ -13,6 +13,7 @@ import { client } from "../../index.js";
 import BasicEmbed from "../../structures/embed/BasicEmbed.js";
 import getLocalizationMap from "../../utils/getLocalizationMap.js";
 import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
+import { Emojis } from "../../typings/emoji/Emoji.js";
 
 // Cannot assign choices because there is a limit of 25 choices.
 const commandOption: ApplicationCommandStringOption = {
@@ -37,6 +38,7 @@ export default new SmoothieCommand(Commands.help, {
 
         const language = (await guildData.get("language")) ?? defaultLanguage;
 
+        // Query which command does the user want to know more about
         if (!command) {
             const choice = await reply.options({
                 title: "genericCommandTitle",
@@ -152,7 +154,7 @@ export default new SmoothieCommand(Commands.help, {
                 : description;
         }
         const embed = BasicEmbed.create({
-            title: titleString,
+            title: `${Emojis.book} ${titleString}`,
             description: description,
             fields: fields,
             footer: getLocale(language, "requiredFieldFooter"),
