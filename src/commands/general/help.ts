@@ -14,6 +14,7 @@ import BasicEmbed from "../../structures/embed/BasicEmbed.js";
 import getLocalizationMap from "../../utils/getLocalizationMap.js";
 import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import { Emojis } from "../../typings/emoji/Emoji.js";
+import didYouMean from "didyoumean";
 
 // Cannot assign choices because there is a limit of 25 choices.
 const commandOption: ApplicationCommandStringOption = {
@@ -75,11 +76,25 @@ export default new SmoothieCommand(Commands.help, {
 
         const cmd = client.commands.get(command);
         if (!cmd) {
-            await reply.error({
-                title: "errorTitle",
-                description: "noSuchCommandMessage",
-                descriptionArgs: [command],
-            });
+            didYouMean.threshold = 1;
+            const mostSimilar = didYouMean(
+                command,
+                Array.from(client.commands.keys())
+            ) as string | null;
+
+            if (mostSimilar) {
+                await reply.error({
+                    title: "errorTitle",
+                    description: "noSuchCommandWithSuggestionMessage",
+                    descriptionArgs: [command, mostSimilar],
+                });
+            } else {
+                await reply.error({
+                    title: "errorTitle",
+                    description: "noSuchCommandMessage",
+                    descriptionArgs: [command],
+                });
+            }
             return;
         }
 

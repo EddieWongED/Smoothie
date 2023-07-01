@@ -106,6 +106,7 @@ export interface InternationalizationList {
 
     // Error message
     noSuchCommandMessage: string;
+    noSuchCommandWithSuggestionMessage: string;
     tooFewInputMessage: string;
     tooManyInputMessage: string;
     requireIntegerMessage: string;

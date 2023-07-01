@@ -112,6 +112,8 @@ const zh_TW: InternationalizationList = {
 
     // Error message
     noSuchCommandMessage: "沒有 `%ARG%` 這個指令。",
+    noSuchCommandWithSuggestionMessage:
+        "沒有 `%ARG%` 這個指令。你的意思是 `%ARG%` 嗎？",
     tooFewInputMessage: "輸入過少！",
     tooManyInputMessage: "輸入過多！",
     requireIntegerMessage: "`%ARG%` 要一個整數。請再試一次。",

@@ -16,6 +16,7 @@ import ReplyHandler from "./ReplyHandler.js";
 import Logging from "../logging/Logging.js";
 import GuildStatesHandler from "../database/GuildStatesHandler.js";
 import type HelpOptions from "../../typings/commands/general/HelpOptions.js";
+import didYouMean from "didyoumean";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class CommandHandler {
@@ -43,11 +44,25 @@ export class CommandHandler {
         // Retrieve command
         const command = client.commands.get(commandName);
         if (!command) {
-            await reply.error({
-                title: "errorTitle",
-                description: "noSuchCommandMessage",
-                descriptionArgs: [commandName],
-            });
+            didYouMean.threshold = 1;
+            const mostSimilar = didYouMean(
+                commandName,
+                Array.from(client.commands.keys())
+            ) as string | null;
+
+            if (mostSimilar) {
+                await reply.error({
+                    title: "errorTitle",
+                    description: "noSuchCommandWithSuggestionMessage",
+                    descriptionArgs: [commandName, mostSimilar],
+                });
+            } else {
+                await reply.error({
+                    title: "errorTitle",
+                    description: "noSuchCommandMessage",
+                    descriptionArgs: [commandName],
+                });
+            }
             return;
         }
         const data = interaction.options.data;
@@ -116,11 +131,25 @@ export class CommandHandler {
 
             // Retrieve command
             if (!command) {
-                await reply.error({
-                    title: "errorTitle",
-                    description: "noSuchCommandMessage",
-                    descriptionArgs: [commandName],
-                });
+                didYouMean.threshold = 1;
+                const mostSimilar = didYouMean(
+                    commandName,
+                    Array.from(client.commands.keys())
+                ) as string | null;
+
+                if (mostSimilar) {
+                    await reply.error({
+                        title: "errorTitle",
+                        description: "noSuchCommandWithSuggestionMessage",
+                        descriptionArgs: [commandName, mostSimilar],
+                    });
+                } else {
+                    await reply.error({
+                        title: "errorTitle",
+                        description: "noSuchCommandMessage",
+                        descriptionArgs: [commandName],
+                    });
+                }
                 return;
             }
 
