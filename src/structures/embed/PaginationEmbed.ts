@@ -2,6 +2,7 @@ import type { BaseMessageOptions } from "discord.js";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import type { PaginationEmbedArgs } from "../../typings/structures/embed/Embed.js";
 import BasicEmbed from "./BasicEmbed.js";
+import { Emojis } from "../../typings/emoji/Emoji.js";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class PaginationEmbed {
@@ -41,34 +42,35 @@ export default class PaginationEmbed {
             description: description,
             footer: footer,
         });
+
         // Create Component
         const firstPageButton = new ButtonBuilder()
             .setCustomId("firstPage")
-            .setEmoji("⏪")
+            .setEmoji(Emojis.rewind)
             .setStyle(ButtonStyle.Danger)
             .setDisabled(page <= 1);
 
         const prevPageButton = new ButtonBuilder()
             .setCustomId("prevPage")
-            .setEmoji("◀️")
+            .setEmoji(Emojis.previous)
             .setStyle(ButtonStyle.Primary)
             .setDisabled(page <= 1);
 
         const nextPageButton = new ButtonBuilder()
             .setCustomId("nextPage")
-            .setEmoji("▶️")
+            .setEmoji(Emojis.next)
             .setStyle(ButtonStyle.Primary)
             .setDisabled(page === maxPage);
 
         const lastPageButton = new ButtonBuilder()
             .setCustomId("lastPage")
-            .setEmoji("⏩")
+            .setEmoji(Emojis.fastForward)
             .setStyle(ButtonStyle.Danger)
             .setDisabled(page === maxPage);
 
         const choosePageButton = new ButtonBuilder()
             .setCustomId("choosePage")
-            .setEmoji("#️⃣")
+            .setEmoji(Emojis.hashtag)
             .setStyle(ButtonStyle.Success)
             .setDisabled(maxPage <= 1);
 
