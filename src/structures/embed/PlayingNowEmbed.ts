@@ -27,7 +27,7 @@ export default class PlayingNowEmbed {
             title: `${Emojis.youtube} ${title}`,
             description: description ? `${description}\n${progressBar}` : null,
             fields: fields,
-            color: 0x3a9bdc,
+            color: 0x30a45a,
             thumbnail: thumbnail,
             url: url,
             author: author,
@@ -101,8 +101,14 @@ export default class PlayingNowEmbed {
         playedFor = playedFor > duration ? duration : playedFor;
         const progress = Math.max(Math.min(playedFor / duration, 1), 0);
         const index = Math.floor(progress * totalCharacters);
-        const numOfFilledCenter = Math.max(index - 1, 0);
-        const numOfEmptyCenter = totalCharacters - 2 - numOfFilledCenter;
+        let numOfFilledCenter = Math.max(index - 1, 0);
+        if (progress === 1) {
+            numOfFilledCenter -= 1;
+        }
+        const numOfEmptyCenter = Math.max(
+            totalCharacters - 2 - numOfFilledCenter,
+            0
+        );
 
         let str: string =
             index === 0 ? Emojis.leftProgressEmpty : Emojis.leftProgressFilled;
