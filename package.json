@@ -29,6 +29,7 @@
     "license": "gpl-3.0",
     "devDependencies": {
         "@tsconfig/node18-strictest": "^1.0.0",
+        "@types/didyoumean": "^1.2.0",
         "@types/glob": "^8.1.0",
         "@types/node": "^20.2.5",
         "@types/string-similarity": "^4.0.0",
@@ -49,6 +50,7 @@
         "array-shuffle": "^3.0.0",
         "async-mutex": "^0.4.0",
         "chalk": "^5.2.0",
+        "didyoumean": "^1.2.2",
         "discord.js": "^14.11.0",
         "dotenv": "^16.1.2",
         "ffmpeg-static": "^5.1.0",

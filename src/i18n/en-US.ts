@@ -121,6 +121,8 @@ const en_US: InternationalizationList = {
 
     // Error message
     noSuchCommandMessage: "There is no `%ARG%` command.",
+    noSuchCommandWithSuggestionMessage:
+        "There is no `%ARG%` command. Did you mean `%ARG%`?",
     tooFewInputMessage: "Too few input!",
     tooManyInputMessage: "Too many input!",
     requireIntegerMessage: "`%ARG%` requires an integer. Please try again.",
