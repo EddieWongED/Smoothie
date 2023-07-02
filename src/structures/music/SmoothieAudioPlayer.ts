@@ -176,20 +176,17 @@ export default class SmoothieAudioPlayer {
                     oldState.status === AudioPlayerStatus.Playing &&
                     !this._isForceStop
                 ) {
+                    const song = oldState.resource.metadata as Song;
+
                     // Update play count when finished
-                    if (!(await this._updatePlayCount())) {
+                    if (!(await this._updatePlayCount(song))) {
                         Logging.warn(
                             this._guildPrefix,
                             "Failed to update play count."
                         );
                     }
-                    const song = oldState.resource.metadata as Song;
-                    if (
-                        !(await this._updateUsersListenCount(
-                            song.url,
-                            song.title
-                        ))
-                    ) {
+
+                    if (!(await this._updateUsersListenCount(song))) {
                         Logging.warn(
                             this._guildPrefix,
                             "Failed to update users listen count."
@@ -203,9 +200,12 @@ export default class SmoothieAudioPlayer {
 
         this.player.on(AudioPlayerStatus.Playing, (oldState, newState) => {
             this._startTimer();
+            this._pauseIfNoOneInChannel();
             if (oldState.status === AudioPlayerStatus.Buffering) {
                 const song = newState.resource.metadata as Song;
                 Logging.info(this._guildPrefix, `Playing ${song.title}`);
+            } else if (oldState.status === AudioPlayerStatus.Paused) {
+                Logging.info(this._guildPrefix, "The song has been resumed.");
             }
         });
 
@@ -215,6 +215,7 @@ export default class SmoothieAudioPlayer {
         });
 
         this.player.on(AudioPlayerStatus.Paused, () => {
+            Logging.info(this._guildPrefix, "The song has been paused.");
             clearInterval(this._musicTimer);
         });
 
@@ -224,6 +225,13 @@ export default class SmoothieAudioPlayer {
 
         this.player.on("error", (err) => {
             Logging.error(this._guildPrefix, err);
+        });
+
+        this.player.on("stateChange", (oldState, newState) => {
+            Logging.debug(
+                this._guildPrefix,
+                `Audio player state changed: ${oldState.status} -> ${newState.status}`
+            );
         });
     }
 
@@ -449,6 +457,7 @@ export default class SmoothieAudioPlayer {
         }
 
         // Update the playing now message every 5 seconds
+        clearInterval(this._embedTimer);
         this._embedTimer = setInterval(() => {
             void (async () => {
                 // Update the playing now message when timer changes or clicked pause or
@@ -496,17 +505,35 @@ export default class SmoothieAudioPlayer {
         }, 1000);
     }
 
-    private async _updatePlayCount() {
-        const queue = await this._queueHandler.fetch();
-        if (!queue) return false;
-        if (!queue[0]) return false;
-        queue[0].playCount += 1;
-        return await this._queueHandler.update(queue);
+    private async _updatePlayCount(song: Song) {
+        const queueGenerator = this._queueHandler.fetchThenUpdate();
+
+        // Retrieve Queue
+        const queue = (await queueGenerator.next()).value;
+        if (!queue) {
+            await queueGenerator.throw("Queue not found.");
+            return false;
+        }
+        const songToBeUpdated = queue.find((s) => s.url === song.url);
+        if (!songToBeUpdated) {
+            await queueGenerator.throw(
+                "The song that need to update play count not found."
+            );
+            return false;
+        }
+
+        songToBeUpdated.playCount++;
+
+        // Update queue
+        await queueGenerator.next(queue);
+
+        return true;
     }
 
-    private async _updateUsersListenCount(url: string, title: string) {
-        const userStats = await this._guildData.get("userStats");
-        if (!userStats) return false;
+    private async _updateUsersListenCount(song: Song) {
+        const url = song.url;
+        const title = song.title;
+
         const channelId = client.voiceConnections.get(this.guildId)?.channelId;
         if (!channelId) return false;
 
@@ -514,11 +541,20 @@ export default class SmoothieAudioPlayer {
             channelId
         ) as VoiceChannel | null;
         if (!channel) return false;
+
         const userIds = channel.members
             .filter((member) => member.user !== client.user)
             .map((member) => member.user.id);
 
-        if (userIds.length === 0) return;
+        if (userIds.length === 0) return true;
+
+        // Retrieve userStats
+        const userStatsGenerator = this._guildData.getThenUpdate("userStats");
+        const userStats = (await userStatsGenerator.next()).value;
+        if (!userStats) {
+            await userStatsGenerator.throw(new Error("Userstats not found."));
+            return false;
+        }
 
         for (const userId of userIds) {
             const stats = userStats.find((stats) => stats.userId === userId);
@@ -553,8 +589,28 @@ export default class SmoothieAudioPlayer {
             songStats.listenCount += 1;
         }
 
-        await this._guildData.update("userStats", userStats);
+        // Update userStats
+        await userStatsGenerator.next(userStats);
 
         return true;
+    }
+
+    private _pauseIfNoOneInChannel() {
+        // Check if there is anyone in the voice channel, if not, pause the music
+        const channelId = client.voiceConnections.get(this.guildId)?.channelId;
+        if (!channelId) return;
+
+        const channel = client.channels.cache.get(
+            channelId
+        ) as VoiceChannel | null;
+        if (!channel) return;
+
+        const userIds = channel.members
+            .filter((member) => member.user !== client.user)
+            .map((member) => member.user.id);
+
+        if (userIds.length === 0) {
+            this.pause();
+        }
     }
 }

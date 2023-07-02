@@ -22,22 +22,40 @@ export default class QueueHandler {
     }
 
     async prev() {
-        const queue = await this.fetch();
-        if (!queue) return undefined;
+        const queueGenerator = this.fetchThenUpdate();
+        const queue = (await queueGenerator.next()).value;
+
+        if (!queue) {
+            await queueGenerator.throw("Queue not found.");
+            return undefined;
+        }
         const last = queue.pop();
-        if (!last) return undefined;
+        if (!last) {
+            await queueGenerator.throw("Not Song in queue.");
+            return undefined;
+        }
+
         queue.unshift(last);
-        await this.update(queue);
+        await queueGenerator.next(queue);
         return queue[0];
     }
 
     async next() {
-        const queue = await this.fetch();
-        if (!queue) return undefined;
+        const queueGenerator = this.fetchThenUpdate();
+        const queue = (await queueGenerator.next()).value;
+
+        if (!queue) {
+            await queueGenerator.throw("Queue not found.");
+            return undefined;
+        }
         const first = queue.shift();
-        if (!first) return undefined;
+        if (!first) {
+            await queueGenerator.throw("Not Song in queue.");
+            return undefined;
+        }
+
         queue.push(first);
-        await this.update(queue);
+        await queueGenerator.next(queue);
         return queue[0];
     }
 
@@ -47,8 +65,12 @@ export default class QueueHandler {
             await this.next();
         }
 
-        const queue = await this.fetch();
-        if (!queue) return undefined;
+        const queueGenerator = this.fetchThenUpdate();
+        const queue = (await queueGenerator.next()).value;
+        if (!queue) {
+            await queueGenerator.throw("Queue not found.");
+            return undefined;
+        }
 
         const filteredSongs = songs.filter((song) =>
             queue.every((queuedSong) => queuedSong.url !== song.url)
@@ -86,7 +108,7 @@ export default class QueueHandler {
             }
         }
 
-        if (!(await this.update(newQueue))) return undefined;
+        await queueGenerator.next(newQueue);
 
         return filteredSongs;
     }
@@ -101,31 +123,55 @@ export default class QueueHandler {
         return playlist.queue;
     }
 
-    async update(queue: Song[]) {
-        const playlists = await this.guildData.get("playlists");
+    async *fetchThenUpdate() {
+        const playlistsGenerator = this.guildData.getThenUpdate("playlists");
+        const playlists = (await playlistsGenerator.next()).value;
         const name = await this.guildStates.get("currentPlaylistName");
         const playlist = playlists?.find((playlist) => playlist.name === name);
-        if (!name || !playlists || !playlist) {
-            return false;
-        }
-        playlist.queue = queue;
 
-        await this.guildData.update("playlists", playlists);
-        return true;
+        if (!name || !playlists || !playlist) {
+            await playlistsGenerator.throw("Playlist not found.");
+            return;
+        }
+
+        let newData: typeof playlist.queue | null = null;
+        try {
+            newData = (yield playlist.queue) as typeof playlist.queue | null;
+        } catch (err) {
+            if (err instanceof Error) {
+                await playlistsGenerator.throw(err.message);
+            }
+        }
+
+        if (!newData) {
+            await playlistsGenerator.throw("Queue is null");
+            return;
+        }
+
+        playlist.queue = newData;
+
+        await playlistsGenerator.next(playlists);
+        return;
     }
 
     async remove(index: number) {
-        const queue = await this.fetch();
+        const queueGenerator = this.fetchThenUpdate();
+        const queue = (await queueGenerator.next()).value;
+
         if (!queue || queue.length === 0 || index < 1 || index > queue.length) {
+            await queueGenerator.throw("Queue remove out of index.");
             return undefined;
         }
         const songToBeRemoved = queue[index - 1];
-        if (!songToBeRemoved) return undefined;
-        queue.splice(index - 1, 1);
-        if (await this.update(queue)) {
-            return songToBeRemoved;
+        if (!songToBeRemoved) {
+            await queueGenerator.throw("Song to be removed not found.");
+            return undefined;
         }
-        return undefined;
+        queue.splice(index - 1, 1);
+
+        await queueGenerator.next(queue);
+
+        return songToBeRemoved;
     }
 
     async index(index: number) {
@@ -137,12 +183,20 @@ export default class QueueHandler {
     }
 
     async shuffle() {
-        const queue = await this.fetch();
-        if (!queue) return false;
+        const queueGenerator = this.fetchThenUpdate();
+        const queue = (await queueGenerator.next()).value;
+
+        if (!queue) {
+            await queueGenerator.throw("Queue not found.");
+            return false;
+        }
+
         const first = queue.slice(0, 1);
         const rest = queue.slice(1);
         const shuffled = first.concat(arrayShuffle(rest));
-        return await this.update(shuffled);
+
+        await queueGenerator.next(shuffled);
+        return true;
     }
 
     async search(query: string) {

@@ -108,14 +108,23 @@ export default class SmoothieVoiceConnection {
                     this.channelId
                 ) as VoiceChannel | null;
                 if (!channel) return;
-                const userStats = await this._guildData.get("userStats");
-                if (!userStats) return;
 
                 const userIds = channel.members
                     .filter((member) => member.user !== client.user)
                     .map((member) => member.user.id);
 
                 if (userIds.length === 0) return;
+
+                // Retrieve userStats
+                const userStatsGenerator =
+                    this._guildData.getThenUpdate("userStats");
+                const userStats = (await userStatsGenerator.next()).value;
+                if (!userStats) {
+                    await userStatsGenerator.throw(
+                        new Error("Userstats not found.")
+                    );
+                    return;
+                }
 
                 for (const userId of userIds) {
                     const stats = userStats.find(
@@ -133,7 +142,8 @@ export default class SmoothieVoiceConnection {
                     stats.stayDuration += timeElapsed;
                 }
 
-                await this._guildData.update("userStats", userStats);
+                // Update userStats
+                await userStatsGenerator.next(userStats);
             })();
         }, 30000);
     }

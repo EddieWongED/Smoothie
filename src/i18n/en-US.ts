@@ -185,6 +185,9 @@ const en_US: InternationalizationList = {
     requiredFieldFooter: "* Required field",
     syntaxField: "Syntax",
     aliasesField: "Alias(es)",
+    autoSwitchPlaylistTitle: "Automatically Switched to `%ARG%` Playlist",
+    autoSwitchPlaylistMessage:
+        "Since you have removed the playlist that you are current playing, the current playlist has been switched to `%ARG%` instead.",
 };
 
 export default en_US;
