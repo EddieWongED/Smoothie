@@ -79,6 +79,8 @@ export default class LevelEmbed {
                 return 0xff9f0a;
             case "error":
                 return 0xcf000f;
+            default:
+                return 0x000000;
         }
     }
 

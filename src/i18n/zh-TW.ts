@@ -60,7 +60,7 @@ const zh_TW: InternationalizationList = {
     searchTitle: "`%ARG%` 的搜尋結果",
     stayRankTitle: "和 Smoothie 逗留在語音通道的排名",
     stayRankFailedMessage: "無法顯示和 Smoothie 逗留在語音通道的排名。",
-    queueRankTitle: "`%ARG%` 播放列表中每首歌曲播放次數的排名",
+    queueRankTitle: "`%ARG%` 播放清單中每首歌曲播放次數的排名",
     queueRankFailedMessage: "無法顯示播放清單中每首歌曲播放次數的排名。",
     prevFailedMessage: "無法播放上一首歌曲。",
     helpMessage: "請選擇您想了解那個命令。",
@@ -80,7 +80,7 @@ const zh_TW: InternationalizationList = {
     stayRankDescription: "顯示在語音通道停留時長的排名。",
     createPlaylistNameOptionDescription: "播放清單的名字。",
     createPlaylistDescription: "創建一個新的播放清單。",
-    infoPlaylistNameOptionDescription: "您想要獲取其信息的播放列表的名字。",
+    infoPlaylistNameOptionDescription: "您想要獲取其信息的播放清單的名字。",
     infoPlaylistDescription:
         "顯示播放清單的信息。如果沒有輸入名稱，將顯示當前播放清單的信息。",
     listPlaylistDescription: "列出所有播放清單。",
@@ -131,7 +131,7 @@ const zh_TW: InternationalizationList = {
     invalidYouTubeURLMessage:
         "無效的 YouTube URL！原因可能是歌曲是私人 / 年齡限制 / 已移除限制影片。",
     playSongFailedMessage:
-        "無法播放當前歌曲（`%ARG%`）。原因可能是歌曲是私人 / 年齡限制 / 已移除限制影片，又或者是網路問題。請用 retry 指令重試。如問題仍然存在，請跳過該歌曲或從播放列表中刪除該歌曲。\n音樂播放器已暫停。",
+        "無法播放當前歌曲（`%ARG%`）。原因可能是歌曲是私人 / 年齡限制 / 已移除限制影片，又或者是網路問題。請用 retry 指令重試。如問題仍然存在，請跳過該歌曲或從播放清單中刪除該歌曲。\n音樂播放器已暫停。",
     noUpComingSongMessage: "您沒有下一首歌曲！",
 
     // Others
@@ -165,6 +165,9 @@ const zh_TW: InternationalizationList = {
     requiredFieldFooter: "* 必填項目",
     syntaxField: "句法",
     aliasesField: "别名",
+    autoSwitchPlaylistTitle: "自動切換到 `%ARG%` 播放清單",
+    autoSwitchPlaylistMessage:
+        "由於您刪除了正在播放的播放清單，因此播放清單已切換為 `%ARG%`。",
 };
 
 export default zh_TW;

@@ -21,4 +21,17 @@ export default class GuildStatesHandler {
         );
         return result;
     }
+
+    // Usage:
+    // 1. const guildStates = new GuildStatesHandler(guildId);
+    // 2. const generator = guildStates.getThenUpdate(key);
+    // 3. const data = (await generator.next()).value;
+    // 4. Update data to newData;
+    // 5. If no need to update, await generator.throw(new Error(message));
+    // 6. If need to update, await generator.next(newData);
+    async *getThenUpdate<Key extends keyof Omit<GuildStates, "guildId">>(
+        key: Key
+    ) {
+        yield* GuildStatesController.getThenUpdate(this.guildId, key);
+    }
 }

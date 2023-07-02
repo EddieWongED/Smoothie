@@ -11,6 +11,8 @@ export default new SmoothieEvent(Events.ClientReady, async () => {
     client.user?.setActivity("$help / slash command");
     const collection = await GuildStatesController.getAll("voiceChannelId");
 
+    if (!collection) return;
+
     collection.forEach((voiceChannelId, guildId) => {
         void (async () => {
             if (!voiceChannelId) return;
@@ -27,14 +29,6 @@ export default new SmoothieEvent(Events.ClientReady, async () => {
                 client.voiceConnections.set(guildId, voiceConnection);
             }
             await voiceConnection.connect(voiceChannelId);
-
-            // If only the bot is in the voice channel, pause the audio player
-            const member = channel.members.first();
-            if (!member) return;
-            if (channel.members.size === 1 && member.user === client.user) {
-                const player = client.audioPlayers.get(guildId);
-                player?.pause();
-            }
         })();
     });
     return;

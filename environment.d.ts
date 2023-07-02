@@ -6,7 +6,7 @@ declare global {
             CLIENT_ID: string;
             GUILD_ID: string;
             MONGODB_URL: string;
-            ENV: "dev" | "prod";
+            ENV: "dev" | "prod" | "debug";
         }
     }
 }

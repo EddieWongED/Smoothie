@@ -156,6 +156,8 @@ export interface InternationalizationList {
     requiredFieldFooter: string;
     syntaxField: string;
     aliasesField: string;
+    autoSwitchPlaylistTitle: string;
+    autoSwitchPlaylistMessage: string;
 }
 
 export enum Languages {

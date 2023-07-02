@@ -42,8 +42,12 @@ export default new SmoothieCommand(Commands.createPlaylist, {
             return;
         }
 
-        const playlists = await guildData.get("playlists");
+        const playlistsGenerator = guildData.getThenUpdate("playlists");
+        const playlists = (await playlistsGenerator.next()).value;
         if (!playlists) {
+            await playlistsGenerator.throw(
+                new Error("Failed to create playlist.")
+            );
             await reply.error({
                 title: "errorTitle",
                 description: "createPlaylistFailedMessage",
@@ -54,6 +58,9 @@ export default new SmoothieCommand(Commands.createPlaylist, {
 
         // Check if the playlist already exists
         if (!playlists.every((playlist) => playlist.name !== name)) {
+            await playlistsGenerator.throw(
+                new Error("Playlist already exist.")
+            );
             await reply.error({
                 title: "errorTitle",
                 description: "playlistAlreadyExistMessage",
@@ -68,7 +75,7 @@ export default new SmoothieCommand(Commands.createPlaylist, {
             queue: [],
             createdAt: new Date(),
         });
-        await guildData.update("playlists", playlists);
+        await playlistsGenerator.next(playlists);
 
         if (playlists.length === 1) {
             const firstPlaylist = playlists[0];

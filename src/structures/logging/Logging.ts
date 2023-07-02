@@ -19,6 +19,12 @@ export default class Logging {
 
     public static error = (...args: unknown[]) => console.error(...args);
 
+    public static debug = (...args: unknown[]) => {
+        if (process.env.ENV === "debug") {
+            console.log(this._parseMessage("debug", ...args));
+        }
+    };
+
     private static _getPrefix = (level: LoggingLevel): string => {
         const prefix = `[${new Date().toUTCString()}] [${level.toUpperCase()}] `;
         return prefix;
@@ -38,6 +44,9 @@ export default class Logging {
                 break;
             case "error":
                 hex = "#cf000f";
+                break;
+            case "debug":
+                hex = "#ffcc00";
                 break;
         }
         return chalk.hex(hex)(message);
