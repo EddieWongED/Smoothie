@@ -13,6 +13,7 @@ export default class OptionsEmbed {
         title,
         description = null,
         footer,
+        emoji,
         options,
         placeholder,
         minValues = 1,
@@ -33,6 +34,7 @@ export default class OptionsEmbed {
             description: description,
             footer: footer,
             color: 0xe389b9,
+            emoji: emoji,
         });
         embed.components = [];
 

@@ -45,6 +45,7 @@ export default new SmoothieCommand(Commands.help, {
                 title: "genericCommandTitle",
                 titleArgs: [Commands.help],
                 description: "helpMessage",
+                emoji: Emojis.book,
                 options: Object.values(Commands)
                     .reduce<Command[]>((commands, commandName) => {
                         const command = client.commands.get(commandName);
@@ -169,10 +170,11 @@ export default new SmoothieCommand(Commands.help, {
                 : description;
         }
         const embed = BasicEmbed.create({
-            title: `${Emojis.book} ${titleString}`,
+            title: titleString,
             description: description,
             fields: fields,
             footer: getLocale(language, "requiredFieldFooter"),
+            emoji: Emojis.book,
         });
 
         await reply.reply(embed);

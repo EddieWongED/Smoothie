@@ -16,6 +16,7 @@ export default class PaginationEmbed {
         footer,
         itemsPerPage = 10,
         indexing = true,
+        emoji,
     }: PaginationEmbedArgs): BaseMessageOptions {
         const maxPage = Math.ceil(list.length / itemsPerPage);
 
@@ -41,6 +42,7 @@ export default class PaginationEmbed {
             title: title,
             description: description,
             footer: footer,
+            emoji: emoji,
         });
 
         // Create Component

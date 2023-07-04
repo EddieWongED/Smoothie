@@ -13,6 +13,7 @@ export default class ConfirmEmbed {
         title,
         description = null,
         footer,
+        emoji,
     }: ConfirmEmbedArgs): BaseMessageOptions {
         // Create Embed
         const embed = BasicEmbed.create({
@@ -20,6 +21,7 @@ export default class ConfirmEmbed {
             description: description,
             footer: footer,
             color: 0xcf000f,
+            emoji: emoji,
         });
 
         // Create Component

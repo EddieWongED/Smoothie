@@ -14,6 +14,7 @@ export default class PlayingNowEmbed {
         thumbnail = null,
         url = null,
         author = null,
+        emoji = Emojis.youtube,
         playedFor,
         duration,
         isPaused,
@@ -24,13 +25,14 @@ export default class PlayingNowEmbed {
 
         // Create Embed
         const embed = BasicEmbed.create({
-            title: `${Emojis.youtube} ${title}`,
+            title: title,
             description: description ? `${description}\n${progressBar}` : null,
             fields: fields,
             color: 0x30a45a,
             thumbnail: thumbnail,
             url: url,
             author: author,
+            emoji: emoji,
         });
 
         // Create Component

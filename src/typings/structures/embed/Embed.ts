@@ -5,6 +5,7 @@ import type {
     RGBTuple,
 } from "discord.js";
 import type { LoggingLevel } from "../logging/Logging.js";
+import type { Emojis } from "../../emoji/Emoji.js";
 
 export interface BasicEmbedArgs {
     title: string;
@@ -15,6 +16,7 @@ export interface BasicEmbedArgs {
     thumbnail?: string | null;
     url?: string | null;
     author?: APIEmbedAuthor | null;
+    emoji?: Emojis | undefined;
 }
 
 export type LevelEmbedArgs = BasicEmbedArgs & { level: LoggingLevel };
@@ -35,6 +37,7 @@ export interface PaginationEmbedArgs {
     footer: string;
     itemsPerPage?: number;
     indexing?: boolean;
+    emoji?: Emojis | undefined;
 }
 
 export type PlayingNowEmbedArgs = BasicEmbedArgs & {
