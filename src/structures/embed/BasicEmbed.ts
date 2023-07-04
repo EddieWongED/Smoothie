@@ -13,9 +13,13 @@ export default class BasicEmbed {
         thumbnail = null,
         author = null,
         url = null,
+        emoji,
     }: BasicEmbedArgs): BaseMessageOptions {
         footer = footer ? `Smoothie • ${footer}` : "Smoothie";
 
+        if (emoji) {
+            title = `${emoji} ${title}`;
+        }
         if (title.length > 256) {
             title = title.substring(0, 253) + "...";
         }

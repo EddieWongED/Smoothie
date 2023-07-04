@@ -1,12 +1,14 @@
 import type { APISelectMenuOption } from "discord.js";
 import type { Internationalization } from "../../i18n/i18n.js";
 import type { LoggingLevel } from "../logging/Logging.js";
+import type { Emojis } from "../../emoji/Emoji.js";
 
 export interface ReplyArgs {
     title: Internationalization;
     description: Internationalization;
     titleArgs?: string[];
     descriptionArgs?: string[];
+    emoji?: Emojis | undefined;
 }
 
 export type FollowUpArgs = { willEdit?: boolean } & ReplyArgs;
@@ -27,4 +29,5 @@ export interface ListReplyArgs {
     titleArgs?: string[];
     itemsPerPage?: number;
     indexing?: boolean;
+    emoji?: Emojis | undefined;
 }

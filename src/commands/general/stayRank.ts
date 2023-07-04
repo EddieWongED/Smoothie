@@ -1,6 +1,7 @@
 import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import { client } from "../../index.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
+import { Emojis } from "../../typings/emoji/Emoji.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import { formatTimeWithLetter } from "../../utils/formatTime.js";
 import getLocalizationMap from "../../utils/getLocalizationMap.js";
@@ -34,6 +35,7 @@ export default new SmoothieCommand(Commands.stayRank, {
         await reply.list({
             list: ranking,
             title: "stayRankTitle",
+            emoji: Emojis.trophy,
         });
 
         return;

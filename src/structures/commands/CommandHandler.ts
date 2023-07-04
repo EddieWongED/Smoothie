@@ -17,6 +17,7 @@ import Logging from "../logging/Logging.js";
 import GuildStatesHandler from "../database/GuildStatesHandler.js";
 import type HelpOptions from "../../typings/commands/general/HelpOptions.js";
 import didYouMean from "didyoumean";
+import { Emojis } from "../../typings/emoji/Emoji.js";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class CommandHandler {
@@ -39,6 +40,7 @@ export class CommandHandler {
             title: "loadingCommandTitle",
             description: "loadingCommandMessage",
             descriptionArgs: [commandName],
+            emoji: Emojis.loading,
         });
 
         // Retrieve command
@@ -127,6 +129,7 @@ export class CommandHandler {
                 title: "loadingCommandTitle",
                 description: "loadingCommandMessage",
                 descriptionArgs: [commandName],
+                emoji: Emojis.loading,
             });
 
             // Retrieve command

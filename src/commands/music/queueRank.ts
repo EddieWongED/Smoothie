@@ -1,5 +1,6 @@
 import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
+import { Emojis } from "../../typings/emoji/Emoji.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import getLocalizationMap from "../../utils/getLocalizationMap.js";
 
@@ -29,6 +30,7 @@ export default new SmoothieCommand(Commands.queueRank, {
             list: ranking,
             title: "queueRankTitle",
             titleArgs: [name],
+            emoji: Emojis.trophy,
         });
 
         return;

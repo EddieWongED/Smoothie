@@ -62,6 +62,7 @@ export default class ReplyHandler {
         description,
         titleArgs = [],
         descriptionArgs = [],
+        emoji,
     }: ReplyArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -75,6 +76,7 @@ export default class ReplyHandler {
             level: "info",
             title: titleString,
             description: descriptionString,
+            emoji: emoji,
         });
         return this.reply(embed);
     }
@@ -84,6 +86,7 @@ export default class ReplyHandler {
         description,
         titleArgs = [],
         descriptionArgs = [],
+        emoji,
     }: ReplyArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -97,6 +100,7 @@ export default class ReplyHandler {
             level: "success",
             title: titleString,
             description: descriptionString,
+            emoji: emoji,
         });
         return this.reply(embed);
     }
@@ -106,6 +110,7 @@ export default class ReplyHandler {
         description,
         titleArgs = [],
         descriptionArgs = [],
+        emoji,
     }: ReplyArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -119,6 +124,7 @@ export default class ReplyHandler {
             level: "warn",
             title: titleString,
             description: descriptionString,
+            emoji: emoji,
         });
         return this.reply(embed);
     }
@@ -128,6 +134,7 @@ export default class ReplyHandler {
         description,
         titleArgs = [],
         descriptionArgs = [],
+        emoji,
     }: ReplyArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -141,6 +148,7 @@ export default class ReplyHandler {
             level: "error",
             title: titleString,
             description: descriptionString,
+            emoji: emoji,
         });
         return this.reply(embed);
     }
@@ -151,6 +159,7 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
         willEdit = true,
+        emoji,
     }: FollowUpArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -164,6 +173,7 @@ export default class ReplyHandler {
             level: "info",
             title: titleString,
             description: descriptionString,
+            emoji: emoji,
         });
         return this.followUp(embed, willEdit);
     }
@@ -174,6 +184,7 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
         willEdit = true,
+        emoji,
     }: FollowUpArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -187,6 +198,7 @@ export default class ReplyHandler {
             level: "success",
             title: titleString,
             description: descriptionString,
+            emoji: emoji,
         });
         return this.followUp(embed, willEdit);
     }
@@ -197,6 +209,7 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
         willEdit = true,
+        emoji,
     }: FollowUpArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -210,6 +223,7 @@ export default class ReplyHandler {
             level: "warn",
             title: titleString,
             description: descriptionString,
+            emoji: emoji,
         });
         return this.followUp(embed, willEdit);
     }
@@ -220,6 +234,7 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
         willEdit = true,
+        emoji,
     }: FollowUpArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -233,6 +248,7 @@ export default class ReplyHandler {
             level: "error",
             title: titleString,
             description: descriptionString,
+            emoji: emoji,
         });
         return this.followUp(embed, willEdit);
     }
@@ -243,6 +259,7 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
         willEdit = true,
+        emoji,
     }: SendArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -256,6 +273,7 @@ export default class ReplyHandler {
             level: "info",
             title: titleString,
             description: descriptionString,
+            emoji: emoji,
         });
         return this.send(embed, willEdit);
     }
@@ -266,6 +284,7 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
         willEdit = true,
+        emoji,
     }: SendArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -279,6 +298,7 @@ export default class ReplyHandler {
             level: "success",
             title: titleString,
             description: descriptionString,
+            emoji: emoji,
         });
         return this.send(embed, willEdit);
     }
@@ -289,6 +309,7 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
         willEdit = true,
+        emoji,
     }: SendArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -302,6 +323,7 @@ export default class ReplyHandler {
             level: "warn",
             title: titleString,
             description: descriptionString,
+            emoji: emoji,
         });
         return this.send(embed, willEdit);
     }
@@ -312,6 +334,7 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
         willEdit = true,
+        emoji,
     }: SendArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -325,6 +348,7 @@ export default class ReplyHandler {
             level: "error",
             title: titleString,
             description: descriptionString,
+            emoji: emoji,
         });
         return this.send(embed, willEdit);
     }
@@ -334,6 +358,7 @@ export default class ReplyHandler {
         description,
         titleArgs = [],
         descriptionArgs = [],
+        emoji,
     }: ReplyArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -350,6 +375,7 @@ export default class ReplyHandler {
             title: titleString,
             description: descriptionString,
             footer: footerString,
+            emoji: emoji,
         });
         const payload = await this.followUp(embed, false);
         if (!payload) return false;
@@ -387,6 +413,7 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
         userId,
+        emoji,
     }: QueryArgs) {
         if (!userId) {
             userId = this._userId;
@@ -397,6 +424,7 @@ export default class ReplyHandler {
             titleArgs: titleArgs,
             descriptionArgs: descriptionArgs,
             willEdit: false,
+            emoji: emoji,
         });
         if (!queryMessage) return null;
 
@@ -432,6 +460,7 @@ export default class ReplyHandler {
         titleArgs = [],
         descriptionArgs = [],
         options,
+        emoji,
     }: OptionsArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -454,6 +483,7 @@ export default class ReplyHandler {
             footer: footerString,
             options: options,
             placeholder: placeholder,
+            emoji: emoji,
         });
         const payload = await this.reply(embed);
         if (!payload) return null;
@@ -493,6 +523,7 @@ export default class ReplyHandler {
         titleArgs = [],
         itemsPerPage = 10,
         indexing = true,
+        emoji,
     }: ListReplyArgs) {
         const language =
             (await this._guildData.get("language")) ?? defaultLanguage;
@@ -510,6 +541,7 @@ export default class ReplyHandler {
             footer: footerString,
             itemsPerPage: itemsPerPage,
             indexing: indexing,
+            emoji: emoji,
         });
         const payload = await this.reply(embed);
         if (!payload) return null;

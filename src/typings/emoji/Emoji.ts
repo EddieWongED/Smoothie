@@ -14,6 +14,7 @@ export enum Emojis {
     tick = "<:check:1124608894547791932>",
     warning = "<:warning:1124608988667990146>",
     error = "<:error:1124609235364347935>",
+    loading = "<a:loading:1125757461396193384>",
     trophy = "<:trophy:1124609011191390208>",
     book = "<:guidelines:1124609057660076132>",
     leftProgressEmpty = "<:leftProgressEmpty:1124627137580781630>",

@@ -13,13 +13,14 @@ export default class LevelEmbed {
         level,
         title,
         description = null,
+        emoji = this._getEmoji(level),
     }: LevelEmbedArgs): BaseMessageOptions {
         // Create Embed
-        title = this._getPrefixedTitle(level, title);
         const embed = BasicEmbed.create({
             title: title,
             description: description,
             color: this._getColor(level),
+            emoji: emoji,
         });
 
         return embed;
@@ -28,44 +29,52 @@ export default class LevelEmbed {
     static info({
         title,
         description = null,
+        emoji = this._getEmoji("info"),
     }: BasicEmbedArgs): BaseMessageOptions {
         return this.create({
             level: "info",
             title: title,
             description: description,
+            emoji: emoji,
         });
     }
 
     static success({
         title,
         description = null,
+        emoji = this._getEmoji("success"),
     }: BasicEmbedArgs): BaseMessageOptions {
         return this.create({
             level: "success",
             title: title,
             description: description,
+            emoji: emoji,
         });
     }
 
     static warn({
         title,
         description = null,
+        emoji = this._getEmoji("warn"),
     }: BasicEmbedArgs): BaseMessageOptions {
         return this.create({
             level: "warn",
             title: title,
             description: description,
+            emoji: emoji,
         });
     }
 
     static error({
         title,
         description = null,
+        emoji = this._getEmoji("error"),
     }: BasicEmbedArgs): BaseMessageOptions {
         return this.create({
             level: "error",
             title: title,
             description: description,
+            emoji: emoji,
         });
     }
 
@@ -84,19 +93,19 @@ export default class LevelEmbed {
         }
     }
 
-    private static _getPrefixedTitle(level: LoggingLevel, title: string) {
+    private static _getEmoji(level: LoggingLevel) {
         switch (level) {
             case "success": {
-                return `${Emojis.tick} ${title}`;
+                return Emojis.tick;
             }
             case "warn": {
-                return `${Emojis.warning} ${title}`;
+                return Emojis.warning;
             }
             case "error": {
-                return `${Emojis.error} ${title}`;
+                return Emojis.error;
             }
             default: {
-                return title;
+                return undefined;
             }
         }
     }
