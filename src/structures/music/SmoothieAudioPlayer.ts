@@ -5,7 +5,6 @@ import { AudioPlayerStatus } from "@discordjs/voice";
 import { createAudioPlayer } from "@discordjs/voice";
 import createGuildPrefix from "../../utils/createGuildPrefix.js";
 import Logging from "../logging/Logging.js";
-import { stream } from "play-dl";
 import QueueHandler from "./QueueHandler.js";
 import type { Song } from "../../data/music/Song.js";
 import ReplyHandler from "../commands/ReplyHandler.js";
@@ -24,6 +23,7 @@ import type {
 import type { MessageCommandPayload } from "../../typings/structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import type { VoiceChannel } from "discord.js";
+import ytdl from "ytdl-core";
 
 export default class SmoothieAudioPlayer {
     player: AudioPlayer;
@@ -114,7 +114,7 @@ export default class SmoothieAudioPlayer {
     }
 
     async play(song: Song) {
-        const resource = await this._createAudioResource(song);
+        const resource = this._createAudioResource(song);
         if (!resource) {
             this.pause();
             await this._reply.errorSend({
@@ -154,12 +154,15 @@ export default class SmoothieAudioPlayer {
         return this.player.stop(true);
     }
 
-    private async _createAudioResource(song: Song) {
+    private _createAudioResource(song: Song) {
         try {
-            const playStream = await stream(song.url, {
-                discordPlayerCompatibility: true,
+            const playStream = ytdl(song.url, {
+                filter: "audioonly",
+                liveBuffer: 0,
+                quality: "lowestaudio",
+                dlChunkSize: 0,
             });
-            return createAudioResource(playStream.stream, {
+            return createAudioResource(playStream, {
                 metadata: song,
             });
         } catch (err) {
