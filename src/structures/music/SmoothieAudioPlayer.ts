@@ -23,7 +23,7 @@ import type {
 import type { MessageCommandPayload } from "../../typings/structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import type { VoiceChannel } from "discord.js";
-import ytdl from "ytdl-core";
+import ytdl from "@distube/ytdl-core";
 
 export default class SmoothieAudioPlayer {
     player: AudioPlayer;
@@ -159,7 +159,8 @@ export default class SmoothieAudioPlayer {
             const playStream = ytdl(song.url, {
                 filter: "audioonly",
                 liveBuffer: 0,
-                quality: "lowestaudio",
+                highWaterMark: 1 << 62,
+                quality: "highestaudio",
                 dlChunkSize: 0,
             });
             return createAudioResource(playStream, {
