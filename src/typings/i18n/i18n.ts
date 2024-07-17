@@ -129,6 +129,7 @@ export interface InternationalizationList {
     successTitle: string;
     errorTitle: string;
     errorCommandMessage: string;
+    unknownStreamErrorMessage: string;
     confirmTitle: string;
     confirmFooter: string;
     cancelSuccessTitle: string;

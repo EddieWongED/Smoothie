@@ -156,6 +156,8 @@ const en_US: InternationalizationList = {
     successTitle: "Success!",
     errorTitle: "Error!",
     errorCommandMessage: "There is an error running `%ARG%` command...",
+    unknownStreamErrorMessage:
+        "Unknown audio streaming error occurred... Please try again with the retry command. If the problem persists, please skip the song or remove the song from the playlist.",
     confirmTitle: "Are you sure?",
     confirmFooter: "You have %ARG% minute(s) to decide",
     cancelSuccessTitle: "Cancel Success!",
