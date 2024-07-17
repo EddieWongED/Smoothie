@@ -138,6 +138,8 @@ const zh_TW: InternationalizationList = {
     successTitle: "成功！",
     errorTitle: "錯誤...",
     errorCommandMessage: "運行 `%ARG%` 指令時出現了錯誤...",
+    unknownStreamErrorMessage:
+        "發生未知的音訊串流錯誤。請用 retry 指令重試。如問題仍然存在，請跳過該歌曲或從播放清單中刪除該歌曲。",
     confirmTitle: "您確定嗎？",
     confirmFooter: "您有 %ARG% 分鐘的時間來決定",
     cancelSuccessTitle: "取消成功！",

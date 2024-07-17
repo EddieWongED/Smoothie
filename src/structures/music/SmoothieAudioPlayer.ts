@@ -24,6 +24,11 @@ import type { MessageCommandPayload } from "../../typings/structures/commands/Sm
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import type { VoiceChannel } from "discord.js";
 import ytdl from "@distube/ytdl-core";
+import ffmpegPath from "@ffmpeg-installer/ffmpeg";
+import ffmpeg from "fluent-ffmpeg";
+import type { PassThrough } from "stream";
+
+ffmpeg.setFfmpegPath(ffmpegPath.path);
 
 export default class SmoothieAudioPlayer {
     player: AudioPlayer;
@@ -155,21 +160,15 @@ export default class SmoothieAudioPlayer {
     }
 
     private _createAudioResource(song: Song) {
-        try {
-            const playStream = ytdl(song.url, {
-                filter: "audioonly",
-                liveBuffer: 0,
-                highWaterMark: 1 << 62,
-                quality: "highestaudio",
-                dlChunkSize: 0,
-            });
-            return createAudioResource(playStream, {
-                metadata: song,
-            });
-        } catch (err) {
-            Logging.error(err);
+        const stream = this._createNormalizedStream(song);
+
+        if (stream == null) {
             return null;
         }
+
+        return createAudioResource(stream, {
+            metadata: song,
+        });
     }
 
     private _registerStateChanges() {
@@ -229,6 +228,13 @@ export default class SmoothieAudioPlayer {
 
         this.player.on("error", (err) => {
             Logging.error(this._guildPrefix, err);
+            this.pause();
+            void (async () => {
+                await this._reply.errorSend({
+                    title: "errorTitle",
+                    description: "unknownStreamErrorMessage",
+                });
+            })();
         });
 
         this.player.on("stateChange", (oldState, newState) => {
@@ -615,6 +621,48 @@ export default class SmoothieAudioPlayer {
 
         if (userIds.length === 0) {
             this.pause();
+        }
+    }
+
+    private _createNormalizedStream(song: Song): PassThrough | null {
+        try {
+            const stream = ytdl(song.url, {
+                filter: "audioonly",
+                liveBuffer: 0,
+                highWaterMark: 1 << 62,
+                quality: "highestaudio",
+                dlChunkSize: 0,
+            }).on("error", (err) => {
+                Logging.error(
+                    this._guildPrefix,
+                    "There is an error in ytdl stream",
+                    err
+                );
+            });
+
+            const command = ffmpeg(stream)
+                .format("mp3")
+                .audioBitrate(320)
+                .audioFilter("loudnorm")
+                .on("error", (err) => {
+                    Logging.error(
+                        this._guildPrefix,
+                        "There is an error in ffmpeg",
+                        err
+                    );
+                });
+
+            const passthrough = command.pipe().on("error", (err: Error) => {
+                Logging.info(
+                    this._guildPrefix,
+                    "Audio has be interrupted.",
+                    err
+                );
+            }) as PassThrough;
+
+            return passthrough;
+        } catch (e) {
+            return null;
         }
     }
 }
