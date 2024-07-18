@@ -27,14 +27,16 @@ import ytdl from "@distube/ytdl-core";
 import ffmpegPath from "@ffmpeg-installer/ffmpeg";
 import ffmpeg from "fluent-ffmpeg";
 import type { PassThrough } from "stream";
+import type { SetIntervalAsyncTimer } from "set-interval-async";
+import { setIntervalAsync, clearIntervalAsync } from "set-interval-async";
 
 ffmpeg.setFfmpegPath(ffmpegPath.path);
 
 export default class SmoothieAudioPlayer {
     player: AudioPlayer;
     playedFor = 0;
-    private _musicTimer?: NodeJS.Timer;
-    private _embedTimer?: NodeJS.Timer;
+    private _musicTimer?: SetIntervalAsyncTimer<unknown[]>;
+    private _embedTimer?: SetIntervalAsyncTimer<unknown[]>;
     private _queueHandler: QueueHandler;
     private _reply: ReplyHandler;
     private _guildPrefix: string;
@@ -213,17 +215,31 @@ export default class SmoothieAudioPlayer {
         });
 
         this.player.on(AudioPlayerStatus.Buffering, () => {
-            clearInterval(this._musicTimer);
-            clearInterval(this._embedTimer);
+            void (async () => {
+                if (this._musicTimer) {
+                    await clearIntervalAsync(this._musicTimer);
+                }
+                if (this._embedTimer) {
+                    await clearIntervalAsync(this._embedTimer);
+                }
+            })();
         });
 
         this.player.on(AudioPlayerStatus.Paused, () => {
             Logging.info(this._guildPrefix, "The song has been paused.");
-            clearInterval(this._musicTimer);
+            void (async () => {
+                if (this._musicTimer) {
+                    await clearIntervalAsync(this._musicTimer);
+                }
+            })();
         });
 
         this.player.on(AudioPlayerStatus.AutoPaused, () => {
-            clearInterval(this._musicTimer);
+            void (async () => {
+                if (this._musicTimer) {
+                    await clearIntervalAsync(this._musicTimer);
+                }
+            })();
         });
 
         this.player.on("error", (err) => {
@@ -467,47 +483,45 @@ export default class SmoothieAudioPlayer {
         }
 
         // Update the playing now message every 5 seconds
-        clearInterval(this._embedTimer);
-        this._embedTimer = setInterval(() => {
-            void (async () => {
-                // Update the playing now message when timer changes or clicked pause or
-                // unpause button
-                if (
-                    this.playedFor !== this._prevPlayedFor ||
-                    this._clickedPauseOrUnpauseButton
-                ) {
-                    const isPaused =
-                        this.player.state.status === AudioPlayerStatus.Paused ||
-                        this.player.state.status ===
-                            AudioPlayerStatus.AutoPaused;
-                    const embed = PlayingNowEmbed.create({
-                        title: getLocale(language, "playingNowTitle"),
-                        description: `### [${song.title}](${song.url})`,
-                        fields: fields,
-                        thumbnail: song.thumbnailURL,
-                        playedFor: this.playedFor,
-                        duration: song.duration,
-                        isPaused: isPaused,
-                        queueButtonText: queueButtonText,
-                        playlistInfoButtonText: playlistInfoButtonText,
-                    });
-                    await this._reply.reply(embed);
-                    this._clickedPauseOrUnpauseButton = false;
-                    if (
-                        this.playedFor >= song.duration &&
-                        song.duration !== 0
-                    ) {
-                        clearInterval(this._embedTimer);
+        if (this._embedTimer) {
+            await clearIntervalAsync(this._embedTimer);
+        }
+        this._embedTimer = setIntervalAsync(async () => {
+            // Update the playing now message when timer changes or clicked pause or
+            // unpause button
+            if (
+                this.playedFor !== this._prevPlayedFor ||
+                this._clickedPauseOrUnpauseButton
+            ) {
+                const isPaused =
+                    this.player.state.status === AudioPlayerStatus.Paused ||
+                    this.player.state.status === AudioPlayerStatus.AutoPaused;
+                const embed = PlayingNowEmbed.create({
+                    title: getLocale(language, "playingNowTitle"),
+                    description: `### [${song.title}](${song.url})`,
+                    fields: fields,
+                    thumbnail: song.thumbnailURL,
+                    playedFor: this.playedFor,
+                    duration: song.duration,
+                    isPaused: isPaused,
+                    queueButtonText: queueButtonText,
+                    playlistInfoButtonText: playlistInfoButtonText,
+                });
+                await this._reply.reply(embed);
+                this._clickedPauseOrUnpauseButton = false;
+                if (this.playedFor >= song.duration && song.duration !== 0) {
+                    if (this._embedTimer) {
+                        await clearIntervalAsync(this._embedTimer);
                     }
                 }
-                this._prevPlayedFor = this.playedFor;
-            })();
+            }
+            this._prevPlayedFor = this.playedFor;
         }, 5000);
     }
 
     private _startTimer() {
         this._prevTime = performance.now();
-        this._musicTimer = setInterval(() => {
+        this._musicTimer = setIntervalAsync(() => {
             const now = performance.now();
             const timeElapsed = now - this._prevTime;
             this.playedFor += timeElapsed / 1000;
