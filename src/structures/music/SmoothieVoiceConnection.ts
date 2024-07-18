@@ -10,7 +10,8 @@ import SmoothieAudioPlayer from "./SmoothieAudioPlayer.js";
 import GuildStatesHandler from "../database/GuildStatesHandler.js";
 import type { VoiceChannel } from "discord.js";
 import GuildDataHandler from "../database/GuildDataHandler.js";
-import { clearInterval } from "timers";
+import type { SetIntervalAsyncTimer } from "set-interval-async";
+import { setIntervalAsync, clearIntervalAsync } from "set-interval-async";
 
 export default class SmoothieVoiceConnection {
     channelId: string | null = null;
@@ -18,7 +19,7 @@ export default class SmoothieVoiceConnection {
     player: SmoothieAudioPlayer;
     private _guildData: GuildDataHandler;
     private _guildStates: GuildStatesHandler;
-    private _stayTimer?: NodeJS.Timer;
+    private _stayTimer?: SetIntervalAsyncTimer<unknown[]>;
     private _prevTime: DOMHighResTimeStamp;
 
     constructor(public guildId: string) {
@@ -90,61 +91,61 @@ export default class SmoothieVoiceConnection {
         this.connection.destroy();
         this.connection = undefined;
         this.channelId = null;
-        clearInterval(this._stayTimer);
+        if (this._stayTimer) {
+            await clearIntervalAsync(this._stayTimer);
+        }
         await this._guildStates.update("voiceChannelId", null);
         return true;
     }
 
     private _startStayingTimer() {
         this._prevTime = performance.now();
-        this._stayTimer = setInterval(() => {
-            void (async () => {
-                const now = performance.now();
-                const timeElapsed = (now - this._prevTime) / 1000;
-                this._prevTime = now;
+        this._stayTimer = setIntervalAsync(async () => {
+            const now = performance.now();
+            const timeElapsed = (now - this._prevTime) / 1000;
+            this._prevTime = now;
 
-                if (!this.channelId) return;
-                const channel = client.channels.cache.get(
-                    this.channelId
-                ) as VoiceChannel | null;
-                if (!channel) return;
+            if (!this.channelId) return;
+            const channel = client.channels.cache.get(
+                this.channelId
+            ) as VoiceChannel | null;
+            if (!channel) return;
 
-                const userIds = channel.members
-                    .filter((member) => member.user !== client.user)
-                    .map((member) => member.user.id);
+            const userIds = channel.members
+                .filter((member) => member.user !== client.user)
+                .map((member) => member.user.id);
 
-                if (userIds.length === 0) return;
+            if (userIds.length === 0) return;
 
-                // Retrieve userStats
-                const userStatsGenerator =
-                    this._guildData.getThenUpdate("userStats");
-                const userStats = (await userStatsGenerator.next()).value;
-                if (!userStats) {
-                    await userStatsGenerator.throw(
-                        new Error("Userstats not found.")
-                    );
-                    return;
+            // Retrieve userStats
+            const userStatsGenerator =
+                this._guildData.getThenUpdate("userStats");
+            const userStats = (await userStatsGenerator.next()).value;
+            if (!userStats) {
+                await userStatsGenerator.throw(
+                    new Error("Userstats not found.")
+                );
+                return;
+            }
+
+            for (const userId of userIds) {
+                const stats = userStats.find(
+                    (stats) => stats.userId === userId
+                );
+                // Create this user stats if it does not exist
+                if (!stats) {
+                    userStats.push({
+                        userId: userId,
+                        stayDuration: timeElapsed,
+                        songStats: [],
+                    });
+                    continue;
                 }
+                stats.stayDuration += timeElapsed;
+            }
 
-                for (const userId of userIds) {
-                    const stats = userStats.find(
-                        (stats) => stats.userId === userId
-                    );
-                    // Create this user stats if it does not exist
-                    if (!stats) {
-                        userStats.push({
-                            userId: userId,
-                            stayDuration: timeElapsed,
-                            songStats: [],
-                        });
-                        continue;
-                    }
-                    stats.stayDuration += timeElapsed;
-                }
-
-                // Update userStats
-                await userStatsGenerator.next(userStats);
-            })();
+            // Update userStats
+            await userStatsGenerator.next(userStats);
         }, 30000);
     }
 }
