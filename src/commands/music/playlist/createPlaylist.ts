@@ -6,7 +6,10 @@ import { ApplicationCommandOptionType } from "discord.js";
 import { SmoothieCommand } from "../../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../../typings/structures/commands/SmoothieCommand.js";
 import { defaultLanguage, getLocale } from "../../../i18n/i18n.js";
+import { PlaylistModel } from "../../../models/music/Playlist.js";
 import getLocalizationMap from "../../../utils/getLocalizationMap.js";
+import { StatesModel } from "../../../models/guild/States.js";
+import { MongoError } from "mongodb";
 
 const nameOption: ApplicationCommandStringOption = {
     name: "name",
@@ -31,7 +34,7 @@ export default new SmoothieCommand(Commands.createPlaylist, {
     description: getLocale(defaultLanguage, "createPlaylistDescription"),
     descriptionLocalizations: getLocalizationMap("createPlaylistDescription"),
     options: createPlaylistOptions,
-    run: async ({ options, reply, guildData, guildStates }) => {
+    run: async ({ options, reply, guildId }) => {
         const { name } = options;
         // Check if name is empty or not
         if (name.length === 0) {
@@ -42,47 +45,30 @@ export default new SmoothieCommand(Commands.createPlaylist, {
             return;
         }
 
-        const playlistsGenerator = guildData.getThenUpdate("playlists");
-        const playlists = (await playlistsGenerator.next()).value;
-        if (!playlists) {
-            await playlistsGenerator.throw(
-                new Error("Failed to create playlist.")
+        try {
+            const playlist = await PlaylistModel.create({ guildId, name });
+            await StatesModel.findAndSetCurrentPlaylistIfNull(
+                guildId,
+                playlist
             );
+        } catch (err) {
+            if (err instanceof MongoError) {
+                if (err.code === 11000) {
+                    await reply.error({
+                        title: "errorTitle",
+                        description: "playlistAlreadyExistMessage",
+                        descriptionArgs: [name],
+                    });
+                    return;
+                }
+            }
+
             await reply.error({
                 title: "errorTitle",
                 description: "createPlaylistFailedMessage",
                 descriptionArgs: [name],
             });
             return;
-        }
-
-        // Check if the playlist already exists
-        if (!playlists.every((playlist) => playlist.name !== name)) {
-            await playlistsGenerator.throw(
-                new Error("Playlist already exist.")
-            );
-            await reply.error({
-                title: "errorTitle",
-                description: "playlistAlreadyExistMessage",
-                descriptionArgs: [name],
-            });
-            return;
-        }
-
-        // Update database
-        playlists.push({
-            name: name,
-            queue: [],
-            createdAt: new Date(),
-        });
-        await playlistsGenerator.next(playlists);
-
-        if (playlists.length === 1) {
-            const firstPlaylist = playlists[0];
-            await guildStates.update(
-                "currentPlaylistName",
-                firstPlaylist ? firstPlaylist.name : null
-            );
         }
 
         await reply.success({

@@ -1,3 +1,4 @@
+import { UserStatsModel } from "../../models/user/UserStats.js";
 import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import { client } from "../../index.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
@@ -10,9 +11,9 @@ export default new SmoothieCommand(Commands.stayRank, {
     name: Commands.stayRank,
     description: getLocale(defaultLanguage, "stayRankDescription"),
     descriptionLocalizations: getLocalizationMap("stayRankDescription"),
-    run: async ({ guildData, reply }) => {
-        const userStats = await guildData.get("userStats");
-        if (!userStats) {
+    run: async ({ guildId, reply }) => {
+        const allUserStats = await UserStatsModel.findAllByGuildId(guildId);
+        if (allUserStats.length === 0) {
             await reply.error({
                 title: "errorTitle",
                 description: "stayRankFailedMessage",
@@ -21,15 +22,13 @@ export default new SmoothieCommand(Commands.stayRank, {
         }
 
         const ranking = await Promise.all(
-            userStats
-                .sort((a, b) => b.stayDuration - a.stayDuration)
-                .map(async (userStat) => {
-                    const user = await client.users.fetch(userStat.userId);
-                    return `${user.username}: ${formatTimeWithLetter(
-                        userStat.stayDuration
-                    )}
+            allUserStats.map(async (userStat) => {
+                const user = await client.users.fetch(userStat.userId);
+                return `${user.username}: ${formatTimeWithLetter(
+                    userStat.stayDuration
+                )}
                     `;
-                })
+            })
         );
 
         await reply.list({

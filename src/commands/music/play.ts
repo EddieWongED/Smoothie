@@ -5,11 +5,13 @@ import type {
 import { ApplicationCommandOptionType } from "discord.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
-import URLHandler from "../../structures/music/URLHandler.js";
-import QueueHandler from "../../structures/music/QueueHandler.js";
-import { client } from "../../index.js";
+import URLHandler, {
+    URLHandlerError,
+} from "../../structures/music/URLHandler.js";
 import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import getLocalizationMap from "../../utils/getLocalizationMap.js";
+import { StatesModel } from "../../models/guild/States.js";
+import { client } from "../../index.js";
 
 const urlOption: ApplicationCommandStringOption = {
     name: "url",
@@ -42,7 +44,7 @@ export default new SmoothieCommand(Commands.play, {
     description: getLocale(defaultLanguage, "playDescription"),
     descriptionLocalizations: getLocalizationMap("playDescription"),
     options: playOptions,
-    run: async ({ guildId, reply, options, guildStates }) => {
+    run: async ({ guildId, reply, options }) => {
         const { url } = options;
         let { when } = options;
         if (!when) {
@@ -50,8 +52,9 @@ export default new SmoothieCommand(Commands.play, {
         }
 
         // Parse the URL
-        const newSongs = await URLHandler.parse(url);
-        if (!newSongs || newSongs.length === 0) {
+        const { code, songs } = await URLHandler.parseAndSave(url, guildId);
+
+        if (code === URLHandlerError.invalidURL || !songs) {
             await reply.error({
                 title: "errorTitle",
                 description: "invalidYouTubeURLMessage",
@@ -59,15 +62,9 @@ export default new SmoothieCommand(Commands.play, {
             return;
         }
 
-        // Create queue handler
-        const queueHandler = new QueueHandler(guildId);
+        const playlist = await StatesModel.findCurrentPlaylist(guildId);
 
-        // Fetch the name of the current playlist
-        const currentPlaylistName = await guildStates.get(
-            "currentPlaylistName"
-        );
-
-        if (!currentPlaylistName) {
+        if (!playlist) {
             await reply.error({
                 title: "errorTitle",
                 description: "noPlaylistMessage",
@@ -75,47 +72,49 @@ export default new SmoothieCommand(Commands.play, {
             return;
         }
 
-        const addedSongs = await queueHandler.add(newSongs, when);
-        if (!addedSongs) {
+        const numSongAdded = await playlist.addSong(songs, when);
+
+        if (numSongAdded === 0) {
             await reply.error({
                 title: "errorTitle",
                 description: "playFailedMessage",
+                descriptionArgs: [url],
             });
             return;
         }
 
-        if (newSongs.length === 1 && addedSongs.length === 1) {
-            // Single
-            const song = addedSongs[0];
-            if (!song) {
-                await reply.error({
-                    title: "errorTitle",
-                    description: "playFailedMessage",
+        switch (when) {
+            case "now": {
+                await reply.success({
+                    title: "successTitle",
+                    description: "playNowSuccessMessage",
+                    descriptionArgs: [numSongAdded.toString()],
                 });
-                return;
+                break;
             }
-            await reply.success({
-                title: "successTitle",
-                description: "playSingleSuccessMessage",
-                descriptionArgs: [song.title],
-            });
-        } else {
-            // Playlist
-            await reply.success({
-                title: "successTitle",
-                description: "playPlaylistSuccessMessage",
-                descriptionArgs: [
-                    addedSongs.length.toString(),
-                    (newSongs.length - addedSongs.length).toString(),
-                ],
-            });
+            case "next": {
+                await reply.success({
+                    title: "successTitle",
+                    description: "playNextSuccessMessage",
+                    descriptionArgs: [numSongAdded.toString()],
+                });
+                break;
+            }
+            case "last": {
+                await reply.success({
+                    title: "successTitle",
+                    description: "playLastSuccessMessage",
+                    descriptionArgs: [numSongAdded.toString()],
+                });
+                break;
+            }
         }
 
-        // Play song if no song is playing
+        // // Play song if no song is playing
         const player = client.audioPlayers.get(guildId);
         if (player) {
             if (when === "now") {
-                await player.playFirst();
+                await player.playNext();
             } else {
                 await player.start();
             }

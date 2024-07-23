@@ -145,12 +145,19 @@ const en_US: InternationalizationList = {
     playFailedMessage: "Failed to play the song(s) with URL = `%ARG%`.",
     playSuccessMessage: "Played `%ARG%` successfully.",
     playSingleSuccessMessage: "Added `%ARG%` successfully.",
-    playPlaylistSuccessMessage:
-        "Added `%ARG%` new song(s) to the queue. `%ARG%` song(s) was/were already in the queue so they didn't get added.",
+    playNowSuccessMessage:
+        "Added `%ARG%` song(s) to the queue. They will be played immediately.",
+    playNextSuccessMessage:
+        "Added `%ARG%` song(s) to the queue. They will be played after the current song.",
+    playLastSuccessMessage:
+        "Added `%ARG%` song(s) to the queue. They are at the end of the queue.",
     playSongFailedMessage:
-        "Failed to play the current song (`%ARG%`). It may be a private / age-restricted / deleted video, or network problem. Please try again with the retry command. If the problem persists, please skip the song or remove the song from the playlist.\nThe music player has been paused.",
+        "Failed to play the current song (`%ARG%`). It may be a private / age-restricted / deleted video, or network problem. Playing the next song instead.",
+    playSongFailedThriceMessage:
+        "Failed to play song 3 times in a row. Stopped the player.",
     noUpComingSongMessage: "You don't have any up coming song!",
     prevFailedMessage: "Failed to play the previous song.",
+    songAlreadyExistMessage: "Song already exist!",
 
     // Others
     successTitle: "Success!",

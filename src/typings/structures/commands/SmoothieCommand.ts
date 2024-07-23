@@ -5,14 +5,12 @@ import type {
     PermissionResolvable,
 } from "discord.js";
 import type ReplyHandler from "../../../structures/commands/ReplyHandler.js";
-import type GuildDataHandler from "../../../structures/database/GuildDataHandler.js";
 import type LanguageOptions from "../../commands/general/LanguageOptions.js";
 import type PingOptions from "../../commands/general/PingOptions.js";
 import type PrefixOptions from "../../commands/general/PrefixOptions.js";
 import type JoinOptions from "../../commands/music/JoinOptions.js";
 import type LeaveOptions from "../../commands/music/LeaveOptions.js";
 import type CreatePlaylistOptions from "../../commands/music/playlist/CreatePlaylistOptions.js";
-import type GuildStatesHandler from "../../../structures/database/GuildStatesHandler.js";
 import type RemovePlaylistOptions from "../../commands/music/playlist/RemovePlaylistOptions.js";
 import type TestOptions from "../../commands/dev/TestOptions.js";
 import type ListPlaylistOptions from "../../commands/music/playlist/ListPlaylistOptions.js";
@@ -113,8 +111,6 @@ interface CommandArgs<Name extends keyof CommandOptionsList> {
     guildId: string;
     payload: CommandPayload;
     options: CommandOptionsList[Name];
-    guildData: GuildDataHandler;
-    guildStates: GuildStatesHandler;
     reply: ReplyHandler;
 }
 

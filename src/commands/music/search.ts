@@ -5,9 +5,9 @@ import type {
 import { ApplicationCommandOptionType } from "discord.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
-import QueueHandler from "../../structures/music/QueueHandler.js";
 import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import getLocalizationMap from "../../utils/getLocalizationMap.js";
+import { StatesModel } from "../../models/guild/States.js";
 
 const queryOption: ApplicationCommandStringOption = {
     name: "query",
@@ -28,9 +28,10 @@ export default new SmoothieCommand(Commands.search, {
     options: searchOptions,
     run: async ({ guildId, reply, options }) => {
         const { query } = options;
-        const queueHandler = new QueueHandler(guildId);
-        const similarityMap = await queueHandler.search(query);
-        if (!similarityMap) {
+
+        const playlist = await StatesModel.findCurrentPlaylist(guildId);
+
+        if (!playlist) {
             await reply.error({
                 title: "errorTitle",
                 description: "searchFailedMessage",
@@ -39,13 +40,12 @@ export default new SmoothieCommand(Commands.search, {
             return;
         }
 
-        const titles = similarityMap
-            .filter((similarity) => similarity !== 0)
-            .sort((s1, s2) => s2 - s1)
-            .map(
-                (similarity, title) =>
-                    `${title} (${(similarity * 100).toFixed(2)}%)`
-            );
+        const similarityMap = await playlist.search(query);
+
+        const titles = similarityMap.map(
+            (similarity, title) =>
+                `${title} (${(similarity * 100).toFixed(2)}%)`
+        );
 
         if (titles.length === 0) {
             await reply.error({

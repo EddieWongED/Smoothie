@@ -8,6 +8,8 @@ import { Commands } from "../../../typings/structures/commands/SmoothieCommand.j
 import { defaultLanguage, getLocale } from "../../../i18n/i18n.js";
 import getLocalizationMap from "../../../utils/getLocalizationMap.js";
 import { client } from "../../../index.js";
+import { PlaylistModel } from "../../../models/music/Playlist.js";
+import { StatesModel } from "../../../models/guild/States.js";
 
 const nameOption: ApplicationCommandStringOption = {
     name: "name",
@@ -32,13 +34,26 @@ export default new SmoothieCommand(Commands.removePlaylist, {
     description: getLocale(defaultLanguage, "removePlaylistDescription"),
     descriptionLocalizations: getLocalizationMap("removePlaylistDescription"),
     options: removePlaylistOptions,
-    run: async ({ guildId, options, reply, guildData, guildStates }) => {
+    run: async ({ guildId, options, reply }) => {
         const { name } = options;
         // Check if name is empty or not
         if (name.length === 0) {
             await reply.error({
                 title: "errorTitle",
                 description: "playlistNameNotEmptyMessage",
+            });
+            return;
+        }
+
+        const playlist = await PlaylistModel.findByGuildIdAndName(
+            guildId,
+            name
+        );
+        if (!playlist) {
+            await reply.error({
+                title: "errorTitle",
+                description: "playlistDoesNotExistMessage",
+                descriptionArgs: [name],
             });
             return;
         }
@@ -59,94 +74,18 @@ export default new SmoothieCommand(Commands.removePlaylist, {
             return;
         }
 
-        const playlistsGenerator = guildData.getThenUpdate("playlists");
-        const playlists = (await playlistsGenerator.next()).value;
-        if (!playlists) {
-            await playlistsGenerator.throw(
-                new Error("Failed to remove playlist.")
-            );
-            await reply.error({
-                title: "errorTitle",
-                description: "removePlaylistFailedMessage",
-                descriptionArgs: [name],
-            });
-            return;
-        }
-
-        // Check if the playlist exists
-        if (
-            playlists.every((playlist) => {
-                return playlist.name !== name;
-            })
-        ) {
-            await playlistsGenerator.throw(
-                new Error("Playlist does not exist.")
-            );
-            await reply.error({
-                title: "errorTitle",
-                description: "playlistDoesNotExistMessage",
-                descriptionArgs: [name],
-            });
-            return;
-        }
-
-        // Remove playlist
-        const filteredPlaylists = playlists.filter((playlist) => {
-            return playlist.name !== name;
+        const result = await PlaylistModel.deleteOne({
+            guildId: guildId,
+            name: name,
         });
 
-        // Check if the playlist is removed
-        if (filteredPlaylists.length === playlists.length) {
-            await playlistsGenerator.throw(
-                new Error("Failed to remove playlist.")
-            );
+        if (!result.acknowledged || result.deletedCount === 0) {
             await reply.error({
                 title: "errorTitle",
                 description: "removePlaylistFailedMessage",
                 descriptionArgs: [name],
             });
             return;
-        }
-
-        // Update database
-        await playlistsGenerator.next(filteredPlaylists);
-
-        const firstPlaylistName = filteredPlaylists[0]?.name;
-
-        if (!firstPlaylistName) {
-            await guildStates.update("currentPlaylistName", null);
-        } else {
-            // Update currentPlaylistName if the name of the playlist being removed is currentPlaylistName
-            const currentPlaylistNameGenerator = guildStates.getThenUpdate(
-                "currentPlaylistName"
-            );
-
-            const currentPlaylistName = (
-                await currentPlaylistNameGenerator.next()
-            ).value;
-
-            if (!currentPlaylistName || currentPlaylistName === name) {
-                await currentPlaylistNameGenerator.next(firstPlaylistName);
-
-                // Switch song
-                const player = client.audioPlayers.get(guildId);
-                if (player) {
-                    player.forceStop();
-                    await player.playFirst();
-                }
-
-                await reply.infoFollowUp({
-                    title: "autoSwitchPlaylistTitle",
-                    description: "autoSwitchPlaylistMessage",
-                    titleArgs: [firstPlaylistName],
-                    descriptionArgs: [firstPlaylistName],
-                    willEdit: false,
-                });
-            } else {
-                await currentPlaylistNameGenerator.throw(
-                    new Error("No need to change currentPlaylistName")
-                );
-            }
         }
 
         await reply.success({
@@ -154,6 +93,35 @@ export default new SmoothieCommand(Commands.removePlaylist, {
             description: "removePlaylistSuccessMessage",
             descriptionArgs: [name],
         });
+
+        // Auto switch to first existing playlist
+        const currentPlaylist = await StatesModel.findCurrentPlaylist(guildId);
+
+        if (currentPlaylist === null || currentPlaylist.name === name) {
+            const playlists = await PlaylistModel.findAllByGuildId(guildId);
+            const newPlaylist = playlists[0] ?? null;
+            await StatesModel.findAndSetCurrentPlaylist(
+                guildId,
+                newPlaylist ?? null
+            );
+
+            if (newPlaylist) {
+                await reply.infoFollowUp({
+                    title: "autoSwitchPlaylistTitle",
+                    description: "autoSwitchPlaylistMessage",
+                    titleArgs: [newPlaylist.name],
+                    descriptionArgs: [newPlaylist.name],
+                    willEdit: false,
+                });
+            }
+        }
+
+        // Switch song
+        const player = client.audioPlayers.get(guildId);
+        if (player) {
+            player.forceStop();
+            await player.playFirst();
+        }
 
         return;
     },

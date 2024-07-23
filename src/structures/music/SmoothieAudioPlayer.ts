@@ -5,12 +5,9 @@ import { AudioPlayerStatus } from "@discordjs/voice";
 import { createAudioPlayer } from "@discordjs/voice";
 import createGuildPrefix from "../../utils/createGuildPrefix.js";
 import Logging from "../logging/Logging.js";
-import QueueHandler from "./QueueHandler.js";
-import type { Song } from "../../data/music/Song.js";
+import type { Song } from "../../models/music/Song.js";
 import ReplyHandler from "../commands/ReplyHandler.js";
 import PlayingNowEmbed from "../embed/PlayingNowEmbed.js";
-import GuildDataHandler from "../database/GuildDataHandler.js";
-import GuildStatesHandler from "../database/GuildStatesHandler.js";
 import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import { client } from "../../index.js";
 import type {
@@ -29,6 +26,11 @@ import ffmpeg from "fluent-ffmpeg";
 import type { PassThrough } from "stream";
 import type { SetIntervalAsyncTimer } from "set-interval-async";
 import { setIntervalAsync, clearIntervalAsync } from "set-interval-async";
+import { StatesModel } from "../../models/guild/States.js";
+import { ConfigsModel } from "../../models/guild/Configs.js";
+import URLHandler from "./URLHandler.js";
+import type { DocumentType } from "@typegoose/typegoose";
+import { UserSongStatsModel } from "../../models/user/UserSongStats.js";
 
 ffmpeg.setFfmpegPath(ffmpegPath.path);
 
@@ -37,12 +39,9 @@ export default class SmoothieAudioPlayer {
     playedFor = 0;
     private _musicTimer?: SetIntervalAsyncTimer<unknown[]>;
     private _embedTimer?: SetIntervalAsyncTimer<unknown[]>;
-    private _queueHandler: QueueHandler;
     private _reply: ReplyHandler;
     private _guildPrefix: string;
-    private _currentSong: Song | null = null;
-    private _guildData: GuildDataHandler;
-    private _guildStates: GuildStatesHandler;
+    private _currentSong: DocumentType<Song> | null = null;
     private _registeredStateChanges = false;
     private _buttonsCollector?: InteractionCollector<
         MappedInteractionTypes[MessageComponentType]
@@ -51,6 +50,7 @@ export default class SmoothieAudioPlayer {
     private _clickedPauseOrUnpauseButton = false;
     private _isForceStop = false;
     private _prevTime: DOMHighResTimeStamp;
+    private _errorCount = 0;
 
     constructor(public guildId: string) {
         this.player = createAudioPlayer({
@@ -61,10 +61,7 @@ export default class SmoothieAudioPlayer {
         this._reply = new ReplyHandler({
             guildId: this.guildId,
         });
-        this._queueHandler = new QueueHandler(guildId);
         this._guildPrefix = createGuildPrefix(this.guildId);
-        this._guildData = new GuildDataHandler(guildId);
-        this._guildStates = new GuildStatesHandler(guildId);
         this._prevTime = performance.now();
     }
 
@@ -88,7 +85,9 @@ export default class SmoothieAudioPlayer {
     }
 
     async playFirst() {
-        const song = await this._queueHandler.first();
+        const playlist = await StatesModel.findCurrentPlaylist(this.guildId);
+        const song = await playlist?.getCurrentSong();
+
         if (!song) {
             this.pause();
             Logging.warn(this._guildPrefix, "Failed to fetch the first song.");
@@ -98,7 +97,9 @@ export default class SmoothieAudioPlayer {
     }
 
     async playPrev() {
-        const song = await this._queueHandler.prev();
+        const playlist = await StatesModel.findCurrentPlaylist(this.guildId);
+        const song = await playlist?.prevSong();
+
         if (!song) {
             this.pause();
             Logging.warn(
@@ -111,7 +112,9 @@ export default class SmoothieAudioPlayer {
     }
 
     async playNext() {
-        const song = await this._queueHandler.next();
+        const playlist = await StatesModel.findCurrentPlaylist(this.guildId);
+        const song = await playlist?.nextSong();
+
         if (!song) {
             this.pause();
             Logging.warn(this._guildPrefix, "Failed to fetch the next song.");
@@ -120,16 +123,10 @@ export default class SmoothieAudioPlayer {
         return this.play(song);
     }
 
-    async play(song: Song) {
+    async play(song: DocumentType<Song>): Promise<DocumentType<Song> | null> {
         const resource = this._createAudioResource(song);
         if (!resource) {
-            this.pause();
-            await this._reply.errorSend({
-                title: "errorTitle",
-                description: "playSongFailedMessage",
-                descriptionArgs: [song.url],
-            });
-            return null;
+            return await this._onPlayerError(song);
         }
         this.playedFor = 0;
         this._prevPlayedFor = -1;
@@ -161,7 +158,7 @@ export default class SmoothieAudioPlayer {
         return this.player.stop(true);
     }
 
-    private _createAudioResource(song: Song) {
+    private _createAudioResource(song: DocumentType<Song>) {
         const stream = this._createNormalizedStream(song);
 
         if (stream == null) {
@@ -181,7 +178,8 @@ export default class SmoothieAudioPlayer {
                     oldState.status === AudioPlayerStatus.Playing &&
                     !this._isForceStop
                 ) {
-                    const song = oldState.resource.metadata as Song;
+                    const song = oldState.resource
+                        .metadata as DocumentType<Song>;
 
                     // Update play count when finished
                     if (!(await this._updatePlayCount(song))) {
@@ -197,6 +195,8 @@ export default class SmoothieAudioPlayer {
                             "Failed to update users listen count."
                         );
                     }
+
+                    this._errorCount = 0;
                     await this.playNext();
                 }
                 this._isForceStop = false;
@@ -207,7 +207,7 @@ export default class SmoothieAudioPlayer {
             this._startTimer();
             this._pauseIfNoOneInChannel();
             if (oldState.status === AudioPlayerStatus.Buffering) {
-                const song = newState.resource.metadata as Song;
+                const song = newState.resource.metadata as DocumentType<Song>;
                 Logging.info(this._guildPrefix, `Playing ${song.title}`);
             } else if (oldState.status === AudioPlayerStatus.Paused) {
                 Logging.info(this._guildPrefix, "The song has been resumed.");
@@ -281,8 +281,6 @@ export default class SmoothieAudioPlayer {
                     });
                     await command?.run({
                         guildId: this.guildId,
-                        guildData: this._guildData,
-                        guildStates: this._guildStates,
                         payload: message,
                         options: {},
                         reply: reply,
@@ -306,8 +304,6 @@ export default class SmoothieAudioPlayer {
                     });
                     await command?.run({
                         guildId: this.guildId,
-                        guildData: this._guildData,
-                        guildStates: this._guildStates,
                         payload: message,
                         options: {},
                         reply: reply,
@@ -321,8 +317,6 @@ export default class SmoothieAudioPlayer {
                     });
                     await command?.run({
                         guildId: this.guildId,
-                        guildData: this._guildData,
-                        guildStates: this._guildStates,
                         payload: message,
                         options: {},
                         reply: reply,
@@ -336,8 +330,6 @@ export default class SmoothieAudioPlayer {
                     });
                     await command?.run({
                         guildId: this.guildId,
-                        guildData: this._guildData,
-                        guildStates: this._guildStates,
                         payload: message,
                         options: {},
                         reply: reply,
@@ -351,8 +343,6 @@ export default class SmoothieAudioPlayer {
                     });
                     await command?.run({
                         guildId: this.guildId,
-                        guildData: this._guildData,
-                        guildStates: this._guildStates,
                         payload: message,
                         options: {},
                         reply: reply,
@@ -363,9 +353,11 @@ export default class SmoothieAudioPlayer {
         });
     }
 
-    private async _sendPlayingNowMessage(song: Song) {
+    private async _sendPlayingNowMessage(song: DocumentType<Song>) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this.guildId))?.language ??
+            defaultLanguage;
+
         const isPaused =
             this.player.state.status === AudioPlayerStatus.Paused ||
             this.player.state.status === AudioPlayerStatus.AutoPaused;
@@ -376,11 +368,19 @@ export default class SmoothieAudioPlayer {
         );
         const fields: APIEmbedField[] = [];
 
+        const info = await URLHandler.getBasicInfo(song.url);
+
+        if (!info) {
+            return;
+        }
+
+        const { url, duration, thumbnailURL, title, uploader, uploaderURL } =
+            info;
         // Add uploaded to field
-        if (song.uploader && song.uploaderURL) {
+        if (uploader && uploaderURL) {
             fields.push({
                 name: getLocale(language, "uploadedByField"),
-                value: `[${song.uploader}](${song.uploaderURL})`,
+                value: `[${uploader}](${uploaderURL})`,
                 inline: true,
             });
         }
@@ -388,7 +388,7 @@ export default class SmoothieAudioPlayer {
         // Add song added date
         fields.push({
             name: getLocale(language, "addedAtField"),
-            value: `<t:${Math.floor(song.addedAt.getTime() / 1000)}>`,
+            value: `<t:${Math.floor(song.createdAt.getTime() / 1000)}>`,
             inline: true,
         });
 
@@ -400,11 +400,7 @@ export default class SmoothieAudioPlayer {
         });
 
         // Add playlist info to field
-        const playlistName = await this._guildStates.get("currentPlaylistName");
-        const playlists = await this._guildData.get("playlists");
-        const playlist = playlists?.find(
-            (playlist) => playlist.name === playlistName
-        );
+        const playlist = await StatesModel.findCurrentPlaylist(this.guildId);
 
         if (playlist) {
             // Add which playlist is playing
@@ -422,9 +418,11 @@ export default class SmoothieAudioPlayer {
             });
 
             // Add next five songs list
-            const nextFiveSongs = playlist.queue
-                .slice(1, 6)
-                .map((song, i) => `${i + 2}. ${song.title}`);
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            const queue = await playlist.getQueue({ _id: 1, title: 1 }, 1, 5);
+            const nextFiveSongs = queue.map(
+                (song, i) => `${i + 2}. ${song.title}`
+            );
             const nextFiveSongsString = nextFiveSongs.length
                 ? `\`\`\`md\n${nextFiveSongs.join("\n")}\n\`\`\``
                 : getLocale(language, "noUpComingSongMessage");
@@ -437,11 +435,11 @@ export default class SmoothieAudioPlayer {
 
         const embed = PlayingNowEmbed.create({
             title: getLocale(language, "playingNowTitle"),
-            description: `### [${song.title}](${song.url})`,
+            description: `### [${title}](${url})`,
             fields: fields,
-            thumbnail: song.thumbnailURL,
+            thumbnail: thumbnailURL,
             playedFor: this.playedFor,
-            duration: song.duration,
+            duration: duration,
             isPaused: isPaused,
             queueButtonText: queueButtonText,
             playlistInfoButtonText: playlistInfoButtonText,
@@ -451,20 +449,14 @@ export default class SmoothieAudioPlayer {
         if (message) {
             this._registerPlayingNowButtons(message);
             // Remove previous playing now message
-            const playingNowMessageId = await this._guildStates.get(
-                "playingNowMessageId"
-            );
-            const playingNowChannelId = await this._guildStates.get(
-                "playingNowChannelId"
-            );
-
-            if (playingNowMessageId && playingNowChannelId) {
+            const state = await StatesModel.findByGuildId(this.guildId);
+            if (state?.playingNowMessageId && state.playingNowChannelId) {
                 try {
                     const channel = client.channels.cache.get(
-                        playingNowChannelId
+                        state.playingNowChannelId
                     ) as TextChannel | null;
                     const message = await channel?.messages.fetch(
-                        playingNowMessageId
+                        state.playingNowMessageId
                     );
                     await message?.delete();
                 } catch (err) {
@@ -475,10 +467,13 @@ export default class SmoothieAudioPlayer {
                 }
             }
 
-            await this._guildStates.update("playingNowMessageId", message.id);
-            await this._guildStates.update(
-                "playingNowChannelId",
+            await StatesModel.findAndSetPlayingNowChannelId(
+                this.guildId,
                 message.channelId
+            );
+            await StatesModel.findAndSetPlayingNowMessageId(
+                this.guildId,
+                message.id
             );
         }
 
@@ -496,27 +491,52 @@ export default class SmoothieAudioPlayer {
                 const isPaused =
                     this.player.state.status === AudioPlayerStatus.Paused ||
                     this.player.state.status === AudioPlayerStatus.AutoPaused;
+
+                const playlist = await StatesModel.findCurrentPlaylist(
+                    this.guildId
+                );
+                if (playlist) {
+                    fields.pop();
+                    const queue = await playlist.getQueue(
+                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                        { _id: 1, title: 1 },
+                        1,
+                        5
+                    );
+                    const nextFiveSongs = queue.map(
+                        (song, i) => `${i + 2}. ${song.title}`
+                    );
+                    const nextFiveSongsString = nextFiveSongs.length
+                        ? `\`\`\`md\n${nextFiveSongs.join("\n")}\n\`\`\``
+                        : getLocale(language, "noUpComingSongMessage");
+                    fields.push({
+                        name: getLocale(language, "upComingField"),
+                        value: nextFiveSongsString,
+                        inline: false,
+                    });
+                }
+
                 const embed = PlayingNowEmbed.create({
                     title: getLocale(language, "playingNowTitle"),
-                    description: `### [${song.title}](${song.url})`,
+                    description: `### [${title}](${url})`,
                     fields: fields,
-                    thumbnail: song.thumbnailURL,
+                    thumbnail: thumbnailURL,
                     playedFor: this.playedFor,
-                    duration: song.duration,
+                    duration: duration,
                     isPaused: isPaused,
                     queueButtonText: queueButtonText,
                     playlistInfoButtonText: playlistInfoButtonText,
                 });
                 await this._reply.reply(embed);
                 this._clickedPauseOrUnpauseButton = false;
-                if (this.playedFor >= song.duration && song.duration !== 0) {
+                if (this.playedFor >= duration && duration !== 0) {
                     if (this._embedTimer) {
                         await clearIntervalAsync(this._embedTimer);
                     }
                 }
             }
             this._prevPlayedFor = this.playedFor;
-        }, 5000);
+        }, 10000);
     }
 
     private _startTimer() {
@@ -529,35 +549,12 @@ export default class SmoothieAudioPlayer {
         }, 1000);
     }
 
-    private async _updatePlayCount(song: Song) {
-        const queueGenerator = this._queueHandler.fetchThenUpdate();
-
-        // Retrieve Queue
-        const queue = (await queueGenerator.next()).value;
-        if (!queue) {
-            await queueGenerator.throw("Queue not found.");
-            return false;
-        }
-        const songToBeUpdated = queue.find((s) => s.url === song.url);
-        if (!songToBeUpdated) {
-            await queueGenerator.throw(
-                "The song that need to update play count not found."
-            );
-            return false;
-        }
-
-        songToBeUpdated.playCount++;
-
-        // Update queue
-        await queueGenerator.next(queue);
-
+    private async _updatePlayCount(song: DocumentType<Song>) {
+        await song.incrementPlayCountAndSave();
         return true;
     }
 
-    private async _updateUsersListenCount(song: Song) {
-        const url = song.url;
-        const title = song.title;
-
+    private async _updateUsersListenCount(song: DocumentType<Song>) {
         const channelId = client.voiceConnections.get(this.guildId)?.channelId;
         if (!channelId) return false;
 
@@ -572,49 +569,18 @@ export default class SmoothieAudioPlayer {
 
         if (userIds.length === 0) return true;
 
-        // Retrieve userStats
-        const userStatsGenerator = this._guildData.getThenUpdate("userStats");
-        const userStats = (await userStatsGenerator.next()).value;
-        if (!userStats) {
-            await userStatsGenerator.throw(new Error("Userstats not found."));
-            return false;
-        }
-
         for (const userId of userIds) {
-            const stats = userStats.find((stats) => stats.userId === userId);
-            // Create this user stats if it does not exist
-            if (!stats) {
-                userStats.push({
-                    userId: userId,
-                    stayDuration: 0,
-                    songStats: [
-                        {
-                            url: url,
-                            title: title,
-                            listenCount: 1,
-                        },
-                    ],
-                });
+            const userSongStats =
+                await UserSongStatsModel.findByGuildIdUserIdAndSong(
+                    this.guildId,
+                    userId,
+                    song
+                );
+            if (!userSongStats) {
                 continue;
             }
-
-            // Create this song stats for this user if it does not exist
-            const songStats = stats.songStats.find(
-                (songStats) => songStats.url === url
-            );
-            if (!songStats) {
-                stats.songStats.push({
-                    url: url,
-                    title: title,
-                    listenCount: 1,
-                });
-                continue;
-            }
-            songStats.listenCount += 1;
+            await userSongStats.incrementListenCountAndSave();
         }
-
-        // Update userStats
-        await userStatsGenerator.next(userStats);
 
         return true;
     }
@@ -638,7 +604,9 @@ export default class SmoothieAudioPlayer {
         }
     }
 
-    private _createNormalizedStream(song: Song): PassThrough | null {
+    private _createNormalizedStream(
+        song: DocumentType<Song>
+    ): PassThrough | null {
         try {
             const stream = ytdl(song.url, {
                 filter: "audioonly",
@@ -649,16 +617,26 @@ export default class SmoothieAudioPlayer {
             }).on("error", (err) => {
                 Logging.error(
                     this._guildPrefix,
-                    "There is an error in ytdl stream",
+                    `There is an error in ytdl stream for ${song.url}... Playing next song.`,
                     err
                 );
+                void (async () => {
+                    await this._onPlayerError(song);
+                })();
             });
 
             const command = ffmpeg(stream)
                 .format("mp3")
                 .audioBitrate(320)
                 .audioFilter("loudnorm")
-                .on("error", (err) => {
+                .on("error", (err: { outputStreamError: { code: string } }) => {
+                    if (
+                        err.outputStreamError.code ===
+                        "ERR_STREAM_PREMATURE_CLOSE"
+                    ) {
+                        return;
+                    }
+
                     Logging.error(
                         this._guildPrefix,
                         "There is an error in ffmpeg",
@@ -666,17 +644,54 @@ export default class SmoothieAudioPlayer {
                     );
                 });
 
-            const passthrough = command.pipe().on("error", (err: Error) => {
-                Logging.info(
-                    this._guildPrefix,
-                    "Audio has be interrupted.",
-                    err
-                );
-            }) as PassThrough;
+            const passthrough = command
+                .pipe()
+                .on("error", (err: { code: string }) => {
+                    if (err.code === "ERR_STREAM_PREMATURE_CLOSE") {
+                        Logging.info(
+                            this._guildPrefix,
+                            "Passthrough stream has been interrupted."
+                        );
+                        return;
+                    }
+
+                    Logging.error(
+                        this._guildPrefix,
+                        "There is an error in passthrough stream",
+                        err
+                    );
+                }) as PassThrough;
 
             return passthrough;
-        } catch (e) {
+        } catch (err) {
+            Logging.error(
+                this._guildPrefix,
+                `There is an error in ytdl stream for ${song.url}`,
+                err
+            );
             return null;
         }
+    }
+
+    private async _onPlayerError(song: DocumentType<Song>) {
+        this.pause();
+        this._errorCount++;
+        if (this._errorCount === 1) {
+            await this._reply.errorSend({
+                title: "errorTitle",
+                description: "playSongFailedMessage",
+                descriptionArgs: [song.url],
+            });
+        }
+
+        if (this._errorCount >= 3) {
+            await this._reply.errorSend({
+                title: "errorTitle",
+                description: "playSongFailedThriceMessage",
+                descriptionArgs: [song.url],
+            });
+            return null;
+        }
+        return await this.playNext();
     }
 }

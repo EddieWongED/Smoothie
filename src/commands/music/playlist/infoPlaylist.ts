@@ -9,6 +9,13 @@ import { defaultLanguage, getLocale } from "../../../i18n/i18n.js";
 import BasicEmbed from "../../../structures/embed/BasicEmbed.js";
 import { formatTimeWithLetter } from "../../../utils/formatTime.js";
 import getLocalizationMap from "../../../utils/getLocalizationMap.js";
+import type { DocumentType } from "@typegoose/typegoose";
+import {
+    PlaylistModel,
+    type Playlist,
+} from "../../../models/music/Playlist.js";
+import { StatesModel } from "../../../models/guild/States.js";
+import { ConfigsModel } from "../../../models/guild/Configs.js";
 
 const nameOption: ApplicationCommandStringOption = {
     name: "name",
@@ -30,26 +37,20 @@ export default new SmoothieCommand(Commands.infoPlaylist, {
     description: getLocale(defaultLanguage, "infoPlaylistDescription"),
     descriptionLocalizations: getLocalizationMap("infoPlaylistDescription"),
     options: infoPlaylistOptions,
-    run: async ({ options, reply, guildData, guildStates }) => {
-        let { name } = options;
+    run: async ({ options, reply, guildId }) => {
+        const { name } = options;
+
+        let playlist: DocumentType<Playlist> | null = null;
 
         // Show current playlist info if no name is given
         if (!name) {
-            const currentPlaylistName = await guildStates.get(
-                "currentPlaylistName"
-            );
-            if (!currentPlaylistName) {
-                await reply.error({
-                    title: "errorTitle",
-                    description: "currentInfoPlaylistFailedMessage",
-                });
-                return;
-            }
-            name = currentPlaylistName;
+            playlist = await StatesModel.findCurrentPlaylist(guildId);
         }
 
         // Check if name is empty or not
-        if (name.length === 0) {
+        if (name && name.length !== 0) {
+            playlist = await PlaylistModel.findByGuildIdAndName(guildId, name);
+        } else if (name && name.length === 0) {
             await reply.error({
                 title: "errorTitle",
                 description: "playlistNameNotEmptyMessage",
@@ -57,41 +58,33 @@ export default new SmoothieCommand(Commands.infoPlaylist, {
             return;
         }
 
-        const playlists = await guildData.get("playlists");
-        if (!playlists) {
-            await reply.error({
-                title: "errorTitle",
-                description: "infoPlaylistFailedMessage",
-                descriptionArgs: [name],
-            });
-            return;
-        }
-
         // Check if the playlist exists
-        const playlist = playlists.find((playlist) => playlist.name === name);
         if (!playlist) {
             await reply.error({
                 title: "errorTitle",
                 description: "playlistDoesNotExistMessage",
-                descriptionArgs: [name],
+                descriptionArgs: [name ?? ""],
             });
             return;
         }
 
         // Show info
-        const language = (await guildData.get("language")) ?? defaultLanguage;
+        const language =
+            (await ConfigsModel.findByGuildId(guildId))?.language ??
+            defaultLanguage;
 
-        const title = name;
-        const topFivePlayedSongs = playlist.queue
-            .sort((song1, song2) => {
-                return song2.playCount - song1.playCount;
-            })
-            .slice(0, 5)
-            .map((song, i) => `${i + 1}. ${song.title} [${song.playCount}]`);
+        const title = playlist.name;
+        const topFivePlayedSongs = await playlist.getTopPlayedSongs(5);
 
         const topFivePlayedSongsString = topFivePlayedSongs.length
-            ? `\`\`\`md\n${topFivePlayedSongs.join("\n")}\n\`\`\``
+            ? `\`\`\`md\n${topFivePlayedSongs
+                  .map(
+                      (song, i) => `${i + 1}. ${song.title} [${song.playCount}]`
+                  )
+                  .join("\n")}\n\`\`\``
             : getLocale(language, "noSonginPlaylistMessage");
+
+        const totalDuration = await playlist.getTotalDuration();
 
         const embed = BasicEmbed.create({
             title: title,
@@ -110,11 +103,7 @@ export default new SmoothieCommand(Commands.infoPlaylist, {
                 },
                 {
                     name: getLocale(language, "totalDurationField"),
-                    value: formatTimeWithLetter(
-                        playlist.queue
-                            .map((song) => song.duration)
-                            .reduce((a, b) => a + b, 0)
-                    ),
+                    value: formatTimeWithLetter(totalDuration),
                     inline: true,
                 },
                 {

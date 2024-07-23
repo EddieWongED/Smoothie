@@ -1,3 +1,4 @@
+import { PlaylistModel } from "../../../models/music/Playlist.js";
 import { defaultLanguage, getLocale } from "../../../i18n/i18n.js";
 import { SmoothieCommand } from "../../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../../typings/structures/commands/SmoothieCommand.js";
@@ -8,15 +9,10 @@ export default new SmoothieCommand(Commands.listPlaylist, {
     aliases: ["listplaylists", "showplaylist"],
     description: getLocale(defaultLanguage, "listPlaylistDescription"),
     descriptionLocalizations: getLocalizationMap("listPlaylistDescription"),
-    run: async ({ reply, guildData }) => {
-        const playlists = await guildData.get("playlists");
-        if (!playlists) {
-            await reply.error({
-                title: "errorTitle",
-                description: "listPlaylistFailedMessage",
-            });
-            return;
-        }
+    run: async ({ reply, guildId }) => {
+        const playlists = await PlaylistModel.findAllByGuildId(guildId, {
+            name: 1,
+        });
 
         // Check if there is any playlist
         if (playlists.length === 0) {

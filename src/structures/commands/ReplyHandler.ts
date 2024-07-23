@@ -29,9 +29,9 @@ import PaginationEmbed from "../embed/PaginationEmbed.js";
 import Logging from "../logging/Logging.js";
 import createGuildPrefix from "../../utils/createGuildPrefix.js";
 import { client } from "../../index.js";
-import GuildDataHandler from "../database/GuildDataHandler.js";
-import GuildStatesHandler from "../database/GuildStatesHandler.js";
 import OptionsEmbed from "../embed/OptionsEmbed.js";
+import { ConfigsModel } from "../../models/guild/Configs.js";
+import { StatesModel } from "../../models/guild/States.js";
 
 export default class ReplyHandler {
     private _currentPayload: CommandPayload | undefined;
@@ -39,8 +39,6 @@ export default class ReplyHandler {
     private _userId: string | undefined;
     private _guildId: string;
     private _guildPrefix: string;
-    private _guildData: GuildDataHandler;
-    private _guildStates: GuildStatesHandler;
 
     constructor({
         payload,
@@ -52,8 +50,6 @@ export default class ReplyHandler {
         this._guildId = guildId;
         this._userId = payload?.member?.user.id;
         this._currentPayload = payload;
-        this._guildData = new GuildDataHandler(guildId);
-        this._guildStates = new GuildStatesHandler(guildId);
         this._guildPrefix = createGuildPrefix(this._guildId);
     }
 
@@ -65,7 +61,9 @@ export default class ReplyHandler {
         emoji,
     }: ReplyArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
             language,
@@ -89,7 +87,9 @@ export default class ReplyHandler {
         emoji,
     }: ReplyArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
             language,
@@ -113,7 +113,9 @@ export default class ReplyHandler {
         emoji,
     }: ReplyArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
             language,
@@ -137,7 +139,9 @@ export default class ReplyHandler {
         emoji,
     }: ReplyArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
             language,
@@ -162,7 +166,9 @@ export default class ReplyHandler {
         emoji,
     }: FollowUpArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
             language,
@@ -187,7 +193,9 @@ export default class ReplyHandler {
         emoji,
     }: FollowUpArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
             language,
@@ -212,7 +220,9 @@ export default class ReplyHandler {
         emoji,
     }: FollowUpArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
             language,
@@ -237,7 +247,9 @@ export default class ReplyHandler {
         emoji,
     }: FollowUpArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
             language,
@@ -262,7 +274,9 @@ export default class ReplyHandler {
         emoji,
     }: SendArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
             language,
@@ -287,7 +301,9 @@ export default class ReplyHandler {
         emoji,
     }: SendArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
             language,
@@ -312,7 +328,9 @@ export default class ReplyHandler {
         emoji,
     }: SendArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
             language,
@@ -337,7 +355,9 @@ export default class ReplyHandler {
         emoji,
     }: SendArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
             language,
@@ -361,7 +381,9 @@ export default class ReplyHandler {
         emoji,
     }: ReplyArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const footerString = getLocale(language, "confirmFooter", [
             (ConfirmEmbed.time / 1000 / 60).toString(),
@@ -463,7 +485,9 @@ export default class ReplyHandler {
         emoji,
     }: OptionsArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const descriptionString = getLocale(
             language,
@@ -526,7 +550,9 @@ export default class ReplyHandler {
         emoji,
     }: ListReplyArgs) {
         const language =
-            (await this._guildData.get("language")) ?? defaultLanguage;
+            (await ConfigsModel.findByGuildId(this._guildId))?.language ??
+            defaultLanguage;
+
         const titleString = getLocale(language, title, titleArgs);
         const footerString = getLocale(language, "buttonDisableTimeFooter", [
             (PaginationEmbed.idleTime / 1000 / 60).toString(),
@@ -731,7 +757,8 @@ export default class ReplyHandler {
     }
 
     async send(embed: BaseMessageOptions, willEdit = true) {
-        const textChannelId = await this._guildStates.get("textChannelId");
+        const states = await StatesModel.findByGuildId(this._guildId);
+        const textChannelId = states?.textChannelId;
         if (!textChannelId) {
             Logging.warn(
                 this._guildPrefix,

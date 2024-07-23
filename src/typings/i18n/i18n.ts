@@ -34,7 +34,9 @@ export interface InternationalizationList {
     playFailedMessage: string;
     playSuccessMessage: string;
     playSingleSuccessMessage: string;
-    playPlaylistSuccessMessage: string;
+    playNowSuccessMessage: string;
+    playNextSuccessMessage: string;
+    playLastSuccessMessage: string;
     queueTitle: string;
     queueFailedMessage: string;
     skipFailedMessage: string;
@@ -123,7 +125,9 @@ export interface InternationalizationList {
     noSonginPlaylistMessage: string;
     invalidYouTubeURLMessage: string;
     playSongFailedMessage: string;
+    playSongFailedThriceMessage: string;
     noUpComingSongMessage: string;
+    songAlreadyExistMessage: string;
 
     // Others
     successTitle: string;

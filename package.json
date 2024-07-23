@@ -15,8 +15,7 @@
         "register-global-commands": "node ./dist/scripts/commands/registerGlobalSlashCommands.js",
         "register-guild-commands": "node ./dist/scripts/commands/registerGuildSlashCommands.js",
         "clear-global-commands": "node ./dist/scripts/commands/clearGlobalSlashCommands.js",
-        "clear-guild-commands": "node ./dist/scripts/commands/clearGuildSlashCommands.js",
-        "import-songs": "node ./dist/scripts/music/importSongs.js"
+        "clear-guild-commands": "node ./dist/scripts/commands/clearGuildSlashCommands.js"
     },
     "keywords": [
         "discord",
@@ -67,7 +66,6 @@
         "set-interval-async": "^3.0.3",
         "string-similarity": "^4.0.4",
         "tweetnacl": "^1.0.3",
-        "youtube-dl-exec": "^2.4.6",
-        "ytdl-core": "^4.11.4"
+        "youtube-dl-exec": "^2.4.6"
     }
 }
