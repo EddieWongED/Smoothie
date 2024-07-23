@@ -15,7 +15,8 @@
         "register-global-commands": "node ./dist/scripts/commands/registerGlobalSlashCommands.js",
         "register-guild-commands": "node ./dist/scripts/commands/registerGuildSlashCommands.js",
         "clear-global-commands": "node ./dist/scripts/commands/clearGlobalSlashCommands.js",
-        "clear-guild-commands": "node ./dist/scripts/commands/clearGuildSlashCommands.js"
+        "clear-guild-commands": "node ./dist/scripts/commands/clearGuildSlashCommands.js",
+        "import-songs": "node ./dist/scripts/music/importSongs.js"
     },
     "keywords": [
         "discord",
