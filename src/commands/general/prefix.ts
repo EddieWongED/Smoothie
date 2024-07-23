@@ -7,6 +7,7 @@ import type {
 } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
 import getLocalizationMap from "../../utils/getLocalizationMap.js";
+import { ConfigsModel } from "../../models/guild/Configs.js";
 
 const prefixOption: ApplicationCommandStringOption = {
     name: "prefix",
@@ -26,12 +27,13 @@ export default new SmoothieCommand(Commands.prefix, {
     description: getLocale(defaultLanguage, "prefixDescription"),
     descriptionLocalizations: getLocalizationMap("prefixDescription"),
     options: prefixOptions,
-    run: async ({ options, guildData, reply }) => {
+    run: async ({ options, guildId, reply }) => {
         const { prefix } = options;
 
         // Show prefix
         if (!prefix) {
-            const guildPrefix = await guildData.get("prefix");
+            const configs = await ConfigsModel.findByGuildId(guildId);
+            const guildPrefix = configs?.prefix;
             if (guildPrefix) {
                 await reply.info({
                     title: "prefixShowSuccessTitle",
@@ -56,19 +58,11 @@ export default new SmoothieCommand(Commands.prefix, {
             return;
         }
 
-        const newGuildData = await guildData.update("prefix", prefix);
-        if (!newGuildData) {
-            await reply.error({
-                title: "errorTitle",
-                description: "prefixUpdateFailedMessage",
-                descriptionArgs: [prefix],
-            });
-            return;
-        }
+        await ConfigsModel.findAndSetPrefix(guildId, prefix);
         await reply.success({
             title: "successTitle",
             description: "prefixUpdateSuccessMessage",
-            descriptionArgs: [newGuildData.prefix],
+            descriptionArgs: [prefix],
         });
         return;
     },

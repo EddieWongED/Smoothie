@@ -11,22 +11,18 @@ import type {
 } from "../../typings/structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import stringToBoolean from "../../utils/stringToBoolean.js";
-import GuildDataHandler from "../database/GuildDataHandler.js";
 import ReplyHandler from "./ReplyHandler.js";
 import Logging from "../logging/Logging.js";
-import GuildStatesHandler from "../database/GuildStatesHandler.js";
 import type HelpOptions from "../../typings/commands/general/HelpOptions.js";
 import didYouMean from "didyoumean";
 import { Emojis } from "../../typings/emoji/Emoji.js";
+import { ConfigsModel } from "../../models/guild/Configs.js";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class CommandHandler {
     static async handleSlashCommand(interaction: SlashCommandPayload) {
         const guildId = interaction.guildId;
         if (!guildId) return;
-
-        const guildData = new GuildDataHandler(guildId);
-        const guildStates = new GuildStatesHandler(guildId);
 
         const commandName = interaction.commandName;
         // Create reply handler
@@ -88,8 +84,6 @@ export class CommandHandler {
                 guildId: guildId,
                 payload: interaction,
                 options: options,
-                guildData: guildData,
-                guildStates: guildStates,
                 reply: reply,
             });
         } catch (err) {
@@ -103,11 +97,9 @@ export class CommandHandler {
             const guildId = message.guildId;
             if (!guildId) return;
 
-            const guildData = new GuildDataHandler(guildId);
-            const guildStates = new GuildStatesHandler(guildId);
-
             // Parse and retrieve command
-            const prefix = await guildData.get("prefix");
+            const configs = await ConfigsModel.findByGuildId(guildId);
+            const prefix = configs?.prefix;
             if (!prefix) return;
             const data = message.content
                 .trim()
@@ -283,8 +275,6 @@ export class CommandHandler {
                 guildId: guildId,
                 payload: message,
                 options: options,
-                guildData: guildData,
-                guildStates: guildStates,
                 reply: reply,
             });
         } catch (err) {
@@ -301,16 +291,11 @@ export class CommandHandler {
         guildId: string;
         command: string;
     }) {
-        const guildData = new GuildDataHandler(guildId);
-        const guildStates = new GuildStatesHandler(guildId);
-
         const helpCommand = client.commands.get(Commands.help);
         if (!helpCommand) return;
         await helpCommand.run({
             guildId: guildId,
             reply: new ReplyHandler({ guildId: guildId }),
-            guildData: guildData,
-            guildStates: guildStates,
             options: { command: command } as HelpOptions,
             payload: payload,
         });

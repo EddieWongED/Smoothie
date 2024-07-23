@@ -36,8 +36,12 @@ const zh_TW: InternationalizationList = {
     playFailedMessage: "無法播放 URL = `%ARG%` 的音樂。",
     playSuccessMessage: "成功播放 `%ARG%`。",
     playSingleSuccessMessage: "成功將 `%ARG%` 添加到播放清單中。",
-    playPlaylistSuccessMessage:
-        "已將 `%ARG%` 首新歌曲添加到播放清單中。另外因為有 `%ARG%` 首歌曲已經在播放清單中，因此它們沒有被添加。",
+    playNowSuccessMessage:
+        "已將 `%ARG%` 首歌曲添加到播放清單中。這些歌曲將會立即播放。",
+    playNextSuccessMessage:
+        "已將 `%ARG%` 首歌曲添加到播放清單中。這些歌曲將會在當前歌曲完結後播放。",
+    playLastSuccessMessage:
+        "已將 `%ARG%` 首歌曲添加到播放清單中。這些歌曲被放在播放清單的最後。",
     queueTitle: "`%ARG%` 歌單",
     queueFailedMessage: "無法顯示目前播放清單的歌單。",
     skipFailedMessage: "無法跳過當前歌曲。",
@@ -131,8 +135,10 @@ const zh_TW: InternationalizationList = {
     invalidYouTubeURLMessage:
         "無效的 YouTube URL！原因可能是歌曲是私人 / 年齡限制 / 已移除限制影片。",
     playSongFailedMessage:
-        "無法播放當前歌曲（`%ARG%`）。原因可能是歌曲是私人 / 年齡限制 / 已移除限制影片，又或者是網路問題。請用 retry 指令重試。如問題仍然存在，請跳過該歌曲或從播放清單中刪除該歌曲。\n音樂播放器已暫停。",
+        "無法播放當前歌曲（`%ARG%`）。原因可能是歌曲是私人 / 年齡限制 / 已移除限制影片，又或者是網路問題。將播放下一首歌曲。",
+    playSongFailedThriceMessage: "連續三次無法播放歌曲。暫停了播放歌曲。",
     noUpComingSongMessage: "您沒有下一首歌曲！",
+    songAlreadyExistMessage: "歌曲已存在！",
 
     // Others
     successTitle: "成功！",

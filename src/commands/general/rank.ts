@@ -30,14 +30,7 @@ export default new SmoothieCommand(Commands.rank, {
     description: getLocale(defaultLanguage, "rankDescription"),
     descriptionLocalizations: getLocalizationMap("rankDescription"),
     options: rankOptions,
-    run: async ({
-        guildId,
-        reply,
-        guildData,
-        guildStates,
-        options,
-        payload,
-    }) => {
+    run: async ({ guildId, reply, options, payload }) => {
         const { action } = options;
 
         let command: Command | undefined;
@@ -55,8 +48,6 @@ export default new SmoothieCommand(Commands.rank, {
         await command.run({
             guildId: guildId,
             reply: reply,
-            guildData: guildData,
-            guildStates: guildStates,
             options: options,
             payload: payload,
         });

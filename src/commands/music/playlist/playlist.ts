@@ -47,14 +47,7 @@ export default new SmoothieCommand(Commands.playlist, {
     description: getLocale(defaultLanguage, "playlistDescription"),
     descriptionLocalizations: getLocalizationMap("playlistDescription"),
     options: playlistOptions,
-    run: async ({
-        guildId,
-        reply,
-        guildData,
-        guildStates,
-        options,
-        payload,
-    }) => {
+    run: async ({ guildId, reply, options, payload }) => {
         const { action, name } = options;
         if (!name) {
             options.name = "";
@@ -87,8 +80,6 @@ export default new SmoothieCommand(Commands.playlist, {
         await command.run({
             guildId: guildId,
             reply: reply,
-            guildData: guildData,
-            guildStates: guildStates,
             options: options,
             payload: payload,
         });

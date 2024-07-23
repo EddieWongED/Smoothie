@@ -7,26 +7,22 @@ import Logging from "../logging/Logging.js";
 import createGuildPrefix from "../../utils/createGuildPrefix.js";
 import createChannelPrefix from "../../utils/createChannelPrefix.js";
 import SmoothieAudioPlayer from "./SmoothieAudioPlayer.js";
-import GuildStatesHandler from "../database/GuildStatesHandler.js";
 import type { VoiceChannel } from "discord.js";
-import GuildDataHandler from "../database/GuildDataHandler.js";
 import type { SetIntervalAsyncTimer } from "set-interval-async";
 import { setIntervalAsync, clearIntervalAsync } from "set-interval-async";
+import { StatesModel } from "../../models/guild/States.js";
+import { UserStatsModel } from "../../models/user/UserStats.js";
 
 export default class SmoothieVoiceConnection {
     channelId: string | null = null;
     connection: VoiceConnection | undefined = undefined;
     player: SmoothieAudioPlayer;
-    private _guildData: GuildDataHandler;
-    private _guildStates: GuildStatesHandler;
     private _stayTimer?: SetIntervalAsyncTimer<unknown[]>;
     private _prevTime: DOMHighResTimeStamp;
 
     constructor(public guildId: string) {
         this.player = new SmoothieAudioPlayer(guildId);
         client.audioPlayers.set(guildId, this.player);
-        this._guildData = new GuildDataHandler(guildId);
-        this._guildStates = new GuildStatesHandler(guildId);
         this._prevTime = performance.now();
     }
 
@@ -79,7 +75,7 @@ export default class SmoothieVoiceConnection {
         this.channelId = channelId;
 
         // Update database voiceChannelId
-        await this._guildStates.update("voiceChannelId", channelId);
+        await StatesModel.findAndSetVoiceChannelId(this.guildId, channelId);
 
         // Start user staying count
         this._startStayingTimer();
@@ -94,7 +90,7 @@ export default class SmoothieVoiceConnection {
         if (this._stayTimer) {
             await clearIntervalAsync(this._stayTimer);
         }
-        await this._guildStates.update("voiceChannelId", null);
+        await StatesModel.findAndSetVoiceChannelId(this.guildId, null);
         return true;
     }
 
@@ -118,34 +114,16 @@ export default class SmoothieVoiceConnection {
             if (userIds.length === 0) return;
 
             // Retrieve userStats
-            const userStatsGenerator =
-                this._guildData.getThenUpdate("userStats");
-            const userStats = (await userStatsGenerator.next()).value;
-            if (!userStats) {
-                await userStatsGenerator.throw(
-                    new Error("Userstats not found.")
-                );
-                return;
-            }
-
             for (const userId of userIds) {
-                const stats = userStats.find(
-                    (stats) => stats.userId === userId
+                const userStats = await UserStatsModel.findByGuildIdAndUserId(
+                    this.guildId,
+                    userId
                 );
-                // Create this user stats if it does not exist
-                if (!stats) {
-                    userStats.push({
-                        userId: userId,
-                        stayDuration: timeElapsed,
-                        songStats: [],
-                    });
+                if (!userStats) {
                     continue;
                 }
-                stats.stayDuration += timeElapsed;
+                await userStats.incrementStayDurationAndSave(timeElapsed);
             }
-
-            // Update userStats
-            await userStatsGenerator.next(userStats);
         }, 30000);
     }
 }

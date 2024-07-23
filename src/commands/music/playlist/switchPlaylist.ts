@@ -5,9 +5,11 @@ import type {
 import { ApplicationCommandOptionType } from "discord.js";
 import { SmoothieCommand } from "../../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../../typings/structures/commands/SmoothieCommand.js";
-import { client } from "../../../index.js";
 import { defaultLanguage, getLocale } from "../../../i18n/i18n.js";
 import getLocalizationMap from "../../../utils/getLocalizationMap.js";
+import { StatesModel } from "../../../models/guild/States.js";
+import { PlaylistModel } from "../../../models/music/Playlist.js";
+import { client } from "../../../index.js";
 
 const nameOption: ApplicationCommandStringOption = {
     name: "name",
@@ -31,7 +33,7 @@ export default new SmoothieCommand(Commands.switchPlaylist, {
     description: getLocale(defaultLanguage, "switchPlaylistDescription"),
     descriptionLocalizations: getLocalizationMap("switchPlaylistDescription"),
     options: switchPlaylistOptions,
-    run: async ({ guildId, options, reply, guildData, guildStates }) => {
+    run: async ({ guildId, options, reply }) => {
         const { name } = options;
         // Check if name is empty or not
         if (name.length === 0) {
@@ -42,22 +44,12 @@ export default new SmoothieCommand(Commands.switchPlaylist, {
             return;
         }
 
-        const playlists = await guildData.get("playlists");
-        if (!playlists) {
-            await reply.error({
-                title: "errorTitle",
-                description: "switchPlaylistFailedMessage",
-                descriptionArgs: [name],
-            });
-            return;
-        }
+        const playlist = await PlaylistModel.findByGuildIdAndName(
+            guildId,
+            name
+        );
 
-        // Check if the playlist exists
-        if (
-            playlists.every((playlist) => {
-                return playlist.name !== name;
-            })
-        ) {
+        if (playlist === null) {
             await reply.error({
                 title: "errorTitle",
                 description: "playlistDoesNotExistMessage",
@@ -66,31 +58,32 @@ export default new SmoothieCommand(Commands.switchPlaylist, {
             return;
         }
 
-        // Update database
-        const newStates = await guildStates.update("currentPlaylistName", name);
+        const newStates = await StatesModel.findAndSetCurrentPlaylist(
+            guildId,
+            playlist
+        );
 
-        if (newStates && newStates.currentPlaylistName === name) {
+        if (newStates.currentPlaylist?._id.equals(playlist._id)) {
             await reply.success({
                 title: "successTitle",
                 description: "switchPlaylistSuccessMessage",
                 descriptionArgs: [name],
             });
-        } else {
-            await reply.error({
-                title: "errorTitle",
-                description: "switchPlaylistFailedMessage",
-                descriptionArgs: [name],
-            });
+
+            // Switch song
+            const player = client.audioPlayers.get(guildId);
+            if (player) {
+                player.forceStop();
+                await player.playFirst();
+            }
             return;
         }
 
-        // Switch song
-        const player = client.audioPlayers.get(guildId);
-        if (player) {
-            player.forceStop();
-            await player.playFirst();
-        }
-
+        await reply.error({
+            title: "errorTitle",
+            description: "switchPlaylistFailedMessage",
+            descriptionArgs: [name],
+        });
         return;
     },
 });

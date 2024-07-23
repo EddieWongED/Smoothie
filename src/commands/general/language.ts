@@ -9,6 +9,7 @@ import { ApplicationCommandOptionType } from "discord.js";
 import { Languages } from "../../typings/i18n/i18n.js";
 import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import getLocalizationMap from "../../utils/getLocalizationMap.js";
+import { ConfigsModel } from "../../models/guild/Configs.js";
 
 const languageOption: ApplicationCommandStringOption = {
     name: "language",
@@ -37,12 +38,14 @@ export default new SmoothieCommand(Commands.language, {
     description: getLocale(defaultLanguage, "languageDescription"),
     descriptionLocalizations: getLocalizationMap("languageDescription"),
     options: languageOptions,
-    run: async ({ options, guildData, reply }) => {
+    run: async ({ options, guildId, reply }) => {
         const { language } = options;
 
         // Show language
         if (!language) {
-            const guildLanguage = await guildData.get("language");
+            const configs = await ConfigsModel.findByGuildId(guildId);
+            const guildLanguage = configs?.language;
+
             if (guildLanguage) {
                 await reply.info({
                     title: "languageShowSuccessTitle",
@@ -59,19 +62,12 @@ export default new SmoothieCommand(Commands.language, {
         }
 
         // Change language
-        const newGuildData = await guildData.update("language", language);
-        if (!newGuildData) {
-            await reply.error({
-                title: "errorTitle",
-                description: "languageUpdateFailedMessage",
-                descriptionArgs: [language],
-            });
-            return;
-        }
+        await ConfigsModel.findAndSetLanguage(guildId, language);
+
         await reply.success({
             title: "successTitle",
             description: "languageUpdateSuccessMessage",
-            descriptionArgs: [newGuildData.language],
+            descriptionArgs: [language],
         });
         return;
     },

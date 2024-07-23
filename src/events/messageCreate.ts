@@ -1,9 +1,9 @@
 import { Events } from "discord.js";
-import GuildDataHandler from "../structures/database/GuildDataHandler.js";
-import GuildStatesHandler from "../structures/database/GuildStatesHandler.js";
 import { SmoothieEvent } from "../structures/events/SmoothieEvent.js";
 import type { MessageCommandPayload } from "../typings/structures/commands/SmoothieCommand.js";
 import { CommandHandler } from "../structures/commands/CommandHandler.js";
+import { ConfigsModel } from "../models/guild/Configs.js";
+import { StatesModel } from "../models/guild/States.js";
 
 export default new SmoothieEvent(Events.MessageCreate, async (message) => {
     if (message.author.bot) return;
@@ -11,9 +11,8 @@ export default new SmoothieEvent(Events.MessageCreate, async (message) => {
     // Create guild data
     const guildId = message.guildId;
     if (!guildId) return;
-    const guildData = new GuildDataHandler(guildId);
-    const guildStates = new GuildStatesHandler(guildId);
-    const prefix = await guildData.get("prefix");
+    const configs = await ConfigsModel.findByGuildId(guildId);
+    const prefix = configs?.prefix;
     if (!prefix) return;
 
     if (message.content.startsWith(prefix)) {
@@ -22,7 +21,7 @@ export default new SmoothieEvent(Events.MessageCreate, async (message) => {
 
         const channelId = messageCommandPayload.channelId;
         if (channelId) {
-            await guildStates.update("textChannelId", channelId);
+            await StatesModel.findAndSetTextChannelId(guildId, channelId);
         }
 
         await CommandHandler.handleMessageCommand(messageCommandPayload);

@@ -5,10 +5,10 @@ import type {
 import { ApplicationCommandOptionType } from "discord.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
-import QueueHandler from "../../structures/music/QueueHandler.js";
 import { client } from "../../index.js";
 import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import getLocalizationMap from "../../utils/getLocalizationMap.js";
+import { StatesModel } from "../../models/guild/States.js";
 
 const indexOption: ApplicationCommandNumericOptionData = {
     name: "index",
@@ -30,16 +30,22 @@ export default new SmoothieCommand(Commands.remove, {
     options: removeOptions,
     run: async ({ options, guildId, reply }) => {
         const { index } = options;
-        const queueHandler = new QueueHandler(guildId);
-        const queue = await queueHandler.fetch();
 
-        if (!queue) {
+        const playlist = await StatesModel.findCurrentPlaylist(guildId);
+
+        if (!playlist) {
             await reply.error({
                 title: "errorTitle",
                 description: "removeFailedMessage",
             });
             return;
         }
+
+        const queue = await playlist.getQueue({
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            _id: 1,
+            title: 1,
+        });
 
         // Throw error if the queue is empty
         if (queue.length === 0) {
@@ -60,8 +66,9 @@ export default new SmoothieCommand(Commands.remove, {
             return;
         }
 
-        const songToBeRemoved = await queueHandler.index(index);
-        if (!songToBeRemoved) {
+        const song = queue[index - 1];
+
+        if (!song) {
             await reply.error({
                 title: "errorTitle",
                 description: "removeFailedMessage",
@@ -73,25 +80,18 @@ export default new SmoothieCommand(Commands.remove, {
             !(await reply.confirm({
                 title: "confirmTitle",
                 description: "confirmRemoveSongMessage",
-                descriptionArgs: [songToBeRemoved.title],
+                descriptionArgs: [song.title],
             }))
         ) {
             await reply.success({
                 title: "cancelSuccessTitle",
                 description: "cancelRemoveSongSuccessMessage",
-                descriptionArgs: [songToBeRemoved.title],
+                descriptionArgs: [song.title],
             });
             return;
         }
 
-        const song = await queueHandler.remove(index);
-        if (!song) {
-            await reply.error({
-                title: "errorTitle",
-                description: "removeFailedMessage",
-            });
-            return;
-        }
+        await playlist.removeSong(song);
 
         await reply.success({
             title: "successTitle",
