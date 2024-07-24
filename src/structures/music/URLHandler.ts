@@ -6,6 +6,7 @@ import parseUrl from "parse-url";
 import type { Song } from "../../models/music/Song.js";
 import { SongModel } from "../../models/music/Song.js";
 import type { DocumentType } from "@typegoose/typegoose";
+import Logging from "../logging/Logging.js";
 
 export enum URLHandlerError {
     success,
@@ -78,6 +79,7 @@ export default class URLHandler {
                 duration: parseInt(result.videoDetails.lengthSeconds),
             };
         } catch (err) {
+            Logging.error(`Failed to get basic info of ${url}`);
             return null;
         }
     }

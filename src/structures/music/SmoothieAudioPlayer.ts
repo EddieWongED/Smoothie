@@ -629,24 +629,27 @@ export default class SmoothieAudioPlayer {
                 .format("mp3")
                 .audioBitrate(320)
                 .audioFilter("loudnorm")
-                .on("error", (err: { outputStreamError: { code: string } }) => {
-                    if (
-                        err.outputStreamError.code ===
-                        "ERR_STREAM_PREMATURE_CLOSE"
-                    ) {
-                        return;
-                    }
+                .on(
+                    "error",
+                    (err: { outputStreamError?: { code?: string } }) => {
+                        if (
+                            err.outputStreamError?.code ===
+                            "ERR_STREAM_PREMATURE_CLOSE"
+                        ) {
+                            return;
+                        }
 
-                    Logging.error(
-                        this._guildPrefix,
-                        "There is an error in ffmpeg",
-                        err
-                    );
-                });
+                        Logging.error(
+                            this._guildPrefix,
+                            "There is an error in ffmpeg",
+                            err
+                        );
+                    }
+                );
 
             const passthrough = command
                 .pipe()
-                .on("error", (err: { code: string }) => {
+                .on("error", (err: { code?: string }) => {
                     if (err.code === "ERR_STREAM_PREMATURE_CLOSE") {
                         Logging.info(
                             this._guildPrefix,
