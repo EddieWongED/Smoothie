@@ -63,7 +63,7 @@
         "json-colorizer": "^2.2.2",
         "mongoose": "^7.6.13",
         "parse-url": "^8.1.0",
-        "play-dl": "^1.9.6",
+        "play-dl": "github:EddieWongED/play-dl",
         "set-interval-async": "^3.0.3",
         "string-similarity": "^4.0.4",
         "tweetnacl": "^1.0.3",
