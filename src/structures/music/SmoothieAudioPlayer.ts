@@ -20,7 +20,6 @@ import type {
 import type { MessageCommandPayload } from "../../typings/structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
 import type { VoiceChannel } from "discord.js";
-import ytdl from "@distube/ytdl-core";
 import ffmpegPath from "@ffmpeg-installer/ffmpeg";
 import ffmpeg from "fluent-ffmpeg";
 import type { PassThrough } from "stream";
@@ -33,6 +32,7 @@ import type { DocumentType } from "@typegoose/typegoose";
 import { UserSongStatsModel } from "../../models/user/UserSongStats.js";
 import type { YoutubeBasicInfo } from "../../typings/structures/music/URLHandler.js";
 import type { Playlist } from "../../models/music/Playlist.js";
+import { stream } from "play-dl";
 
 ffmpeg.setFfmpegPath(ffmpegPath.path);
 
@@ -129,9 +129,10 @@ export default class SmoothieAudioPlayer {
     }
 
     async play(song: DocumentType<Song>): Promise<DocumentType<Song> | null> {
-        const resource = this._createAudioResource(song);
+        const resource = await this._createAudioResource(song);
         this._songInfo = await URLHandler.getBasicInfo(song.url);
         if (!resource || !this._songInfo) {
+            await this._onPlayerError(song);
             return null;
         }
 
@@ -170,8 +171,8 @@ export default class SmoothieAudioPlayer {
         return this.player.stop(true);
     }
 
-    private _createAudioResource(song: DocumentType<Song>) {
-        const stream = this._createNormalizedStream(song);
+    private async _createAudioResource(song: DocumentType<Song>) {
+        const stream = await this._createNormalizedStream(song);
 
         if (stream == null) {
             return null;
@@ -218,7 +219,10 @@ export default class SmoothieAudioPlayer {
         this.player.on(AudioPlayerStatus.Playing, (oldState, newState) => {
             this._startTimer();
             this._pauseIfNoOneInChannel();
-            if (oldState.status === AudioPlayerStatus.Buffering) {
+            if (
+                oldState.status === AudioPlayerStatus.Buffering ||
+                oldState.status === AudioPlayerStatus.Idle
+            ) {
                 const song = newState.resource.metadata as DocumentType<Song>;
                 Logging.info(this._guildPrefix, `Playing ${song.title}`);
             } else if (oldState.status === AudioPlayerStatus.Paused) {
@@ -612,28 +616,15 @@ export default class SmoothieAudioPlayer {
         }
     }
 
-    private _createNormalizedStream(
+    private async _createNormalizedStream(
         song: DocumentType<Song>
-    ): PassThrough | null {
+    ): Promise<PassThrough | null> {
         try {
-            const stream = ytdl(song.url, {
-                filter: "audioonly",
-                liveBuffer: 0,
-                highWaterMark: 1 << 62,
-                quality: "highestaudio",
-                dlChunkSize: 0,
-            }).on("error", (err) => {
-                Logging.error(
-                    this._guildPrefix,
-                    `There is an error in ytdl stream for ${song.url}... Playing next song.`,
-                    err
-                );
-                void (async () => {
-                    await this._onPlayerError(song);
-                })();
+            const playStream = await stream(song.url, {
+                discordPlayerCompatibility: true,
             });
 
-            const command = ffmpeg(stream)
+            const command = ffmpeg(playStream.stream)
                 .format("mp3")
                 .audioBitrate(320)
                 .audioFilter("loudnorm")
