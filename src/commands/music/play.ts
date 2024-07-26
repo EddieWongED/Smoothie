@@ -5,9 +5,8 @@ import type {
 import { ApplicationCommandOptionType } from "discord.js";
 import { SmoothieCommand } from "../../structures/commands/SmoothieCommand.js";
 import { Commands } from "../../typings/structures/commands/SmoothieCommand.js";
-import URLHandler, {
-    URLHandlerError,
-} from "../../structures/music/URLHandler.js";
+import URLHandler from "../../structures/music/URLHandler.js";
+import { URLHandlerError } from "../../typings/structures/music/URLHandler.js";
 import { defaultLanguage, getLocale } from "../../i18n/i18n.js";
 import getLocalizationMap from "../../utils/getLocalizationMap.js";
 import { StatesModel } from "../../models/guild/States.js";

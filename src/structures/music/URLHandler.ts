@@ -1,5 +1,11 @@
-import type { YouTubePlaylist } from "../../typings/structures/music/URLHandler.js";
-import { URLType } from "../../typings/structures/music/URLHandler.js";
+import type {
+    YouTubePlaylist,
+    YoutubeBasicInfo,
+} from "../../typings/structures/music/URLHandler.js";
+import {
+    URLType,
+    URLHandlerError,
+} from "../../typings/structures/music/URLHandler.js";
 import ytdl from "@distube/ytdl-core";
 import youtubeDl from "youtube-dl-exec";
 import parseUrl from "parse-url";
@@ -7,13 +13,6 @@ import type { Song } from "../../models/music/Song.js";
 import { SongModel } from "../../models/music/Song.js";
 import type { DocumentType } from "@typegoose/typegoose";
 import Logging from "../logging/Logging.js";
-
-export enum URLHandlerError {
-    success,
-    unknown,
-    invalidURL,
-    alreadyExists,
-}
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class URLHandler {
@@ -67,7 +66,7 @@ export default class URLHandler {
         }
     }
 
-    static async getBasicInfo(url: string) {
+    static async getBasicInfo(url: string): Promise<YoutubeBasicInfo | null> {
         try {
             const result = await ytdl.getBasicInfo(url);
             return {
