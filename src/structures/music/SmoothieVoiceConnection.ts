@@ -14,13 +14,12 @@ import { StatesModel } from "../../models/guild/States.js";
 import { UserStatsModel } from "../../models/user/UserStats.js";
 
 export default class SmoothieVoiceConnection {
-    channelId: string | null = null;
     connection: VoiceConnection | undefined = undefined;
     player: SmoothieAudioPlayer;
     private _stayTimer?: SetIntervalAsyncTimer<unknown[]>;
     private _prevTime: DOMHighResTimeStamp;
 
-    constructor(public guildId: string) {
+    constructor(public guildId: string, public channelId: string | null) {
         this.player = new SmoothieAudioPlayer(guildId);
         client.audioPlayers.set(guildId, this.player);
         this._prevTime = performance.now();
@@ -71,8 +70,6 @@ export default class SmoothieVoiceConnection {
         // Start the audio player
         await this.player.start();
         this.connection.subscribe(this.player.player);
-
-        this.channelId = channelId;
 
         // Update database voiceChannelId
         await StatesModel.findAndSetVoiceChannelId(this.guildId, channelId);

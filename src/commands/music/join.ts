@@ -23,7 +23,10 @@ export default new SmoothieCommand(Commands.join, {
 
         let voiceConnection = client.voiceConnections.get(guildId);
         if (!voiceConnection) {
-            voiceConnection = new SmoothieVoiceConnection(guildId);
+            voiceConnection = new SmoothieVoiceConnection(
+                guildId,
+                voiceChannelId
+            );
             client.voiceConnections.set(guildId, voiceConnection);
         }
 
