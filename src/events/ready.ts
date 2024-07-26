@@ -18,17 +18,20 @@ export default new SmoothieEvent(Events.ClientReady, async () => {
 
     for (const state of allStates) {
         const { guildId, voiceChannelId } = state;
-        if (!voiceChannelId) return;
+        if (!voiceChannelId) continue;
         // Fetch the voice channel
         const channel = client.channels.cache.get(
             voiceChannelId
         ) as VoiceChannel | null;
-        if (!channel) return;
+        if (!channel) continue;
 
         // Automatically connect the bot to the voice channel if the bot has restarted
         let voiceConnection = client.voiceConnections.get(guildId);
         if (!voiceConnection) {
-            voiceConnection = new SmoothieVoiceConnection(guildId);
+            voiceConnection = new SmoothieVoiceConnection(
+                guildId,
+                voiceChannelId
+            );
             client.voiceConnections.set(guildId, voiceConnection);
         }
         await voiceConnection.connect(voiceChannelId);
