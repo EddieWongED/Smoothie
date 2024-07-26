@@ -1,8 +1,24 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+export enum URLHandlerError {
+    success,
+    unknown,
+    invalidURL,
+    alreadyExists,
+}
+
 export enum URLType {
     invalid,
     single,
     playlist,
+}
+
+export interface YoutubeBasicInfo {
+    url: string;
+    title: string;
+    uploader: string;
+    uploaderURL: string;
+    thumbnailURL: string | null;
+    duration: number;
 }
 
 export interface YouTubeThumbnail {

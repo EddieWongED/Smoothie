@@ -31,26 +31,30 @@ import { ConfigsModel } from "../../models/guild/Configs.js";
 import URLHandler from "./URLHandler.js";
 import type { DocumentType } from "@typegoose/typegoose";
 import { UserSongStatsModel } from "../../models/user/UserSongStats.js";
+import type { YoutubeBasicInfo } from "../../typings/structures/music/URLHandler.js";
+import type { Playlist } from "../../models/music/Playlist.js";
 
 ffmpeg.setFfmpegPath(ffmpegPath.path);
 
 export default class SmoothieAudioPlayer {
     player: AudioPlayer;
-    playedFor = 0;
+    private _playedFor = 0;
     private _musicTimer?: SetIntervalAsyncTimer<unknown[]>;
-    private _embedTimer?: SetIntervalAsyncTimer<unknown[]>;
     private _reply: ReplyHandler;
     private _guildPrefix: string;
     private _currentSong: DocumentType<Song> | null = null;
+    private _songInfo: YoutubeBasicInfo | null = null;
     private _registeredStateChanges = false;
     private _buttonsCollector?: InteractionCollector<
         MappedInteractionTypes[MessageComponentType]
     >;
-    private _prevPlayedFor = -1;
-    private _clickedPauseOrUnpauseButton = false;
+    private _nextFiveSongs?: DocumentType<Song>[];
     private _isForceStop = false;
     private _prevTime: DOMHighResTimeStamp;
     private _errorCount = 0;
+    private _language = defaultLanguage;
+    private _message: MessageCommandPayload | null = null;
+    private _playlist: DocumentType<Playlist> | null = null;
 
     constructor(public guildId: string) {
         this.player = createAudioPlayer({
@@ -81,6 +85,7 @@ export default class SmoothieAudioPlayer {
             this.unpause();
             return this._currentSong;
         }
+
         return this.playFirst();
     }
 
@@ -125,15 +130,22 @@ export default class SmoothieAudioPlayer {
 
     async play(song: DocumentType<Song>): Promise<DocumentType<Song> | null> {
         const resource = this._createAudioResource(song);
-        if (!resource) {
-            return await this._onPlayerError(song);
+        this._songInfo = await URLHandler.getBasicInfo(song.url);
+        if (!resource || !this._songInfo) {
+            return null;
         }
-        this.playedFor = 0;
-        this._prevPlayedFor = -1;
-        this.player.play(resource);
-        this._currentSong = song;
 
-        await this._sendPlayingNowMessage(song);
+        this._currentSong = song;
+        this._language =
+            (await ConfigsModel.findByGuildId(this.guildId))?.language ??
+            defaultLanguage;
+
+        await this._stopTimer();
+        this._playedFor = 0;
+        await this._removePreviousPlayingNowMessage();
+        this._message = await this._sendPlayingNowMessage(false);
+
+        this.player.play(resource);
 
         return song;
     }
@@ -214,31 +226,18 @@ export default class SmoothieAudioPlayer {
             }
         });
 
-        this.player.on(AudioPlayerStatus.Buffering, () => {
-            void (async () => {
-                if (this._musicTimer) {
-                    await clearIntervalAsync(this._musicTimer);
-                }
-                if (this._embedTimer) {
-                    await clearIntervalAsync(this._embedTimer);
-                }
-            })();
-        });
-
         this.player.on(AudioPlayerStatus.Paused, () => {
             Logging.info(this._guildPrefix, "The song has been paused.");
             void (async () => {
-                if (this._musicTimer) {
-                    await clearIntervalAsync(this._musicTimer);
-                }
+                await this._stopTimer();
+                await this._updatePlayingNowMessage();
             })();
         });
 
         this.player.on(AudioPlayerStatus.AutoPaused, () => {
             void (async () => {
-                if (this._musicTimer) {
-                    await clearIntervalAsync(this._musicTimer);
-                }
+                await this._stopTimer();
+                await this._updatePlayingNowMessage();
             })();
         });
 
@@ -258,6 +257,152 @@ export default class SmoothieAudioPlayer {
                 this._guildPrefix,
                 `Audio player state changed: ${oldState.status} -> ${newState.status}`
             );
+        });
+    }
+
+    private async _removePreviousPlayingNowMessage() {
+        if (this._message) {
+            try {
+                await this._message.delete();
+                await StatesModel.findAndSetPlayingNowChannelId(
+                    this.guildId,
+                    null
+                );
+                await StatesModel.findAndSetPlayingNowMessageId(
+                    this.guildId,
+                    null
+                );
+            } catch (err) {
+                Logging.warn(
+                    this._guildPrefix,
+                    "Failed to delete previous playing now message."
+                );
+            }
+            this._message = null;
+        }
+        // Remove previous playing now message
+        const state = await StatesModel.findByGuildId(this.guildId);
+        if (state?.playingNowMessageId && state.playingNowChannelId) {
+            try {
+                const channel = client.channels.cache.get(
+                    state.playingNowChannelId
+                ) as TextChannel | null;
+                const message = await channel?.messages.fetch(
+                    state.playingNowMessageId
+                );
+                await message?.delete();
+            } catch (err) {
+                Logging.warn(
+                    this._guildPrefix,
+                    "Failed to delete previous playing now message."
+                );
+            }
+            await StatesModel.findAndSetPlayingNowChannelId(this.guildId, null);
+            await StatesModel.findAndSetPlayingNowMessageId(this.guildId, null);
+        }
+    }
+
+    private async _createPlayingNowEmbed(useCache = true) {
+        if (!this._songInfo) {
+            return null;
+        }
+
+        const language = this._language;
+
+        const { url, duration, thumbnailURL, title, uploader, uploaderURL } =
+            this._songInfo;
+        const fields: APIEmbedField[] = [];
+
+        // Add uploaded to field
+        if (uploader && uploaderURL) {
+            fields.push({
+                name: getLocale(language, "uploadedByField"),
+                value: `[${uploader}](${uploaderURL})`,
+                inline: true,
+            });
+        }
+
+        if (this._currentSong) {
+            // Add song added date
+            fields.push({
+                name: getLocale(language, "addedAtField"),
+                value: `<t:${Math.floor(
+                    this._currentSong.createdAt.getTime() / 1000
+                )}>`,
+                inline: true,
+            });
+
+            // Add song play count
+            fields.push({
+                name: getLocale(language, "playCountField"),
+                value: this._currentSong.playCount.toString(),
+                inline: true,
+            });
+        }
+
+        let queue: DocumentType<Song>[] | null = null;
+        let playlist: DocumentType<Playlist> | null = null;
+        if (!useCache || !this._nextFiveSongs || !this._playlist) {
+            playlist = await StatesModel.findCurrentPlaylist(this.guildId);
+            this._playlist = playlist;
+            if (playlist) {
+                queue = await playlist.getQueue(
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    { _id: 1, title: 1 },
+                    1,
+                    5
+                );
+                this._nextFiveSongs = queue;
+            }
+        } else {
+            queue = this._nextFiveSongs;
+            playlist = this._playlist;
+        }
+
+        if (playlist) {
+            // Add which playlist is playing
+            fields.push({
+                name: getLocale(language, "playlistField"),
+                value: playlist.name,
+                inline: true,
+            });
+
+            // Add number of songs in playlist
+            fields.push({
+                name: getLocale(language, "numberOfSongsField"),
+                value: playlist.queue.length.toString(),
+                inline: true,
+            });
+        }
+
+        if (queue) {
+            const nextFiveSongs = queue.map(
+                (song, i) => `${i + 2}. ${song.title}`
+            );
+            const nextFiveSongsString = nextFiveSongs.length
+                ? `\`\`\`md\n${nextFiveSongs.join("\n")}\n\`\`\``
+                : getLocale(language, "noUpComingSongMessage");
+            fields.push({
+                name: getLocale(language, "upComingField"),
+                value: nextFiveSongsString,
+                inline: false,
+            });
+        }
+
+        const isPaused =
+            this.player.state.status === AudioPlayerStatus.Paused ||
+            this.player.state.status === AudioPlayerStatus.AutoPaused;
+
+        return PlayingNowEmbed.create({
+            title: getLocale(language, "playingNowTitle"),
+            description: `### [${title}](${url})`,
+            fields: fields,
+            thumbnail: thumbnailURL,
+            playedFor: this._playedFor,
+            duration: duration,
+            isPaused: isPaused,
+            queueButtonText: getLocale(language, "queueButton"),
+            playlistInfoButtonText: getLocale(language, "playlistInfoButton"),
         });
     }
 
@@ -289,12 +434,10 @@ export default class SmoothieAudioPlayer {
                 }
                 case "pause": {
                     this.pause();
-                    this._clickedPauseOrUnpauseButton = true;
                     break;
                 }
                 case "unpause": {
                     this.unpause();
-                    this._clickedPauseOrUnpauseButton = true;
                     break;
                 }
                 case "skip": {
@@ -350,122 +493,18 @@ export default class SmoothieAudioPlayer {
                     break;
                 }
             }
+            await this._updatePlayingNowMessage(false);
         });
     }
 
-    private async _sendPlayingNowMessage(song: DocumentType<Song>) {
-        const language =
-            (await ConfigsModel.findByGuildId(this.guildId))?.language ??
-            defaultLanguage;
-
-        const isPaused =
-            this.player.state.status === AudioPlayerStatus.Paused ||
-            this.player.state.status === AudioPlayerStatus.AutoPaused;
-        const queueButtonText = getLocale(language, "queueButton");
-        const playlistInfoButtonText = getLocale(
-            language,
-            "playlistInfoButton"
-        );
-        const fields: APIEmbedField[] = [];
-
-        const info = await URLHandler.getBasicInfo(song.url);
-
-        if (!info) {
-            return;
+    private async _sendPlayingNowMessage(useCache = true) {
+        const embed = await this._createPlayingNowEmbed(useCache);
+        if (!embed) {
+            return null;
         }
-
-        const { url, duration, thumbnailURL, title, uploader, uploaderURL } =
-            info;
-        // Add uploaded to field
-        if (uploader && uploaderURL) {
-            fields.push({
-                name: getLocale(language, "uploadedByField"),
-                value: `[${uploader}](${uploaderURL})`,
-                inline: true,
-            });
-        }
-
-        // Add song added date
-        fields.push({
-            name: getLocale(language, "addedAtField"),
-            value: `<t:${Math.floor(song.createdAt.getTime() / 1000)}>`,
-            inline: true,
-        });
-
-        // Add song play count
-        fields.push({
-            name: getLocale(language, "playCountField"),
-            value: song.playCount.toString(),
-            inline: true,
-        });
-
-        // Add playlist info to field
-        const playlist = await StatesModel.findCurrentPlaylist(this.guildId);
-
-        if (playlist) {
-            // Add which playlist is playing
-            fields.push({
-                name: getLocale(language, "playlistField"),
-                value: playlist.name,
-                inline: true,
-            });
-
-            // Add number of songs in playlist
-            fields.push({
-                name: getLocale(language, "numberOfSongsField"),
-                value: playlist.queue.length.toString(),
-                inline: true,
-            });
-
-            // Add next five songs list
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            const queue = await playlist.getQueue({ _id: 1, title: 1 }, 1, 5);
-            const nextFiveSongs = queue.map(
-                (song, i) => `${i + 2}. ${song.title}`
-            );
-            const nextFiveSongsString = nextFiveSongs.length
-                ? `\`\`\`md\n${nextFiveSongs.join("\n")}\n\`\`\``
-                : getLocale(language, "noUpComingSongMessage");
-            fields.push({
-                name: getLocale(language, "upComingField"),
-                value: nextFiveSongsString,
-                inline: false,
-            });
-        }
-
-        const embed = PlayingNowEmbed.create({
-            title: getLocale(language, "playingNowTitle"),
-            description: `### [${title}](${url})`,
-            fields: fields,
-            thumbnail: thumbnailURL,
-            playedFor: this.playedFor,
-            duration: duration,
-            isPaused: isPaused,
-            queueButtonText: queueButtonText,
-            playlistInfoButtonText: playlistInfoButtonText,
-        });
-
         const message = await this._reply.send(embed);
         if (message) {
             this._registerPlayingNowButtons(message);
-            // Remove previous playing now message
-            const state = await StatesModel.findByGuildId(this.guildId);
-            if (state?.playingNowMessageId && state.playingNowChannelId) {
-                try {
-                    const channel = client.channels.cache.get(
-                        state.playingNowChannelId
-                    ) as TextChannel | null;
-                    const message = await channel?.messages.fetch(
-                        state.playingNowMessageId
-                    );
-                    await message?.delete();
-                } catch (err) {
-                    Logging.warn(
-                        this._guildPrefix,
-                        "Failed to delete previous playing now message."
-                    );
-                }
-            }
 
             await StatesModel.findAndSetPlayingNowChannelId(
                 this.guildId,
@@ -476,77 +515,46 @@ export default class SmoothieAudioPlayer {
                 message.id
             );
         }
+        return message;
+    }
 
-        // Update the playing now message every 5 seconds
-        if (this._embedTimer) {
-            await clearIntervalAsync(this._embedTimer);
+    private async _updatePlayingNowMessage(useCache = true) {
+        const embed = await this._createPlayingNowEmbed(useCache);
+        if (!embed || !this._message) {
+            return;
         }
-        this._embedTimer = setIntervalAsync(async () => {
-            // Update the playing now message when timer changes or clicked pause or
-            // unpause button
-            if (
-                this.playedFor !== this._prevPlayedFor ||
-                this._clickedPauseOrUnpauseButton
-            ) {
-                const isPaused =
-                    this.player.state.status === AudioPlayerStatus.Paused ||
-                    this.player.state.status === AudioPlayerStatus.AutoPaused;
+        try {
+            await this._message.edit(embed);
+        } catch (err) {
+            Logging.warn(
+                this._guildPrefix,
+                "Failed to edit playing now message."
+            );
+        }
+    }
 
-                const playlist = await StatesModel.findCurrentPlaylist(
-                    this.guildId
-                );
-                if (playlist) {
-                    fields.pop();
-                    const queue = await playlist.getQueue(
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        { _id: 1, title: 1 },
-                        1,
-                        5
-                    );
-                    const nextFiveSongs = queue.map(
-                        (song, i) => `${i + 2}. ${song.title}`
-                    );
-                    const nextFiveSongsString = nextFiveSongs.length
-                        ? `\`\`\`md\n${nextFiveSongs.join("\n")}\n\`\`\``
-                        : getLocale(language, "noUpComingSongMessage");
-                    fields.push({
-                        name: getLocale(language, "upComingField"),
-                        value: nextFiveSongsString,
-                        inline: false,
-                    });
-                }
-
-                const embed = PlayingNowEmbed.create({
-                    title: getLocale(language, "playingNowTitle"),
-                    description: `### [${title}](${url})`,
-                    fields: fields,
-                    thumbnail: thumbnailURL,
-                    playedFor: this.playedFor,
-                    duration: duration,
-                    isPaused: isPaused,
-                    queueButtonText: queueButtonText,
-                    playlistInfoButtonText: playlistInfoButtonText,
-                });
-                await this._reply.reply(embed);
-                this._clickedPauseOrUnpauseButton = false;
-                if (this.playedFor >= duration && duration !== 0) {
-                    if (this._embedTimer) {
-                        await clearIntervalAsync(this._embedTimer);
-                    }
-                }
-            }
-            this._prevPlayedFor = this.playedFor;
-        }, 10000);
+    private async _stopTimer() {
+        if (this._musicTimer) {
+            Logging.debug(this._guildPrefix, "Stopped the music timer.");
+            await clearIntervalAsync(this._musicTimer);
+            this._updatePlayedFor();
+        }
     }
 
     private _startTimer() {
+        Logging.debug(this._guildPrefix, "Started the music timer.");
         this._prevTime = performance.now();
-        this._musicTimer = setIntervalAsync(() => {
-            const now = performance.now();
-            const timeElapsed = now - this._prevTime;
-            this.playedFor += timeElapsed / 1000;
-            this._prevTime = now;
+        this._musicTimer = setIntervalAsync(async () => {
+            this._updatePlayedFor();
+            await this._updatePlayingNowMessage();
         }, 1000);
+    }
+
+    private _updatePlayedFor() {
+        const now = performance.now();
+        const timeElapsed = now - this._prevTime;
+        this._playedFor += timeElapsed / 1000;
+        this._prevTime = now;
     }
 
     private async _updatePlayCount(song: DocumentType<Song>) {
@@ -691,7 +699,6 @@ export default class SmoothieAudioPlayer {
             await this._reply.errorSend({
                 title: "errorTitle",
                 description: "playSongFailedThriceMessage",
-                descriptionArgs: [song.url],
             });
             return null;
         }
