@@ -1,22 +1,90 @@
 import type {
+    ParseResult,
     YouTubePlaylist,
+    YouTubeVideo,
     YoutubeBasicInfo,
 } from "../../typings/structures/music/URLHandler.js";
 import {
     URLType,
     URLHandlerError,
 } from "../../typings/structures/music/URLHandler.js";
-import ytdl from "@distube/ytdl-core";
 import youtubeDl from "youtube-dl-exec";
 import parseUrl from "parse-url";
 import type { Song } from "../../models/music/Song.js";
 import { SongModel } from "../../models/music/Song.js";
 import type { DocumentType } from "@typegoose/typegoose";
-import Logging from "../logging/Logging.js";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default class URLHandler {
-    static async validate(url: string): Promise<URLType> {
+    static async getBasicInfo(url: string): Promise<YoutubeBasicInfo | null> {
+        const { type, data } = await URLHandler._parse(url);
+        if (type === URLType.single) {
+            return data;
+        }
+
+        return null;
+    }
+
+    static async parseAndSave(
+        url: string,
+        guildId: string
+    ): Promise<{ code: URLHandlerError; songs: DocumentType<Song>[] | null }> {
+        const { type, data } = await this._parse(url);
+        switch (type) {
+            case URLType.invalid: {
+                return {
+                    code: URLHandlerError.invalidURL,
+                    songs: null,
+                };
+            }
+            case URLType.single: {
+                const songs = await SongModel.upsertSongs(
+                    guildId,
+                    [
+                        {
+                            url: data.url,
+                            title: data.title,
+                            duration: data.duration,
+                        },
+                    ],
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    { _id: 1 }
+                );
+
+                return {
+                    code: URLHandlerError.success,
+                    songs: songs,
+                };
+            }
+            case URLType.playlist: {
+                const songs = await SongModel.upsertSongs(
+                    guildId,
+                    data.map((song) => {
+                        return {
+                            url: song.url,
+                            title: song.title,
+                            duration: song.duration,
+                        };
+                    }),
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    { _id: 1 }
+                );
+
+                return {
+                    code: URLHandlerError.success,
+                    songs: songs,
+                };
+            }
+            default: {
+                return {
+                    code: URLHandlerError.unknown,
+                    songs: null,
+                };
+            }
+        }
+    }
+
+    private static async _parse(url: string): Promise<ParseResult> {
         // Check if the url is valid or not
         try {
             const parsedURL = parseUrl(url);
@@ -26,18 +94,10 @@ export default class URLHandler {
                 (parsedURL.pathname !== "/watch" &&
                     parsedURL.pathname !== "/playlist")
             ) {
-                return URLType.invalid;
+                return { type: URLType.invalid, data: null };
             }
         } catch (err) {
-            return URLType.invalid;
-        }
-
-        // Check if it is single YouTube video
-        try {
-            await ytdl.getBasicInfo(url);
-            return URLType.single;
-        } catch (err) {
-            /* empty */
+            return { type: URLType.invalid, data: null };
         }
 
         // Check if it is a YouTube playist
@@ -58,120 +118,37 @@ export default class URLHandler {
                 skipDownload: true,
                 skipUnavailableFragments: true,
                 quiet: true,
-            })) as unknown as YouTubePlaylist | undefined;
-            if (!result) return URLType.invalid;
-            return URLType.playlist;
-        } catch (err) {
-            return URLType.invalid;
-        }
-    }
+            })) as unknown as YouTubePlaylist | YouTubeVideo;
 
-    static async getBasicInfo(url: string): Promise<YoutubeBasicInfo | null> {
-        try {
-            const result = await ytdl.getBasicInfo(url);
-            return {
-                url: result.videoDetails.video_url,
-                title: result.videoDetails.title,
-                uploader: result.videoDetails.author.name,
-                uploaderURL: result.videoDetails.author.channel_url,
-                thumbnailURL: result.videoDetails.thumbnails[0]?.url ?? null,
-                duration: parseInt(result.videoDetails.lengthSeconds),
-            };
-        } catch (err) {
-            Logging.error(`Failed to get basic info of ${url}`);
-            return null;
-        }
-    }
-
-    static async parseAndSave(
-        url: string,
-        guildId: string
-    ): Promise<{ code: URLHandlerError; songs: DocumentType<Song>[] | null }> {
-        const type = await this.validate(url);
-        switch (type) {
-            case URLType.invalid: {
+            if ("entries" in result) {
                 return {
-                    code: URLHandlerError.invalidURL,
-                    songs: null,
-                };
-            }
-            case URLType.single: {
-                const info = await URLHandler.getBasicInfo(url);
-
-                if (!info) {
-                    return {
-                        code: URLHandlerError.invalidURL,
-                        songs: null,
-                    };
-                }
-
-                const songs = await SongModel.upsertSongs(
-                    guildId,
-                    [
-                        {
-                            url: info.url,
-                            title: info.title,
-                            duration: info.duration,
-                        },
-                    ],
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    { _id: 1 }
-                );
-
-                return {
-                    code: URLHandlerError.success,
-                    songs: songs,
-                };
-            }
-            case URLType.playlist: {
-                const result = (await youtubeDl(url, {
-                    ignoreErrors: true,
-                    flatPlaylist: true,
-                    dumpSingleJson: true,
-                    noWarnings: true,
-                    callHome: false,
-                    noCheckCertificates: true,
-                    preferFreeFormats: true,
-                    noColor: true,
-                    yesPlaylist: true,
-                    youtubeSkipDashManifest: true,
-                    geoBypass: true,
-                    simulate: true,
-                    skipDownload: true,
-                    skipUnavailableFragments: true,
-                    quiet: true,
-                })) as unknown as YouTubePlaylist | undefined;
-                if (!result) {
-                    return {
-                        code: URLHandlerError.invalidURL,
-                        songs: null,
-                    };
-                }
-
-                const songs = await SongModel.upsertSongs(
-                    guildId,
-                    result.entries.map((video) => {
+                    type: URLType.playlist,
+                    data: result.entries.map((video) => {
                         return {
                             url: video.url,
                             title: video.title,
                             duration: video.duration ?? 0,
+                            uploader: video.uploader,
+                            uploaderURL: video.uploader_url,
+                            thumbnailURL: video.thumbnails[0]?.url ?? null,
                         };
                     }),
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    { _id: 1 }
-                );
-
+                };
+            } else {
                 return {
-                    code: URLHandlerError.success,
-                    songs: songs,
+                    type: URLType.single,
+                    data: {
+                        url: result.original_url,
+                        title: result.title,
+                        duration: result.duration ?? 0,
+                        uploader: result.uploader,
+                        uploaderURL: result.uploader_url,
+                        thumbnailURL: result.thumbnails[0]?.url ?? null,
+                    },
                 };
             }
-            default: {
-                return {
-                    code: URLHandlerError.unknown,
-                    songs: null,
-                };
-            }
+        } catch (err) {
+            return { type: URLType.invalid, data: null };
         }
     }
 }
