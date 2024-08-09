@@ -86,6 +86,7 @@ Put these value in `.env` file.
 | `GUILD_ID`             | No        | Used in `register-guild-commands`, `clear-guild-commands`, `import-songs` scripts.                                                                                                                                                                                                                                                                                                                |
 | `MONGODB_URL`          | Yes       | The URL of your MongoDB database (more detail below). <br /> Please remove everything after the last `/`, including the `/`. <br /> For example: For `mongodb+srv://<username>:<password>@cluster0.9mmia.mongodb.net/<database_name>?retryWrites=true&w=majority`, remove `/<database_name>?retryWrites=true&w=majority` (i.e.: `mongodb+srv://<username>:<password>@cluster0.9mmia.mongodb.net`) |
 | `ENV`                  | Yes       | Can be `dev`, `prod`, or `debug`. If you do not know what this is, just choose `prod`.                                                                                                                                                                                                                                                                                                            |
+| `YOUTUBE_COOKIE`       | No        | If you encounter `Sign in to confirm you’re not a bot`, you will need fill in this variabel. See [Toubleshooting](#troubleshooting).                                                                                                                                                                                                                                                              |
 
 ## Setting up MongoDB :factory:
 
@@ -127,6 +128,30 @@ Put these value in `.env` file.
 12. In the console, type `npm run register-global-commands` to register slash commands globally.
 13. On right hand corner, click `More` and then click `Restart all dynos`.
 14. Click `More` once again and click `View logs`. You should see the bot has been successfully hosted! Congratulations!
+
+## Troubleshooting
+
+### Sign in to confirm you’re not a bot
+
+-   If you face `Sign in to confirm you’re not a bot` error, you need provide a YouTube cookie.
+
+> [!WARNING]  
+> It is strongly suggested that you create a new account to do this instead of using your personal account.
+
+1. Open a random YouTube video with your new account.
+
+2. Open developer tools (`Option + ⌘ + J` (on macOS), or `Shift + CTRL + J` (on Windows/Linux)).
+
+3. Open **Network** tab.
+
+4. Reload the page. Find and open the first request (which is HTTP GET Request of the webpage).
+
+5. Scroll down and find Request Headers. Find `Cookie` attribute.
+
+6. Copy its value to `.env` file. Wrap your cookie with double quotation marks. (e.g. `YOUTUBE_COOKIE="<your cookie here>"`).
+
+> [!WARNING]  
+> Do not logout your YouTube account as it would expire your cookie. Alternatively, you can delete the cookie.
 
 ## Contributing
 

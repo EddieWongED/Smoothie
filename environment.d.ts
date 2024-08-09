@@ -6,6 +6,7 @@ declare global {
             CLIENT_ID: string;
             GUILD_ID: string;
             MONGODB_URL: string;
+            YOUTUBE_COOKIE?: string;
             ENV: "dev" | "prod" | "debug";
         }
     }
