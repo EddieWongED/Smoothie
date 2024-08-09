@@ -9,6 +9,7 @@ import type SmoothieVoiceConnection from "../music/SmoothieVoiceConnection.js";
 import importDefault from "../../utils/importDefault.js";
 import subfilePathsOf from "../../utils/subfilePathsOf.js";
 import type SmoothieAudioPlayer from "../music/SmoothieAudioPlayer.js";
+import { setToken } from "play-dl";
 
 export class SmoothieClient extends Client {
     commands = new Collection<string, Command>();
@@ -33,6 +34,12 @@ export class SmoothieClient extends Client {
             this._registerEvents(),
             this.database.connect(),
         ]);
+        if (process.env.YOUTUBE_COOKIE) {
+            await setToken({ youtube: { cookie: process.env.YOUTUBE_COOKIE } });
+            Logging.info(
+                "YouTube cookie is given. It will be used when fetching data from YouTube."
+            );
+        }
         await this.login(process.env.BOT_TOKEN);
     }
 
