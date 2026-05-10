@@ -23,15 +23,16 @@ export class Configs implements Base, TimeStamps {
 
     public updatedAt!: Date;
 
-    @prop({ required: true, unique: true, immutable: true })
+    @prop({ required: true, unique: true, immutable: true, type: String })
     public guildId!: string;
 
-    @prop({ default: "$" })
+    @prop({ default: "$", type: String })
     public prefix!: string;
 
     @prop({
         default: Languages.en_us,
         enum: Object.values(Languages),
+        type: String,
     })
     public language!: Language;
 

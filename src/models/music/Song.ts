@@ -23,19 +23,19 @@ export class Song implements Base, TimeStamps {
 
     public updatedAt!: Date;
 
-    @prop({ required: true, immutable: true })
+    @prop({ required: true, immutable: true, type: String })
     public guildId!: string;
 
-    @prop({ required: true, immutable: true, trim: true })
+    @prop({ required: true, immutable: true, trim: true, type: String })
     public url!: string;
 
-    @prop({ required: true, immutable: true, trim: true })
+    @prop({ required: true, immutable: true, trim: true, type: String })
     public title!: string;
 
-    @prop({ required: true, immutable: true })
+    @prop({ required: true, immutable: true, type: Number })
     public duration!: number;
 
-    @prop({ default: 0 })
+    @prop({ default: 0, type: Number })
     public playCount!: number;
 
     public static async findAllByGuildId(

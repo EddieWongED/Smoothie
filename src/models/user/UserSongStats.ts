@@ -7,16 +7,16 @@ import Logging from "../../structures/logging/Logging.js";
 
 @index({ guildId: 1, userId: 1, song: 1 }, { unique: true })
 export class UserSongStats {
-    @prop({ required: true, immutable: true })
+    @prop({ type: String, required: true, immutable: true })
     public guildId!: string;
 
-    @prop({ required: true, immutable: true })
+    @prop({ type: String, required: true, immutable: true })
     public userId!: string;
 
     @prop({ ref: () => Song, required: true, immutable: true })
     public song!: Ref<Song>;
 
-    @prop({ default: 0 })
+    @prop({ type: Number, default: 0 })
     public listenCount!: number;
 
     public static async findByGuildIdUserIdAndSong(

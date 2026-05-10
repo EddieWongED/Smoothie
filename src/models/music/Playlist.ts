@@ -28,10 +28,10 @@ export class Playlist implements Base, TimeStamps {
 
     public updatedAt!: Date;
 
-    @prop({ required: true, immutable: true })
+    @prop({ type: String, required: true, immutable: true })
     public guildId!: string;
 
-    @prop({ required: true, immutable: true })
+    @prop({ type: String, required: true, immutable: true })
     public name!: string;
 
     @prop({ ref: () => Song, default: null })

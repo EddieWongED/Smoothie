@@ -6,14 +6,14 @@ import Logging from "../../structures/logging/Logging.js";
 
 @index({ guildId: 1, userId: 1 }, { unique: true })
 export class UserStats {
-    @prop({ required: true, immutable: true })
+    @prop({ required: true, immutable: true, type: String })
     public guildId!: string;
 
-    @prop({ required: true, immutable: true })
+    @prop({ required: true, immutable: true, type: String })
     public userId!: string;
 
     // In minutes
-    @prop({ default: 0 })
+    @prop({ default: 0, type: Number })
     public stayDuration!: number;
 
     public static async findByGuildIdAndUserId(

@@ -52,7 +52,9 @@ export class SmoothieClient extends Client {
                 const event = await importDefault<
                     SmoothieEvent<keyof ClientEvents>
                 >(path);
-                if (!event) return;
+                if (!event) {
+                    return;
+                }
                 Logging.success(`Registering ${event.event} event...`);
                 this.on(event.event, event.run);
                 Logging.info(`${event.event} event is registered.`);
@@ -71,7 +73,9 @@ export class SmoothieClient extends Client {
         for (const path of paths) {
             try {
                 const command = await importDefault<Command>(path);
-                if (!command) break;
+                if (!command) {
+                    break;
+                }
                 Logging.info(`Loading ${command.name} command...`);
                 if (command.aliases) {
                     for (const alias of command.aliases) {

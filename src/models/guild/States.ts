@@ -24,7 +24,7 @@ export class States implements Base, TimeStamps {
 
     public updatedAt!: Date;
 
-    @prop({ required: true, unique: true, immutable: true })
+    @prop({ required: true, unique: true, immutable: true, type: String })
     public guildId!: string;
 
     @prop({ default: null, ref: () => Playlist })
